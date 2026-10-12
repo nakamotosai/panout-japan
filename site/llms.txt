@@ -1,0 +1,20 @@
+# Pan Out Japan — llms.txt
+
+> japan.ouuut.com：地震・犯罪率・内閣支持率への静的聚合門面。
+> Pan out ＝ カメラを引いて日本全体を見渡すこと。そして、うまくいくこと。
+
+## Gates（外链跳转，老站现行 URL）
+
+- [地震マップ](https://3d.saaaai.com/)：列島の震源を3D地球儀で俯瞰する。数据源：USGS。
+- [犯罪率マップ](https://crime.saaaai.com/)：東京都 5,234 町丁の刑法犯千人率を分級着色。数据源：警視庁（CC BY）。
+- [内閣支持率 2000→](https://japan.saaaai.com/)：NHK 月次世論調査 632 点の推移を月平均で追う。数据源：NHK放送文化研究所。
+
+## News
+
+- News Pan 開発中：日本本土ニュースの日次聚合、準備中。首版は静的プレースホルダのみ。
+
+## Policy
+
+- 语言：ja / zh-CN / en（三语结构同步，`?lang=` > localStorage > navigator > ja）。
+- 许可：站内文案与可视化 CC BY 4.0；底层官方数据以各来源许可为准。
+- 联系与回滚：三老站（3d / crime / japan.saaaai.com）保持在线做回滚锚。

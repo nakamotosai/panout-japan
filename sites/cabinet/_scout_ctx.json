@@ -1,0 +1,37 @@
+{
+  "pm_map": {
+    "小渕恵三": "obuchi",
+    "森喜朗": "mori",
+    "小泉純一郎": "koizumi",
+    "安倍晋三(1次)": "abe1",
+    "福田康夫": "fukuda",
+    "麻生太郎": "aso",
+    "鳩山由紀夫": "hatoyama",
+    "菅直人": "kan",
+    "野田佳彦": "noda",
+    "安倍晋三(2次)": "abe2",
+    "菅義偉": "suga",
+    "岸田文雄": "kishida",
+    "石破茂": "ishiba",
+    "高市早苗": "takaichi"
+  },
+  "poll_schema_sample": {
+    "date": "2000-01-15",
+    "pm": "小渕恵三",
+    "value": 44.0,
+    "source": "NHK世論調査",
+    "url": "https://www.nhk.or.jp/bunken/yoron/political/2000.html",
+    "derived": false,
+    "kind": "月次"
+  },
+  "poll_schema_pdf_sample": {
+    "date": "2026-07-10",
+    "survey_end": "2026-07-12",
+    "pm": "高市早苗",
+    "value": 57.8,
+    "source": "NHK世論調査",
+    "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2026/y202607.pdf",
+    "derived": false,
+    "kind": "NHK月次"
+  }
+}

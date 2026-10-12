@@ -1,0 +1,1219 @@
+--- C:/Users/sai/omp/cabinet-approval/index.html
++++ F:/cabinet-approval/index.html
+@@ -1,600 +1,616 @@
+-<!DOCTYPE html>
+-<html lang="ja" data-theme="gruvbox-dark">
+-<head>
+-<meta charset="UTF-8">
+-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+-<title>内閣支持率 2000→｜NHK 月次世論調査</title>
+-<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+-<style>
+-  * { margin: 0; padding: 0; box-sizing: border-box; }
+-  ::-webkit-scrollbar { width: 8px; height: 8px; }
+-  ::-webkit-scrollbar-track { background: transparent; }
+-  ::-webkit-scrollbar-thumb {
+-    background: color-mix(in srgb, var(--ink) 22%, transparent);
+-    border-radius: 999px; border: 2px solid transparent; background-clip: padding-box;
+-  }
+-  ::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--ink) 40%, transparent); background-clip: padding-box; }
+-  * { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--ink) 22%, transparent) transparent; }
+-
+-  /* ===== Theme tokens (F:\模板库\themes) ===== */
+-  :root, [data-theme="gruvbox-dark"] {
+-    --bg: #1d2021; --bg2: #282828; --bg3: #3c3836;
+-    --ink: #ebdbb2; --muted: #a89984; --faint: #928374;
+-    --accent: #fe8019; --accent2: #83a598;
+-    --panel: #282828; --panel-border: #3c3836;
+-    --pillow: #282828; --pill-border: #3c3836;
+-    --font-body: "Maple Mono NF CN", "Noto Sans JP", "PingFang SC", "Microsoft YaHei UI", system-ui, sans-serif;
+-    --font-display: "Maple Mono NF CN", "Noto Sans JP", "PingFang SC", sans-serif;
+-  }
+-  [data-theme="paper-editorial"] {
+-    --bg: #F7F3EB; --bg2: #EFE9DF; --bg3: #D4CDC2;
+-    --ink: #1A1714; --muted: #6B6560; --faint: #8A847C;
+-    --accent: #C41E3A; --accent2: #2C4A6E;
+-    --panel: #FFFCF7; --panel-border: #D4CDC2;
+-    --pillow: #FFFCF7; --pill-border: #D4CDC2;
+-    --font-body: 'Maple Mono NF CN', 'Noto Sans JP', 'PingFang SC', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+-    --font-display: 'Maple Mono NF CN', 'Noto Serif JP', 'Songti SC', serif;
+-  }
+-  [data-theme="claude-cream"] {
+-    --bg: #FAF9F5; --bg2: #F5F0E8; --bg3: #E6DFD8;
+-    --ink: #141413; --muted: #6C6A64; --faint: #8E8B82;
+-    --accent: #CC785C; --accent2: #3D7A9A;
+-    --panel: #F5F0E8; --panel-border: #E6DFD8;
+-    --pillow: #F5F0E8; --pill-border: #E6DFD8;
+-    --font-body: 'Maple Mono NF CN', 'Noto Sans JP', 'PingFang SC', sans-serif;
+-    --font-display: 'Maple Mono NF CN', 'Noto Serif JP', serif;
+-  }
+-  [data-theme="saaaai-mono"] {
+-    --bg: #06070A; --bg2: #0E0F14; --bg3: #161820;
+-    --ink: #F4F4F5; --muted: #A8A8A8; --faint: #8B8D94;
+-    --accent: #E8E8EC; --accent2: #00D4FF;
+-    --panel: #0E0F14; --panel-border: rgba(255,255,255,0.12);
+-    --pillow: #0E0F14; --pill-border: rgba(255,255,255,0.14);
+-    --font-body: 'Maple Mono NF CN', 'Noto Sans JP', 'PingFang SC', sans-serif;
+-    --font-display: 'Maple Mono NF CN', 'Noto Sans JP', sans-serif;
+-  }
+-
+-  html { color-scheme: light; }
+-  [data-theme="gruvbox-dark"] { color-scheme: dark; }
+-  [data-theme="saaaai-mono"] { color-scheme: dark; }
+-
+-  body {
+-    font-family: var(--font-body);
+-    background: var(--bg);
+-    color: var(--ink);
+-    min-height: 100vh;
+-    padding: 22px 32px 40px;
+-    transition: background 0.25s, color 0.25s;
+-  }
+-  .wrap { max-width: 1400px; margin: 0 auto; }
+-
+-  /* ===== 顶部第一行：标题 + 主题切换（右侧一个按钮） ===== */
+-  .topline {
+-    display: flex; align-items: flex-start; justify-content: space-between;
+-    gap: 16px; flex-wrap: wrap; margin-bottom: 10px;
+-  }
+-  .topline h1 {
+-    font-family: var(--font-display);
+-    font-size: 24px; font-weight: 700; letter-spacing: 0.02em; line-height: 1.35;
+-  }
+-  .topline .subtitle { font-size: 13px; color: var(--muted); line-height: 1.6; margin-top: 4px; }
+-
+-  .theme-drop { position: relative; flex-shrink: 0; }
+-  .theme-btn {
+-    display: inline-flex; align-items: center; gap: 7px;
+-    background: var(--pillow); border: 1px solid var(--pill-border); color: var(--ink);
+-    padding: 8px 14px; border-radius: 10px;
+-    font-family: inherit; font-size: 13px; font-weight: 500;
+-    cursor: pointer; transition: border-color 0.15s, background 0.15s;
+-  }
+-  .theme-btn:hover { border-color: var(--accent); }
+-  .theme-btn .sw { width: 12px; height: 12px; border-radius: 3px; border: 1px solid var(--pill-border); }
+-  .theme-btn .caret { color: var(--faint); font-size: 11px; }
+-  .theme-menu {
+-    position: absolute; right: 0; top: calc(100% + 6px);
+-    min-width: 190px; z-index: 30;
+-    background: var(--panel); border: 1px solid var(--pill-border); border-radius: 10px;
+-    padding: 5px; box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+-    display: none;
+-  }
+-  .theme-menu.open { display: block; }
+-  .theme-menu button {
+-    display: flex; align-items: center; gap: 9px; width: 100%;
+-    background: none; border: none; border-radius: 7px;
+-    padding: 8px 10px; cursor: pointer;
+-    font-family: inherit; font-size: 13px; color: var(--muted);
+-    text-align: left;
+-  }
+-  .theme-menu button:hover { background: var(--bg3); color: var(--ink); }
+-  .theme-menu button.active { color: var(--ink); font-weight: 600; }
+-  .theme-menu button .sw { width: 13px; height: 13px; border-radius: 4px; border: 1px solid var(--pill-border); flex-shrink: 0; }
+-  .theme-menu button.active .sw { border-color: var(--accent); outline: 2px solid color-mix(in srgb, var(--accent) 35%, transparent); outline-offset: 1px; }
+-
+-  /* ===== 图例 ===== */
+-  .legend-bar { margin: 0 0 10px; font-size: 12px; color: var(--faint); line-height: 2; }
+-  .legend-bar span.pill {
+-    display: inline-block; padding: 2px 10px; margin: 2px 4px 2px 0;
+-    border-radius: 9px; font-size: 11px; font-weight: 500; background: var(--panel);
+-    border: 1px solid var(--pill-border);
+-  }
+-  .legend-bar button.pill {
+-    display: inline-block; padding: 3px 11px; margin: 2px 4px 2px 0;
+-    border-radius: 8px; font-size: 12px; font-weight: 500; background: var(--panel);
+-    border: 1px solid var(--pill-border);
+-    font-family: inherit; cursor: pointer; line-height: 1.5;
+-    transition: transform .12s ease, box-shadow .12s ease, opacity .15s ease;
+-    vertical-align: middle;
+-  }
+-  .legend-bar button.pill:hover { transform: translateY(-1px); box-shadow: 0 2px 6px color-mix(in srgb, var(--accent) 25%, transparent); }
+-  .legend-bar button.pill.focused {
+-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 55%, transparent);
+-    transform: translateY(-1px);
+-    font-weight: 700;
+-  }
+-  .legend-bar button.pill.exit-focus {
+-    background: color-mix(in srgb, var(--accent) 14%, var(--panel));
+-    border: 1px solid var(--accent);
+-    color: var(--accent); font-weight: 600;
+-    margin-right: 8px;
+-  }
+-  .legend-bar button.pill.exit-focus:hover { background: color-mix(in srgb, var(--accent) 26%, var(--panel)); }
+-  .legend-bar .real-mark {
+-    display: inline-block; width: 10px; height: 10px; border-radius: 50%;
+-    background: var(--accent); border: 1.5px solid var(--bg); vertical-align: middle; margin: 0 4px 0 10px;
+-  }
+-  .legend-bar .derived-mark {
+-    display: inline-block; width: 16px; height: 2px;
+-    background: repeating-linear-gradient(90deg, var(--faint) 0 4px, transparent 4px 7px);
+-    vertical-align: middle; margin: 0 4px 0 10px;
+-  }
+-
+-  .chart-wrap { position: relative; }
+-  .chart-wrap .zoom {
+-    position: absolute; left: 12px; bottom: 18px; z-index: 5;
+-    display: inline-flex; align-items: center;
+-    background: var(--panel); border: 1px solid var(--pill-border); border-radius: 8px;
+-    padding: 2px; box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+-  }
+-  .zoom button {
+-    border: none; background: none; color: var(--faint);
+-    padding: 4px 11px; border-radius: 6px;
+-    font-family: inherit; font-size: 12px; font-weight: 500;
+-    cursor: pointer; transition: all 0.15s; line-height: 1;
+-  }
+-  .zoom button:hover { color: var(--ink); }
+-  .zoom button.active { background: var(--accent); color: var(--bg); font-weight: 600; }
+-
+-  #chart {
+-    width: 100%; height: 70vh; min-height: 480px;
+-    border-radius: 10px; background: var(--panel); border: 1px solid var(--panel-border);
+-    transition: background 0.25s;
+-  }
+-</style>
+-</head>
+-<body>
+-<div class="wrap">
+-
+-<div class="topline">
+-  <div>
+-    <h1>🇯🇵 内閣支持率 2000→ NHK 月次世論調査</h1>
+-    <div class="subtitle">
+-      2000 年 1 月以降の NHK 月次世論調査（放送文化研究所 + 選挙WEB）。縦線 = 首相交代。同色 = 同一首相。
+-    </div>
+-  </div>
+-  <div class="theme-drop" id="themeDrop">
+-    <button class="theme-btn" id="themeBtn" type="button">
+-      <span class="sw" id="themeSwatch"></span>
+-      <span id="themeBtnLabel">テーマ</span>
+-      <span class="caret">▾</span>
+-    </button>
+-    <div class="theme-menu" id="themeMenu"></div>
+-  </div>
+-</div>
+-
+-<div class="legend-bar" id="legend"></div>
+-
+-<div class="chart-wrap">
+-  <div class="zoom" id="zoomSeg"></div>
+-  <div id="chart"></div>
+-</div>
+-
+-</div>
+-
+-<script>
+-/* ===== テーマ定義（F:\模板库\themes 由来） ===== */
+-const THEMES = [
+-  { id: 'gruvbox-dark',      label: '暖暗·Gruvbox', swatch: '#fe8019' },
+-  { id: 'paper-editorial',   label: '纸感·朱砂',   swatch: '#C41E3A' },
+-  { id: 'claude-cream',      label: '奶油·珊瑚',   swatch: '#CC785C' },
+-  { id: 'saaaai-mono',       label: '银灰·极简',   swatch: '#00D4FF' }
+-];
+-const THEME_CHART = {
+-  'gruvbox-dark': {
+-    palette: ['#fb4934', '#fe8019', '#fabd2f', '#b8bb26', '#8ec07c', '#83a598', '#d3869b', '#a89984', '#e6642c', '#d79921', '#9d9f3a', '#689d6a', '#458588', '#b16286'],
+-    chart: {
+-      gridBorder: 'transparent',
+-      tooltipBg: 'rgba(29,32,33,0.96)', tooltipBorder: '#3c3836',
+-      tooltipText: '#ebdbb2', tooltipMuted: '#a89984', tooltipDim: '#928374',
+-      axisLine: '#3c3836', axisLabel: '#a89984',
+-      splitLine: '#3c3836', splitLineType: 'dashed',
+-      zoomBorder: '#3c3836', zoomBg: '#282828', zoomFill: 'rgba(254,128,25,0.16)', zoomHandle: '#fe8019', zoomText: '#928374',
+-      markLabelBg: 'rgba(40,40,40,0.92)', pointBorder: '#1d2021'
+-    }
+-  },
+-  'paper-editorial': {
+-    palette: ['#C41E3A', '#2C4A6E', '#3D6B6B', '#2F6B4F', '#6B4A6B', '#8A5A24', '#1A1714', '#9A1830', '#4A6A8A', '#5A8A7A', '#7A6A4A', '#C4A252', '#3A4A6A', '#8A3A5A'],
+-    chart: {
+-      gridBorder: 'transparent',
+-      tooltipBg: 'rgba(255,252,247,0.97)', tooltipBorder: '#C41E3A',
+-      tooltipText: '#1A1714', tooltipMuted: '#6B6560', tooltipDim: '#8A847C',
+-      axisLine: '#C4CDC2', axisLabel: '#8A847C',
+-      splitLine: '#E3DDD2', splitLineType: 'dashed',
+-      zoomBorder: '#D4CDC2', zoomBg: '#FFFCF7', zoomFill: 'rgba(196,30,58,0.12)', zoomHandle: '#C41E3A', zoomText: '#8A847C',
+-      markBorder: 'rgba(255,252,247,0.92)', pointBorder: '#FFFCF7'
+-    }
+-  },
+-  'claude-cream': {
+-    palette: ['#CC785C', '#A9583E', '#3D9A8A', '#3D7A9A', '#8A6A9A', '#5DB872', '#C64545', '#B8977A', '#7A8A5A', '#9A7A5A', '#5A8A9A', '#AA7A9A', '#6A8A6A', '#D8A55A'],
+-    chart: {
+-      gridBorder: 'transparent',
+-      tooltipBg: 'rgba(255,253,250,0.97)', tooltipBorder: '#E6DFD8',
+-      tooltipText: '#141413', tooltipMuted: '#6C6A64', tooltipDim: '#8E8B82',
+-      axisLine: '#E6DFD8', axisLabel: '#8E8B82',
+-      splitLine: '#EAE4DB', splitLineType: 'dashed',
+-      zoomBorder: '#E6DFD8', zoomBg: '#F5F0E8', zoomFill: 'rgba(204,120,92,0.14)', zoomHandle: '#CC785C', zoomText: '#8E8B82',
+-      markBorder: 'rgba(245,240,232,0.93)', pointBorder: '#FAF9F5'
+-    }
+-  },
+-  'saaaai-mono': {
+-    palette: ['#E8E8EC', '#A8A8A8', '#8B8D94', '#6B6D74', '#FF2D7E', '#00D4FF', '#3DDC97', '#C8C8CC', '#5A5C64', '#F4F4F5', '#9A9CA8', '#4A4C54', '#7A7CA8', '#BF5A9A'],
+-    chart: {
+-      gridBorder: 'transparent',
+-      tooltipBg: 'rgba(14,15,20,0.96)', tooltipBorder: 'rgba(255,255,255,0.2)',
+-      tooltipText: '#F4F4F5', tooltipMuted: '#A8A8A8', tooltipDim: '#8B8D94',
+-      axisLine: 'rgba(255,255,255,0.16)', axisLabel: '#8B8D94',
+-      splitLine: 'rgba(255,255,255,0.08)', splitLineType: 'dashed',
+-      zoomBorder: 'rgba(255,255,255,0.14)', zoomBg: '#0E0F14', zoomFill: 'rgba(232,232,236,0.12)', zoomHandle: '#E8E8EC', zoomText: '#8B8D94',
+-      markBorder: 'rgba(14,15,20,0.92)', pointBorder: '#06070A'
+-    }
+-  }
+-};
+-
+-let chart = null;
+-let rawData = null;
+-let activeRange = '10y';   // 默认近10年
+-let focusCabinet = null;   // 点击图例聚焦的首相 id，null=全部
+-
+-/* 主题下拉 */
+-const themeMenu = document.getElementById('themeMenu');
+-function renderThemeMenu() {
+-  themeMenu.innerHTML = '';
+-  THEMES.forEach(t => {
+-    const b = document.createElement('button');
+-    b.type = 'button';
+-    b.dataset.theme = t.id;
+-    b.innerHTML = '<span class="sw" style="background:' + t.swatch + '"></span>' + t.label;
+-    b.classList.toggle('active', t.id === currentTheme);
+-    b.addEventListener('click', () => {
+-      applyTheme(t.id);
+-      renderChart();
+-      closeThemeMenu();
+-    });
+-    themeMenu.appendChild(b);
+-  });
+-}
+-function openThemeMenu() { themeMenu.classList.add('open'); }
+-function closeThemeMenu() { themeMenu.classList.remove('open'); }
+-document.getElementById('themeBtn').addEventListener('click', (e) => {
+-  e.stopPropagation();
+-  themeMenu.classList.toggle('open');
+-});
+-document.addEventListener('click', () => closeThemeMenu());
+-
+-let currentTheme = localStorage.getItem('cabinet-theme') || 'gruvbox-dark'; // 默认 gruvbox
+-function applyTheme(id) {
+-  currentTheme = id;
+-  document.documentElement.dataset.theme = id;
+-  localStorage.setItem('cabinet-theme', id);
+-  const meta = THEMES.find(t => t.id === id);
+-  document.getElementById('themeBtnLabel').textContent = 'テーマ：' + meta.label;
+-  document.getElementById('themeSwatch').style.background = meta.swatch;
+-}
+-
+-/* 时间分段按钮 */
+-const RANGES = [
+-  { id: '3m',  label: '3ヶ月' },
+-  { id: '1y',  label: '1年' },
+-  { id: '2y',  label: '2年' },
+-  { id: '5y',  label: '5年' },
+-  { id: '10y', label: '10年' },
+-  { id: 'all', label: '全期間' }
+-];
+-const RANGE_WINDOW_MONTHS = { '3m': 3, '1y': 12, '2y': 24, '5y': 60, '10y': 120, 'all': 0 };
+-const zoomSeg = document.getElementById('zoomSeg');
+-function renderZoomSeg() {
+-  zoomSeg.innerHTML = '';
+-  RANGES.forEach(r => {
+-    const b = document.createElement('button');
+-    b.type = 'button';
+-    b.textContent = r.label;
+-    b.classList.toggle('active', r.id === activeRange);
+-    b.addEventListener('click', () => {
+-      activeRange = r.id;
+-      focusCabinet = null;   // 手动切时间窗=退出首相聚焦
+-      renderZoomSeg();
+-      buildLegend();
+-      renderChart();
+-    });
+-    zoomSeg.appendChild(b);
+-  });
+-}
+-
+-function tchart() { return THEME_CHART[currentTheme].chart; }
+-function cabColors() { return THEME_CHART[currentTheme].palette; }
+-
+-async function loadData() {
+-  try {
+-    const resp = await fetch('data.json');
+-    rawData = await resp.json();
+-  } catch (e) {
+-    console.error('data.json load failed', e);
+-    return;
+-  }
+-  renderThemeMenu();
+-  renderZoomSeg();
+-  applyTheme(currentTheme);
+-  buildLegend();
+-  renderChart();
+-}
+-
+-function buildLegend() {
+-  const el = document.getElementById('legend');
+-  el.innerHTML = '';
+-
+-  // 退出聚焦按钮：仅在聚焦某位首相时显示
+-  if (focusCabinet) {
+-    const exitBtn = document.createElement('button');
+-    exitBtn.type = 'button';
+-    exitBtn.className = 'pill exit-focus';
+-    exitBtn.textContent = '✕ 全部表示';
+-    exitBtn.title = 'クリックで全首相の線を元に戻す';
+-    exitBtn.addEventListener('click', () => {
+-      focusCabinet = null;
+-      buildLegend();
+-      renderChart();
+-    });
+-    el.appendChild(exitBtn);
+-  }
+-
+-  rawData.cabinets.forEach((c, i) => {
+-    const pill = document.createElement('button');
+-    pill.type = 'button';
+-    pill.className = 'pill';
+-    pill.title = 'クリックでこの首相の線にフォーカス';
+-    pill.textContent = c.pm;
+-    const color = cabColors()[i % cabColors().length];
+-    pill.style.borderLeft = '3px solid ' + color;
+-    pill.style.color = color;
+-    if (focusCabinet === c.id) pill.classList.add('focused');
+-    pill.addEventListener('click', () => {
+-      focusCabinet = (focusCabinet === c.id) ? null : c.id;
+-      buildLegend();
+-      renderChart();
+-    });
+-    el.appendChild(pill);
+-  });
+-}
+-
+-function pmByDate(dateStr) {
+-  const d = new Date(dateStr);
+-  for (let i = rawData.cabinets.length - 1; i >= 0; i--) {
+-    if (d >= new Date(rawData.cabinets[i].start)) return rawData.cabinets[i];
+-  }
+-  return rawData.cabinets[0];
+-}
+-
+-function renderChart() {
+-  if (!chart) chart = echarts.init(document.getElementById('chart'), null, {renderer: 'canvas'});
+-  if (!rawData) return;
+-
+-  const polls = rawData.polls;
+-  const cabinets = rawData.cabinets;
+-  const C = cabColors();
+-  const T = tchart();
+-
+-  // (内閣, 年月) バケットで実測点を実調査日で所属判別 → 算術平均
+-  const buckets = {};
+-  polls.forEach(p => {
+-    if (p.derived) return;
+-    const cab = pmByDate(p.date);
+-    const ym = p.date.slice(0, 7);
+-    const key = cab.id + '|' + ym;
+-    if (!buckets[key]) buckets[key] = { cab, ym, sums: 0, n: 0, sources: [] };
+-    buckets[key].sums += p.value;
+-    buckets[key].n += 1;
+-    buckets[key].sources.push({ src: p.source, v: p.value, kind: p.kind || '' });
+-  });
+-
+-  const series = [];
+-  cabinets.forEach((c, i) => {
+-    const color = C[i % C.length];
+-    const points = [];
+-    Object.keys(buckets).sort().forEach(key => {
+-      const rec = buckets[key];
+-      if (rec.cab.id !== c.id) return;
+-      const d = rec.ym + '-15';
+-      const avg = Math.round((rec.sums / rec.n) * 10) / 10;
+-      points.push([d, avg, rec.n, rec.sources]);
+-    });
+-
+-    if (points.length > 0) {
+-      const focused = focusCabinet === c.id;
+-      series.push({
+-        name: c.pm,
+-        type: 'line',
+-        data: points,
+-        showSymbol: true,
+-        symbol: 'circle',
+-        symbolSize: focused ? 7 : 5,
+-        smooth: false,
+-        connectNulls: false,
+-        lineStyle: { color: color, width: focused ? 4 : 2, type: 'solid', opacity: focusCabinet ? (focused ? 1 : 0.22) : 1 },
+-        itemStyle: { color: color, borderColor: T.pointBorder, borderWidth: 1, opacity: focusCabinet ? (focused ? 1 : 0.22) : 1 },
+-        emphasis: { focus: 'series', scale: 1.4 },
+-        z: focused ? 5 : 2,
+-        markLine: {
+-          silent: true,
+-          symbol: ['none','none'],
+-          lineStyle: { color: color, type: 'solid', width: focused ? 2 : 1.2, opacity: focusCabinet ? (focused ? 0.9 : 0.15) : 0.55 },
+-          label: {
+-            position: 'end',
+-            formatter: c.pm,
+-            color: color, fontSize: 14, fontWeight: 700,
+-            padding: [3,8],
+-            backgroundColor: T.markBorder,
+-            borderColor: color, borderWidth: 1, borderRadius: 4,
+-            distance: 6
+-          },
+-          data: [{ xAxis: c.start }]
+-        }
+-      });
+-    }
+-  });
+-
+-  const allDates = polls.map(p => p.date).sort();
+-  const startDate = allDates[0];
+-  const endDate = allDates[allDates.length - 1];
+-
+-  // 近N年窗口（动态）：按实际时间跨度比例换算 dataZoom start
+-  const wMonths = RANGE_WINDOW_MONTHS[activeRange];
+-  let zoomStart = 0;
+-  if (wMonths > 0) {
+-    const spanMs = new Date(endDate) - new Date(startDate);
+-    const winMs = wMonths * 30.44 * 86400000;
+-    zoomStart = Math.max(0, Math.round((1 - winMs / spanMs) * 1000) / 10);
+-  }
+-
+-  // 聚焦首相：窗口平移到其任期（中心对齐），但宽度保持 activeRange 窗口不变（10年就是10年）
+-  const focusCab = focusCabinet ? rawData.cabinets.find(c => c.id === focusCabinet) : null;
+-  let focusWindow = null;   // { startValue, endValue } 或 null
+-  if (focusCab && wMonths > 0) {
+-    const winMs = wMonths * 30.44 * 86400000;
+-    const tMin = new Date(startDate).getTime();
+-    const tMax = new Date(endDate).getTime();
+-    const cStart = new Date(focusCab.start).getTime();
+-    const cEnd = new Date(focusCab.end).getTime();
+-    const center = (cStart + cEnd) / 2;
+-    let ws = center - winMs / 2;
+-    let we = center + winMs / 2;
+-    // clamp 到数据范围，窗口宽度恒等于 winMs（数据跨度26.5年 > 10年，恒有解）
+-    if (ws < tMin) { ws = tMin; we = tMin + winMs; }
+-    if (we > tMax) { we = tMax; ws = tMax - winMs; }
+-    focusWindow = { startValue: new Date(ws), endValue: new Date(we) };
+-  }
+-
+-  const sliderDZ = {
+-    type: 'slider', xAxisIndex: 0,
+-    left: 380, right: 12,
+-    height: 24, bottom: 18,
+-    borderRadius: 8,
+-    borderColor: T.zoomBorder,
+-    backgroundColor: T.zoomBg,
+-    fillerColor: T.zoomFill,
+-    handleSize: 14,
+-    brushSelect: false,
+-    dataBackground: {
+-      lineStyle: { color: 'rgba(0,0,0,0)' },
+-      areaStyle: { color: 'rgba(0,0,0,0)' }
+-    },
+-    selectedDataBackground: {
+-      lineStyle: { color: 'rgba(0,0,0,0)' },
+-      areaStyle: { color: 'rgba(0,0,0,0)' }
+-    },
+-    moveHandleSize: 0,
+-    // 实心圆角滑块（替换 ECharts 默认梯形手柄）+ 描边阴影小装饰
+-    handleIcon: 'path://M-8,-9h16a4,4 0 0 1 4,4v10a4,4 0 0 1 -4,4h-16a4,4 0 0 1 -4,-4v-10a4,4 0 0 1 4,-4z',
+-    handleStyle: {
+-      color: T.zoomHandle,
+-      borderColor: 'rgba(0,0,0,0.28)',
+-      borderWidth: 1,
+-      shadowBlur: 5,
+-      shadowColor: 'rgba(0,0,0,0.35)',
+-      shadowOffsetY: 1.5
+-    },
+-    emphasis: { handleStyle: { color: T.zoomHandle, borderColor: '#fff', shadowBlur: 7 } },
+-    textStyle: { color: T.zoomText, fontSize: 10 }
+-  };
+-  if (focusWindow) {
+-    sliderDZ.startValue = focusWindow.startValue;
+-    sliderDZ.endValue = focusWindow.endValue;
+-  } else {
+-    sliderDZ.start = zoomStart;
+-    sliderDZ.end = 100;
+-  }
+-
+-  const option = {
+-    backgroundColor: 'transparent',
+-    grid: { left: 64, right: 32, top: 30, bottom: 100, borderColor: T.gridBorder },
+-    legend: { show: false },
+-    tooltip: {
+-      trigger: 'axis',
+-      backgroundColor: T.tooltipBg,
+-      borderColor: T.tooltipBorder,
+-      textStyle: { color: T.tooltipText, fontSize: 12 },
+-      formatter: function(params) {
+-        if (!params || params.length === 0) return '';
+-        const d = new Date(params[0].axisValue);
+-        const ym = d.getFullYear() + '年' + (d.getMonth()+1) + '月';
+-        const p = params[0];
+-        const avg = p.data ? p.data[1] : null;
+-        const n = p.data ? p.data[2] : 0;
+-        const sources = p.data ? (p.data[3] || []) : [];
+-        let html = '<div style="font-weight:700;margin-bottom:4px;font-size:13px">' + ym + ' 平均 <b>' + avg + '%</b></div>';
+-        html += '<div style="color:' + T.tooltipMuted + ';font-size:11px;margin-bottom:6px">' + n + '社平均</div>';
+-        sources.forEach(s => {
+-          html += '<span style="color:' + T.tooltipDim + '">▪</span> ' + s.src + ': <b>' + s.v + '%</b>'
+-                + (s.kind ? ' <span style="color:' + T.tooltipDim + ';font-size:10px">(' + s.kind + ')</span>' : '') + '<br>';
+-        });
+-        return html;
+-      }
+-    },
+-    xAxis: {
+-      type: 'time', min: startDate, max: endDate,
+-      axisLine: { lineStyle: { color: T.axisLine } },
+-      axisLabel: { color: T.axisLabel, fontSize: 11, hideOverlap: true },
+-      splitLine: { show: true, lineStyle: { color: T.splitLine, type: T.splitLineType } }
+-    },
+-    yAxis: {
+-      type: 'value', min: 0, max: 100, interval: 10,
+-      name: '支持率 (%)',
+-      nameTextStyle: { color: T.axisLabel, fontSize: 11 },
+-      axisLine: { show: false },
+-      axisLabel: { color: T.axisLabel, formatter: '{value}%' },
+-      splitLine: { show: true, lineStyle: { color: T.splitLine, type: T.splitLineType } }
+-    },
+-    dataZoom: [
+-      sliderDZ,
+-      {
+-        type: 'inside', xAxisIndex: 0,
+-        start: focusWindow ? undefined : zoomStart,
+-        end: focusWindow ? undefined : 100,
+-        startValue: focusWindow ? focusWindow.startValue : undefined,
+-        endValue: focusWindow ? focusWindow.endValue : undefined,
+-        zoomOnMouseWheel: 'shift', moveOnMouseWheel: true
+-      }
+-    ],
+-    animation: false,
+-    series: series
+-  };
+-
+-  chart.setOption(option, true);
+-}
+-
+-/* 点击图表空白关闭菜单兜底 */
+-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeThemeMenu(); });
+-
+-window.addEventListener('resize', () => { if (chart) chart.resize(); });
+-loadData();
+-</script>
+-</body>
++<!DOCTYPE html>
++<html lang="ja" data-theme="gruvbox-dark">
++<head>
++<meta charset="UTF-8">
++<meta name="viewport" content="width=device-width, initial-scale=1.0">
++<title>内閣支持率 2000→｜NHK 月次世論調査</title>
++<link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
++<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"/>
++<link rel="shortcut icon" href="/favicon.ico"/>
++<link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
++<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@700&display=swap" rel="stylesheet">
++
++<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
++<style>
++  * { margin: 0; padding: 0; box-sizing: border-box; }
++  ::-webkit-scrollbar { width: 8px; height: 8px; }
++  ::-webkit-scrollbar-track { background: transparent; }
++  ::-webkit-scrollbar-thumb {
++    background: color-mix(in srgb, var(--ink) 22%, transparent);
++    border-radius: 999px; border: 2px solid transparent; background-clip: padding-box;
++  }
++  ::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--ink) 40%, transparent); background-clip: padding-box; }
++  * { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--ink) 22%, transparent) transparent; }
++
++  /* ===== Theme tokens (F:\模板库\themes) ===== */
++  :root, [data-theme="gruvbox-dark"] {
++    --bg: #1d2021; --bg2: #282828; --bg3: #3c3836;
++    --ink: #ebdbb2; --muted: #a89984; --faint: #928374;
++    --accent: #fe8019; --accent2: #83a598;
++    --panel: #282828; --panel-border: #3c3836;
++    --pillow: #282828; --pill-border: #3c3836;
++    --font-body: "Maple Mono NF CN", "Noto Sans JP", "PingFang SC", "Microsoft YaHei UI", system-ui, sans-serif;
++    --font-masthead: "Noto Serif JP", "Songti SC", "Times New Roman", serif;
++  }
++  [data-theme="paper-editorial"] {
++    --bg: #F7F3EB; --bg2: #EFE9DF; --bg3: #D4CDC2;
++    --ink: #1A1714; --muted: #6B6560; --faint: #8A847C;
++    --accent: #C41E3A; --accent2: #2C4A6E;
++    --panel: #FFFCF7; --panel-border: #D4CDC2;
++    --pillow: #FFFCF7; --pill-border: #D4CDC2;
++    --font-body: 'Maple Mono NF CN', 'Noto Sans JP', 'PingFang SC', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
++    --font-display: 'Maple Mono NF CN', 'Noto Serif JP', 'Songti SC', serif;
++    --font-masthead: "Noto Serif JP", "Songti SC", "Times New Roman", serif;
++  }
++  [data-theme="claude-cream"] {
++    --bg: #FAF9F5; --bg2: #F5F0E8; --bg3: #E6DFD8;
++    --ink: #141413; --muted: #6C6A64; --faint: #8E8B82;
++    --accent: #CC785C; --accent2: #3D7A9A;
++    --panel: #F5F0E8; --panel-border: #E6DFD8;
++    --pillow: #F5F0E8; --pill-border: #E6DFD8;
++    --font-body: 'Maple Mono NF CN', 'Noto Sans JP', 'PingFang SC', sans-serif;
++    --font-display: 'Maple Mono NF CN', 'Noto Serif JP', serif;
++    --font-masthead: "Noto Serif JP", "Songti SC", "Times New Roman", serif;
++  }
++  [data-theme="saaaai-mono"] {
++    --bg: #06070A; --bg2: #0E0F14; --bg3: #161820;
++    --ink: #F4F4F5; --muted: #A8A8A8; --faint: #8B8D94;
++    --accent: #E8E8EC; --accent2: #00D4FF;
++    --panel: #0E0F14; --panel-border: rgba(255,255,255,0.12);
++    --pillow: #0E0F14; --pill-border: rgba(255,255,255,0.14);
++    --font-body: 'Maple Mono NF CN', 'Noto Sans JP', 'PingFang SC', sans-serif;
++    --font-display: 'Maple Mono NF CN', 'Noto Sans JP', sans-serif;
++    --font-masthead: "Noto Serif JP", "Songti SC", "Times New Roman", serif;
++  }
++
++  html { color-scheme: light; }
++  [data-theme="gruvbox-dark"] { color-scheme: dark; }
++  [data-theme="saaaai-mono"] { color-scheme: dark; }
++
++  body {
++    font-family: var(--font-body);
++    background: var(--bg);
++    color: var(--ink);
++    min-height: 100vh;
++    padding: 22px 32px 40px;
++    transition: background 0.25s, color 0.25s;
++  }
++  .wrap { max-width: 1400px; margin: 0 auto; }
++
++  /* ===== 顶部第一行：标题 + 主题切换（右侧一个按钮） ===== */
++  .topline {
++    display: flex; align-items: flex-start; justify-content: space-between;
++    gap: 16px; flex-wrap: wrap; margin-bottom: 10px;
++  }
++  .topline .titles { display: flex; align-items: baseline; gap: 10px; flex-shrink: 0; min-width: 0; }
++  .topline h1 {
++    font-family: var(--font-masthead);
++    font-size: 22px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.12;
++    white-space: nowrap;
++  }
++  .topline .site-url {
++    font-family: var(--font-body); font-size: 14px; font-weight: 400; letter-spacing: 0.03em; line-height: 1;
++    color: var(--faint); white-space: nowrap; text-decoration: none;
++    border-left: 1px solid color-mix(in srgb, var(--ink) 16%, transparent); padding-left: 10px;
++  }
++  .topline .site-url:hover { color: var(--accent); }
++  .topline .subtitle { font-size: 14px; color: var(--muted); line-height: 1.6; margin-top: 6px; }
++
++  .theme-drop { position: relative; flex-shrink: 0; }
++  .theme-btn {
++    display: inline-flex; align-items: center; gap: 7px;
++    background: var(--pillow); border: 1px solid var(--pill-border); color: var(--ink);
++    padding: 8px 14px; border-radius: 10px;
++    font-family: inherit; font-size: 13px; font-weight: 500;
++    cursor: pointer; transition: border-color 0.15s, background 0.15s;
++  }
++  .theme-btn:hover { border-color: var(--accent); }
++  .theme-btn .sw { width: 12px; height: 12px; border-radius: 3px; border: 1px solid var(--pill-border); }
++  .theme-btn .caret { color: var(--faint); font-size: 11px; }
++  .theme-menu {
++    position: absolute; right: 0; top: calc(100% + 6px);
++    min-width: 190px; z-index: 30;
++    background: var(--panel); border: 1px solid var(--pill-border); border-radius: 10px;
++    padding: 5px; box-shadow: 0 10px 30px rgba(0,0,0,0.25);
++    display: none;
++  }
++  .theme-menu.open { display: block; }
++  .theme-menu button {
++    display: flex; align-items: center; gap: 9px; width: 100%;
++    background: none; border: none; border-radius: 7px;
++    padding: 8px 10px; cursor: pointer;
++    font-family: inherit; font-size: 13px; color: var(--muted);
++    text-align: left;
++  }
++  .theme-menu button:hover { background: var(--bg3); color: var(--ink); }
++  .theme-menu button.active { color: var(--ink); font-weight: 600; }
++  .theme-menu button .sw { width: 13px; height: 13px; border-radius: 4px; border: 1px solid var(--pill-border); flex-shrink: 0; }
++  .theme-menu button.active .sw { border-color: var(--accent); outline: 2px solid color-mix(in srgb, var(--accent) 35%, transparent); outline-offset: 1px; }
++
++  /* ===== 图例 ===== */
++  .legend-bar { margin: 0 0 10px; font-size: 12px; color: var(--faint); line-height: 2; }
++  .legend-bar span.pill {
++    display: inline-block; padding: 2px 10px; margin: 2px 4px 2px 0;
++    border-radius: 9px; font-size: 11px; font-weight: 500; background: var(--panel);
++    border: 1px solid var(--pill-border);
++  }
++  .legend-bar button.pill {
++    display: inline-block; padding: 3px 11px; margin: 2px 4px 2px 0;
++    border-radius: 8px; font-size: 12px; font-weight: 500; background: var(--panel);
++    border: 1px solid var(--pill-border);
++    font-family: inherit; cursor: pointer; line-height: 1.5;
++    transition: transform .12s ease, box-shadow .12s ease, opacity .15s ease;
++    vertical-align: middle;
++  }
++  .legend-bar button.pill:hover { transform: translateY(-1px); box-shadow: 0 2px 6px color-mix(in srgb, var(--accent) 25%, transparent); }
++  .legend-bar button.pill.focused {
++    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 55%, transparent);
++    transform: translateY(-1px);
++    font-weight: 700;
++  }
++  .legend-bar button.pill.exit-focus {
++    background: color-mix(in srgb, var(--accent) 14%, var(--panel));
++    border: 1px solid var(--accent);
++    color: var(--accent); font-weight: 600;
++    margin-right: 8px;
++  }
++  .legend-bar button.pill.exit-focus:hover { background: color-mix(in srgb, var(--accent) 26%, var(--panel)); }
++  .legend-bar .real-mark {
++    display: inline-block; width: 10px; height: 10px; border-radius: 50%;
++    background: var(--accent); border: 1.5px solid var(--bg); vertical-align: middle; margin: 0 4px 0 10px;
++  }
++  .legend-bar .derived-mark {
++    display: inline-block; width: 16px; height: 2px;
++    background: repeating-linear-gradient(90deg, var(--faint) 0 4px, transparent 4px 7px);
++    vertical-align: middle; margin: 0 4px 0 10px;
++  }
++
++  .chart-wrap { position: relative; }
++  .chart-wrap .zoom {
++    position: absolute; left: 12px; bottom: 18px; z-index: 5;
++    display: inline-flex; align-items: center;
++    background: var(--panel); border: 1px solid var(--pill-border); border-radius: 8px;
++    padding: 2px; box-shadow: 0 2px 8px rgba(0,0,0,0.25);
++  }
++  .zoom button {
++    border: none; background: none; color: var(--faint);
++    padding: 4px 11px; border-radius: 6px;
++    font-family: inherit; font-size: 12px; font-weight: 500;
++    cursor: pointer; transition: all 0.15s; line-height: 1;
++  }
++  .zoom button:hover { color: var(--ink); }
++  .zoom button.active { background: var(--accent); color: var(--bg); font-weight: 600; }
++
++  #chart {
++  #chart {
++    width: 100%; height: 70vh; min-height: 480px;
++  }
++</style>
++</head>
++<body>
++<div class="wrap">
++
++<div class="topline">
++  <div>
++    <h1>🇯🇵 内閣支持率 2000→ NHK 月次世論調査</h1>
++    <div class="subtitle">
++      2000 年 1 月以降の NHK 月次世論調査（放送文化研究所 + 選挙WEB）。縦線 = 首相交代。同色 = 同一首相。
++    </div>
++  </div>
++  <div class="theme-drop" id="themeDrop">
++    <button class="theme-btn" id="themeBtn" type="button">
++      <span class="sw" id="themeSwatch"></span>
++      <span id="themeBtnLabel">テーマ</span>
++      <span class="caret">▾</span>
++    </button>
++    <div class="theme-menu" id="themeMenu"></div>
++  </div>
++</div>
++
++<div class="legend-bar" id="legend"></div>
++
++<div class="chart-wrap">
++  <div class="zoom" id="zoomSeg"></div>
++  <div id="chart"></div>
++</div>
++
++</div>
++
++<script>
++/* ===== テーマ定義（F:\模板库\themes 由来） ===== */
++const THEMES = [
++  { id: 'gruvbox-dark',      label: '暖暗·Gruvbox', swatch: '#fe8019' },
++  { id: 'paper-editorial',   label: '纸感·朱砂',   swatch: '#C41E3A' },
++  { id: 'claude-cream',      label: '奶油·珊瑚',   swatch: '#CC785C' },
++  { id: 'saaaai-mono',       label: '银灰·极简',   swatch: '#00D4FF' }
++];
++const THEME_CHART = {
++  'gruvbox-dark': {
++    palette: ['#fb4934', '#fe8019', '#fabd2f', '#b8bb26', '#8ec07c', '#83a598', '#d3869b', '#a89984', '#e6642c', '#d79921', '#9d9f3a', '#689d6a', '#458588', '#b16286'],
++    chart: {
++      gridBorder: 'transparent',
++      tooltipBg: 'rgba(29,32,33,0.96)', tooltipBorder: '#3c3836',
++      tooltipText: '#ebdbb2', tooltipMuted: '#a89984', tooltipDim: '#928374',
++      axisLine: '#3c3836', axisLabel: '#a89984',
++      splitLine: '#3c3836', splitLineType: 'dashed',
++      zoomBorder: '#3c3836', zoomBg: '#282828', zoomFill: 'rgba(254,128,25,0.16)', zoomHandle: '#fe8019', zoomText: '#928374',
++      markLabelBg: 'rgba(40,40,40,0.92)', pointBorder: '#1d2021'
++    }
++  },
++  'paper-editorial': {
++    palette: ['#C41E3A', '#2C4A6E', '#3D6B6B', '#2F6B4F', '#6B4A6B', '#8A5A24', '#1A1714', '#9A1830', '#4A6A8A', '#5A8A7A', '#7A6A4A', '#C4A252', '#3A4A6A', '#8A3A5A'],
++    chart: {
++      gridBorder: 'transparent',
++      tooltipBg: 'rgba(255,252,247,0.97)', tooltipBorder: '#C41E3A',
++      tooltipText: '#1A1714', tooltipMuted: '#6B6560', tooltipDim: '#8A847C',
++      axisLine: '#C4CDC2', axisLabel: '#8A847C',
++      splitLine: '#E3DDD2', splitLineType: 'dashed',
++      zoomBorder: '#D4CDC2', zoomBg: '#FFFCF7', zoomFill: 'rgba(196,30,58,0.12)', zoomHandle: '#C41E3A', zoomText: '#8A847C',
++      markBorder: 'rgba(255,252,247,0.92)', pointBorder: '#FFFCF7'
++    }
++  },
++  'claude-cream': {
++    palette: ['#CC785C', '#A9583E', '#3D9A8A', '#3D7A9A', '#8A6A9A', '#5DB872', '#C64545', '#B8977A', '#7A8A5A', '#9A7A5A', '#5A8A9A', '#AA7A9A', '#6A8A6A', '#D8A55A'],
++    chart: {
++      gridBorder: 'transparent',
++      tooltipBg: 'rgba(255,253,250,0.97)', tooltipBorder: '#E6DFD8',
++      tooltipText: '#141413', tooltipMuted: '#6C6A64', tooltipDim: '#8E8B82',
++      axisLine: '#E6DFD8', axisLabel: '#8E8B82',
++      splitLine: '#EAE4DB', splitLineType: 'dashed',
++      zoomBorder: '#E6DFD8', zoomBg: '#F5F0E8', zoomFill: 'rgba(204,120,92,0.14)', zoomHandle: '#CC785C', zoomText: '#8E8B82',
++      markBorder: 'rgba(245,240,232,0.93)', pointBorder: '#FAF9F5'
++    }
++  },
++  'saaaai-mono': {
++    palette: ['#E8E8EC', '#A8A8A8', '#8B8D94', '#6B6D74', '#FF2D7E', '#00D4FF', '#3DDC97', '#C8C8CC', '#5A5C64', '#F4F4F5', '#9A9CA8', '#4A4C54', '#7A7CA8', '#BF5A9A'],
++    chart: {
++      gridBorder: 'transparent',
++      tooltipBg: 'rgba(14,15,20,0.96)', tooltipBorder: 'rgba(255,255,255,0.2)',
++      tooltipText: '#F4F4F5', tooltipMuted: '#A8A8A8', tooltipDim: '#8B8D94',
++      axisLine: 'rgba(255,255,255,0.16)', axisLabel: '#8B8D94',
++      splitLine: 'rgba(255,255,255,0.08)', splitLineType: 'dashed',
++      zoomBorder: 'rgba(255,255,255,0.14)', zoomBg: '#0E0F14', zoomFill: 'rgba(232,232,236,0.12)', zoomHandle: '#E8E8EC', zoomText: '#8B8D94',
++      markBorder: 'rgba(14,15,20,0.92)', pointBorder: '#06070A'
++    }
++  }
++};
++
++let chart = null;
++let rawData = null;
++let activeRange = '10y';   // 默认近10年
++let focusCabinet = null;   // 点击图例聚焦的首相 id，null=全部
++
++/* 主题下拉 */
++const themeMenu = document.getElementById('themeMenu');
++function renderThemeMenu() {
++  themeMenu.innerHTML = '';
++  THEMES.forEach(t => {
++    const b = document.createElement('button');
++    b.type = 'button';
++    b.dataset.theme = t.id;
++    b.innerHTML = '<span class="sw" style="background:' + t.swatch + '"></span>' + t.label;
++    b.classList.toggle('active', t.id === currentTheme);
++    b.addEventListener('click', () => {
++      applyTheme(t.id);
++      renderChart();
++      closeThemeMenu();
++    });
++    themeMenu.appendChild(b);
++  });
++}
++function openThemeMenu() { themeMenu.classList.add('open'); }
++function closeThemeMenu() { themeMenu.classList.remove('open'); }
++document.getElementById('themeBtn').addEventListener('click', (e) => {
++  e.stopPropagation();
++  themeMenu.classList.toggle('open');
++});
++document.addEventListener('click', () => closeThemeMenu());
++
++let currentTheme = localStorage.getItem('cabinet-theme') || 'gruvbox-dark'; // 默认 gruvbox
++function applyTheme(id) {
++  currentTheme = id;
++  document.documentElement.dataset.theme = id;
++  localStorage.setItem('cabinet-theme', id);
++  const meta = THEMES.find(t => t.id === id);
++  document.getElementById('themeBtnLabel').textContent = 'テーマ：' + meta.label;
++  document.getElementById('themeSwatch').style.background = meta.swatch;
++}
++
++/* 时间分段按钮 */
++const RANGES = [
++  { id: '3m',  label: '3ヶ月' },
++  { id: '1y',  label: '1年' },
++  { id: '2y',  label: '2年' },
++  { id: '5y',  label: '5年' },
++  { id: '10y', label: '10年' },
++  { id: 'all', label: '全期間' }
++];
++const RANGE_WINDOW_MONTHS = { '3m': 3, '1y': 12, '2y': 24, '5y': 60, '10y': 120, 'all': 0 };
++const zoomSeg = document.getElementById('zoomSeg');
++function renderZoomSeg() {
++  zoomSeg.innerHTML = '';
++  RANGES.forEach(r => {
++    const b = document.createElement('button');
++    b.type = 'button';
++    b.textContent = r.label;
++    b.classList.toggle('active', r.id === activeRange);
++    b.addEventListener('click', () => {
++      activeRange = r.id;
++      focusCabinet = null;   // 手动切时间窗=退出首相聚焦
++      renderZoomSeg();
++      buildLegend();
++      renderChart();
++    });
++    zoomSeg.appendChild(b);
++  });
++}
++
++function tchart() { return THEME_CHART[currentTheme].chart; }
++function cabColors() { return THEME_CHART[currentTheme].palette; }
++
++async function loadData() {
++  try {
++    const resp = await fetch('data.json');
++    rawData = await resp.json();
++  } catch (e) {
++    console.error('data.json load failed', e);
++    return;
++  }
++  renderThemeMenu();
++  renderZoomSeg();
++  applyTheme(currentTheme);
++  buildLegend();
++  renderChart();
++}
++
++function buildLegend() {
++  const el = document.getElementById('legend');
++  el.innerHTML = '';
++
++  // 退出聚焦按钮：仅在聚焦某位首相时显示
++  if (focusCabinet) {
++    const exitBtn = document.createElement('button');
++    exitBtn.type = 'button';
++    exitBtn.className = 'pill exit-focus';
++    exitBtn.textContent = '✕ 全部表示';
++    exitBtn.title = 'クリックで全首相の線を元に戻す';
++    exitBtn.addEventListener('click', () => {
++      focusCabinet = null;
++      buildLegend();
++      renderChart();
++    });
++    el.appendChild(exitBtn);
++  }
++
++  rawData.cabinets.forEach((c, i) => {
++    const pill = document.createElement('button');
++    pill.type = 'button';
++    pill.className = 'pill';
++    pill.title = 'クリックでこの首相の線にフォーカス';
++    pill.textContent = c.pm;
++    const color = cabColors()[i % cabColors().length];
++    pill.style.borderLeft = '3px solid ' + color;
++    pill.style.color = color;
++    if (focusCabinet === c.id) pill.classList.add('focused');
++    pill.addEventListener('click', () => {
++      focusCabinet = (focusCabinet === c.id) ? null : c.id;
++      buildLegend();
++      renderChart();
++    });
++    el.appendChild(pill);
++  });
++}
++
++function pmByDate(dateStr) {
++  const d = new Date(dateStr);
++  for (let i = rawData.cabinets.length - 1; i >= 0; i--) {
++    if (d >= new Date(rawData.cabinets[i].start)) return rawData.cabinets[i];
++  }
++  return rawData.cabinets[0];
++}
++
++function renderChart() {
++  if (!chart) chart = echarts.init(document.getElementById('chart'), null, {renderer: 'canvas'});
++  if (!rawData) return;
++
++  const polls = rawData.polls;
++  const cabinets = rawData.cabinets;
++  const C = cabColors();
++  const T = tchart();
++
++  // (内閣, 年月) バケットで実測点を実調査日で所属判別 → 算術平均
++  const buckets = {};
++  polls.forEach(p => {
++    if (p.derived) return;
++    const cab = pmByDate(p.date);
++    const ym = p.date.slice(0, 7);
++    const key = cab.id + '|' + ym;
++    if (!buckets[key]) buckets[key] = { cab, ym, sums: 0, n: 0, sources: [] };
++    buckets[key].sums += p.value;
++    buckets[key].n += 1;
++    buckets[key].sources.push({ src: p.source, v: p.value, kind: p.kind || '' });
++  });
++
++  const series = [];
++  cabinets.forEach((c, i) => {
++    const color = C[i % C.length];
++    const points = [];
++    Object.keys(buckets).sort().forEach(key => {
++      const rec = buckets[key];
++      if (rec.cab.id !== c.id) return;
++      const d = rec.ym + '-15';
++      const avg = Math.round((rec.sums / rec.n) * 10) / 10;
++      points.push([d, avg, rec.n, rec.sources]);
++    });
++
++    if (points.length > 0) {
++      const focused = focusCabinet === c.id;
++      series.push({
++        name: c.pm,
++        type: 'line',
++        data: points,
++        showSymbol: true,
++        symbol: 'circle',
++        symbolSize: focused ? 7 : 5,
++        smooth: false,
++        connectNulls: false,
++        lineStyle: { color: color, width: focused ? 4 : 2, type: 'solid', opacity: focusCabinet ? (focused ? 1 : 0.22) : 1 },
++        itemStyle: { color: color, borderColor: T.pointBorder, borderWidth: 1, opacity: focusCabinet ? (focused ? 1 : 0.22) : 1 },
++        emphasis: { focus: 'series', scale: 1.4 },
++        z: focused ? 5 : 2,
++        markLine: {
++          silent: true,
++          symbol: ['none','none'],
++          lineStyle: { color: color, type: 'solid', width: focused ? 2 : 1.2, opacity: focusCabinet ? (focused ? 0.9 : 0.15) : 0.55 },
++          label: {
++            position: 'end',
++            formatter: c.pm,
++            color: color, fontSize: 14, fontWeight: 700,
++            padding: [3,8],
++            backgroundColor: T.markBorder,
++            borderColor: color, borderWidth: 1, borderRadius: 4,
++            distance: 6
++          },
++          data: [{ xAxis: c.start }]
++        }
++      });
++    }
++  });
++
++  const allDates = polls.map(p => p.date).sort();
++  const startDate = allDates[0];
++  const endDate = allDates[allDates.length - 1];
++
++  // 近N年窗口（动态）：按实际时间跨度比例换算 dataZoom start
++  const wMonths = RANGE_WINDOW_MONTHS[activeRange];
++  let zoomStart = 0;
++  if (wMonths > 0) {
++    const spanMs = new Date(endDate) - new Date(startDate);
++    const winMs = wMonths * 30.44 * 86400000;
++    zoomStart = Math.max(0, Math.round((1 - winMs / spanMs) * 1000) / 10);
++  }
++
++  // 聚焦首相：窗口平移到其任期（中心对齐），但宽度保持 activeRange 窗口不变（10年就是10年）
++  const focusCab = focusCabinet ? rawData.cabinets.find(c => c.id === focusCabinet) : null;
++  let focusWindow = null;   // { startValue, endValue } 或 null
++  if (focusCab && wMonths > 0) {
++    const winMs = wMonths * 30.44 * 86400000;
++    const tMin = new Date(startDate).getTime();
++    const tMax = new Date(endDate).getTime();
++    const cStart = new Date(focusCab.start).getTime();
++    const cEnd = new Date(focusCab.end).getTime();
++    const center = (cStart + cEnd) / 2;
++    let ws = center - winMs / 2;
++    let we = center + winMs / 2;
++    // clamp 到数据范围，窗口宽度恒等于 winMs（数据跨度26.5年 > 10年，恒有解）
++    if (ws < tMin) { ws = tMin; we = tMin + winMs; }
++    if (we > tMax) { we = tMax; ws = tMax - winMs; }
++    focusWindow = { startValue: new Date(ws), endValue: new Date(we) };
++  }
++
++  const sliderDZ = {
++    type: 'slider', xAxisIndex: 0,
++    left: 380, right: 12,
++    height: 24, bottom: 18,
++    borderRadius: 8,
++    borderColor: T.zoomBorder,
++    backgroundColor: T.zoomBg,
++    fillerColor: T.zoomFill,
++    handleSize: 14,
++    brushSelect: false,
++    dataBackground: {
++      lineStyle: { color: 'rgba(0,0,0,0)' },
++      areaStyle: { color: 'rgba(0,0,0,0)' }
++    },
++    selectedDataBackground: {
++      lineStyle: { color: 'rgba(0,0,0,0)' },
++      areaStyle: { color: 'rgba(0,0,0,0)' }
++    },
++    moveHandleSize: 0,
++    // 实心圆角滑块（替换 ECharts 默认梯形手柄）+ 描边阴影小装饰
++    handleIcon: 'path://M-8,-9h16a4,4 0 0 1 4,4v10a4,4 0 0 1 -4,4h-16a4,4 0 0 1 -4,-4v-10a4,4 0 0 1 4,-4z',
++    handleStyle: {
++      color: T.zoomHandle,
++      borderColor: 'rgba(0,0,0,0.28)',
++      borderWidth: 1,
++      shadowBlur: 5,
++      shadowColor: 'rgba(0,0,0,0.35)',
++      shadowOffsetY: 1.5
++    },
++    emphasis: { handleStyle: { color: T.zoomHandle, borderColor: '#fff', shadowBlur: 7 } },
++    textStyle: { color: T.zoomText, fontSize: 10 }
++  };
++  if (focusWindow) {
++    sliderDZ.startValue = focusWindow.startValue;
++    sliderDZ.endValue = focusWindow.endValue;
++  } else {
++    sliderDZ.start = zoomStart;
++    sliderDZ.end = 100;
++  }
++
++  const option = {
++    backgroundColor: 'transparent',
++    grid: { left: 64, right: 32, top: 30, bottom: 100, borderColor: T.gridBorder },
++    legend: { show: false },
++    tooltip: {
++      trigger: 'axis',
++      backgroundColor: T.tooltipBg,
++      borderColor: T.tooltipBorder,
++      textStyle: { color: T.tooltipText, fontSize: 12 },
++      formatter: function(params) {
++        if (!params || params.length === 0) return '';
++        const d = new Date(params[0].axisValue);
++        const ym = d.getFullYear() + '年' + (d.getMonth()+1) + '月';
++        const p = params[0];
++        const avg = p.data ? p.data[1] : null;
++        const n = p.data ? p.data[2] : 0;
++        const sources = p.data ? (p.data[3] || []) : [];
++        let html = '<div style="font-weight:700;margin-bottom:4px;font-size:13px">' + ym + ' 平均 <b>' + avg + '%</b></div>';
++        html += '<div style="color:' + T.tooltipMuted + ';font-size:11px;margin-bottom:6px">' + n + '社平均</div>';
++        sources.forEach(s => {
++          html += '<span style="color:' + T.tooltipDim + '">▪</span> ' + s.src + ': <b>' + s.v + '%</b>'
++                + (s.kind ? ' <span style="color:' + T.tooltipDim + ';font-size:10px">(' + s.kind + ')</span>' : '') + '<br>';
++        });
++        return html;
++      }
++    },
++    xAxis: {
++      type: 'time', min: startDate, max: endDate,
++      axisLine: { lineStyle: { color: T.axisLine } },
++      axisLabel: { color: T.axisLabel, fontSize: 11, hideOverlap: true },
++      splitLine: { show: true, lineStyle: { color: T.splitLine, type: T.splitLineType } }
++    },
++    yAxis: {
++      type: 'value', min: 0, max: 100, interval: 10,
++      name: '支持率 (%)',
++      nameTextStyle: { color: T.axisLabel, fontSize: 11 },
++      axisLine: { show: false },
++      axisLabel: { color: T.axisLabel, formatter: '{value}%' },
++      splitLine: { show: true, lineStyle: { color: T.splitLine, type: T.splitLineType } }
++    },
++    dataZoom: [
++      sliderDZ,
++      {
++        type: 'inside', xAxisIndex: 0,
++        start: focusWindow ? undefined : zoomStart,
++        end: focusWindow ? undefined : 100,
++        startValue: focusWindow ? focusWindow.startValue : undefined,
++        endValue: focusWindow ? focusWindow.endValue : undefined,
++        zoomOnMouseWheel: 'shift', moveOnMouseWheel: true
++      }
++    ],
++    animation: false,
++    series: series
++  };
++
++  chart.setOption(option, true);
++}
++
++/* 点击图表空白关闭菜单兜底 */
++document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeThemeMenu(); });
++
++window.addEventListener('resize', () => { if (chart) chart.resize(); });
++loadData();
++</script>
++</body>
+ </html>
+\ No newline at end of file

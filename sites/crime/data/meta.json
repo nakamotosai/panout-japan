@@ -1,0 +1,60 @@
+{
+ "sources": [
+  {
+   "name": "警視庁 区市町村の町丁別、罪種別及び手口別認知件数(令和7年・年計)",
+   "url": "https://www.keishicho.metro.tokyo.lg.jp/about_mpd/jokyo_tokei/jokyo/ninchikensu.html",
+   "license": "CC BY（東京都オープンデータカタログ catalog.data.metro.tokyo.lg.jp/dataset/t000022d0000100001）"
+  },
+  {
+   "name": "警視庁 同(R8・月次累計)",
+   "url": "https://www.keishicho.metro.tokyo.lg.jp/about_mpd/jokyo_tokei/jokyo/ninchikensu.html",
+   "license": "CC BY"
+  },
+  {
+   "name": "住民基本台帳による東京都の世帯と人口 第5表(令和8年1月1日)",
+   "url": "https://catalog.data.metro.tokyo.lg.jp/dataset/t000003d0000000577",
+   "license": "CC BY"
+  },
+  {
+   "name": "区界ポリゴン dataofjapan/land tokyo.geojson（配布元:地球地図日本）",
+   "url": "https://github.com/dataofjapan/land",
+   "license": "出典明記（営利目的は著作権者へ利用報告）"
+  },
+  {
+   "name": "底図 国土地理院 淡色地図",
+   "url": "https://maps.gsi.go.jp/",
+   "license": "国土地理院コンテンツ利用規約"
+  }
+ ],
+ "method": "認知件数(批量合計のみ)を町丁人口で割り千人率化→罪種加权→小人口収縮(K=2000)→対数標準化→都内分位数でA-E分档。分档は相対参考であり官方評価ではない。安全を保証しない。",
+ "notes": [
+  "月次は累計値。前月差分=当月累計-上月累計(推定)。",
+  "認知件数≠発案数。届出率の影響を受ける。駅前・繁華街の町丁は昼間人口により高く出る。",
+  "人口欠損町丁(以下不詳・中央防波堤等)は * 表示し分档対象外。",
+  "声かけ・前兆事案に町丁批量はないため本図に含まず。デジポリスへの外部リンクを掲載。",
+  "交通事故を含まない。"
+ ],
+ "counts": {
+  "chome": 5234,
+  "pop_missing": 122,
+  "munis": 62
+ },
+ "pop_missing_examples": [
+  "あきる野市小峰台",
+  "世田谷区砧公園",
+  "中央区以下不詳",
+  "中央区日本橋本石町1丁目",
+  "中央区日本橋本石町2丁目",
+  "中野区以下不詳",
+  "北区以下不詳",
+  "千代田区一ツ橋1丁目",
+  "千代田区丸の内2丁目",
+  "千代田区丸の内3丁目",
+  "千代田区以下不詳",
+  "千代田区内幸町2丁目",
+  "千代田区大手町2丁目",
+  "千代田区日比谷公園",
+  "千代田区皇居外苑",
+  "千代田区神田相生町"
+ ]
+}

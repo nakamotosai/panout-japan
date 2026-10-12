@@ -1,0 +1,36 @@
+# 东京都犯罪率地图 / Tokyo Crime Rates Map
+
+> 基于日本警视厅（警視庁）官方公开统计制作的东京都犯罪率分级设色交互地图，覆盖 5,234 个町丁与 62 个区市町村，支持中文 / 日本語 / English 三种界面语言。
+
+## 核心页面
+
+- [交互地图主页](https://crime.saaaai.com/)：东京都犯罪率热力图。可切换 6 类罪种（全部刑法犯 / 非入室盗窃 / 入室盗窃 / 粗暴犯 / 凶恶犯 / 其他）、2 个统计期（令和7年计 / 令和8年月次累计）、2 级空间粒度（区市町村 / 町丁）。
+- [日文版](https://crime.saaaai.com/?lang=ja)
+- [中文版](https://crime.saaaai.com/?lang=zh)
+- [英文版](https://crime.saaaai.com/?lang=en)
+
+## 数据与统计口径
+
+- 犯罪统计：警視庁「区市町村の町丁別、罪種別及び手口別認知件数」（令和7年年計 / 令和8年月次累計），许可 CC BY。
+- 人口基数：東京都「住民基本台帳による東京都の世帯と人口 第5表」，许可 CC BY。
+- 区界多边形：dataofjapan/land（出典：地球地図日本）。
+- 底图：国土地理院 白地図。
+- 指标定义：千人率 = 认知件数 ÷ 常住人口 × 1000；分档前做小样本收缩（K = 2000）以削弱小人口町丁的极端值。
+- **重要限定**：认知件数 ≠ 发案数，受报案率影响；繁华街与车站前的町丁因昼夜人口差会呈现偏高的千人率，**不代表居住安全水平**；本图不构成对任何地区安全性的评价或担保。
+
+## 可下载数据
+
+- 区市町村统计（JSON）：https://crime.saaaai.com/data/muni.json
+- 町丁多边形与统计（GeoJSON like, JSON）：https://crime.saaaai.com/data/chome_poly.json
+- 区市町村边界（JSON）：https://crime.saaaai.com/data/muni_poly.json
+- 町丁代表点（JSON）：https://crime.saaaai.com/data/points.json
+
+## 许可与署名
+
+- 犯罪统计与人口：CC BY（東京都オープンデータ）。转载需署名来源。
+- 几何数据派生自 OpenStreetMap（ODbL 1.0）与 dataofjapan/land，衍生数据库需同样以 ODbL 分发并保留署名。
+- 页面右下角常驻署名，请勿移除。
+
+## 代码
+
+- 仓库：https://github.com/nakamotosai/tokyo-crime-map （private）

@@ -1,0 +1,28 @@
+# 依赖/构建产物（重建即可）
+node_modules/
+dist/
+dist-ssr/
+.wrangler/
+__pycache__/
+*.log
+
+# 地震 USGS 瓦片（154 文件 75M）：npm run fetch-data 重抓，不入库
+sites/quake/public/data/quakes/
+
+# 犯罪率抓取缓存（可由 scripts/fetch_lod.mjs 重抓）
+sites/crime/data/lod_cache.json
+
+# QA 截图与本地工作目录
+sites/crime/qa/out/
+sites/crime/.work/
+sites/quake/.work/
+
+# 系统与编辑器
+.DS_Store
+*.suo
+.vscode/*
+!.vscode/extensions.json
+.idea
+.env
+.env.*
+!.env.example

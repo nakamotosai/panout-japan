@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ja" data-variant="tactical" data-accent="amber">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pan Out Japan — 日本本土情報の門面 | 地震・犯罪率・内閣支持率</title>
+<meta name="description" content="Pan Out Japan（japan.ouuut.com）：地震・犯罪率・内閣支持率への門面。Pan out＝引いて見渡す＋うまくいく。日本本土情報在這裡。">
+<link rel="canonical" href="https://japan.ouuut.com/">
+<link rel="alternate" hreflang="ja" href="https://japan.ouuut.com/?lang=ja">
+<link rel="alternate" hreflang="zh-Hans" href="https://japan.ouuut.com/?lang=zh">
+<link rel="alternate" hreflang="en" href="https://japan.ouuut.com/?lang=en">
+<link rel="alternate" hreflang="x-default" href="https://japan.ouuut.com/">
+<meta name="theme-color" content="#141210">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Pan Out Japan">
+<meta property="og:title" content="Pan Out Japan — 日本本土情報の門面">
+<meta property="og:description" content="地震・犯罪率・内閣支持率への三つの門。Pan out＝引いて見渡す＋うまくいく。">
+<meta property="og:url" content="https://japan.ouuut.com/">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:locale:alternate" content="zh_CN">
+<meta property="og:locale:alternate" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Pan Out Japan — 日本本土情報の門面">
+<meta name="twitter:description" content="地震・犯罪率・内閣支持率への三つの門。Pan out＝引いて見渡す＋うまくいく。">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23141210'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%23d0801a' stroke-width='2.5'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%23f5f0e8'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://japan.ouuut.com/#website",
+      "url": "https://japan.ouuut.com/",
+      "name": "Pan Out Japan",
+      "alternateName": ["Pan Out Japan 日本門面", "Pan Out Japan 日本门面"],
+      "description": "地震・犯罪率・内閣支持率への静的聚合門面。Pan out＝引いて見渡す＋うまくいく。",
+      "inLanguage": ["ja", "zh-Hans", "en"],
+      "isAccessibleForFree": true,
+      "license": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "@type": "ItemList",
+      "@id": "https://japan.ouuut.com/#gates",
+      "name": "Pan Out Japan gates",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "url": "https://3d.saaaai.com/", "name": "地震マップ" },
+        { "@type": "ListItem", "position": 2, "url": "https://crime.saaaai.com/", "name": "東京都犯罪率マップ" },
+        { "@type": "ListItem", "position": 3, "url": "https://japan.saaaai.com/", "name": "内閣支持率 2000→" }
+      ]
+    }
+  ]
+}
+</script>
+<style>
+/* ---- token 原样：sites/crime/site/index.html:205-258 tactical 深色 ---- */
+:root { color-scheme: dark; }
+html[data-variant="tactical"] {
+  color-scheme: dark;
+  --bg-page: #141210;
+  --bg-glass: rgba(20, 18, 16, 0.55);
+  --bg-map: #0d0c0b;
+  --bg-card: rgba(27, 25, 23, 0.62);
+  --bg-card-sub: rgba(53, 47, 42, 0.42);
+  --bg-hover: rgba(255, 244, 232, 0.08);
+  --text-main: #f5f0e8;
+  --text-muted: #a89d8d;
+  --text-faint: #6f675b;
+  --line-main: rgba(255, 244, 232, 0.1);
+  --line-strong: #f5f0e8;
+  --accent: #d0801a;
+  --accent-soft: rgba(208, 128, 26, 0.16);
+  --shadow-card: 0 12px 32px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 244, 232, 0.08);
+  --card-glass: blur(26px) saturate(1.5);
+  --capsule-bg: rgba(18, 16, 14, 0.94);
+  --capsule-line: rgba(255, 244, 232, 0.14);
+}
+html[data-accent="amber"] { --accent: #d0801a; --accent-soft: rgba(208, 128, 26, 0.16); }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg-page);
+  color: var(--text-main);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; }
+/* 眉标：Mono 11px uppercase tracking .12em */
+.eyebrow {
+  font-family: ui-monospace, "JetBrains Mono", SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px; text-transform: uppercase; letter-spacing: .12em;
+  color: var(--text-muted);
+  margin: 0 0 12px;
+}
+.eyebrow b { color: var(--accent); font-weight: 600; }
+/* 顶栏 */
+.topbar {
+  position: sticky; top: 0; z-index: 50;
+  display: flex; align-items: center; gap: 16px;
+  padding: 10px 20px;
+  background: var(--bg-glass);
+  -webkit-backdrop-filter: var(--card-glass); backdrop-filter: var(--card-glass);
+  border-bottom: 1px solid var(--line-main);
+}
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; min-height: 44px; }
+.brand-mark { width: 22px; height: 22px; flex: none; }
+.brand-name { font-weight: 700; font-size: 15px; letter-spacing: .01em; white-space: nowrap; }
+.brand-name small { color: var(--text-faint); font-weight: 400; font-size: 12px; margin-left: 6px; }
+.sites-nav { display: flex; align-items: center; gap: 4px; margin-left: auto; flex-wrap: wrap; }
+.sites-nav a {
+  text-decoration: none; color: var(--text-muted); font-size: 13px;
+  padding: 10px 12px; min-height: 44px; display: inline-flex; align-items: center;
+  border-radius: 8px; white-space: nowrap;
+}
+.sites-nav a:hover { background: var(--bg-hover); color: var(--text-main); }
+.sites-nav a[aria-current="page"] { color: var(--text-main); background: var(--accent-soft); }
+.sites-nav .sep { color: var(--text-faint); user-select: none; }
+/* 三语切换器 */
+.lang-switch-group {
+  display: inline-flex; align-items: center; gap: 2px; flex: none;
+  background: var(--bg-card-sub); border: 1px solid var(--line-main);
+  border-radius: 8px; padding: 2px;
+}
+.lang-switch-group button {
+  background: transparent; border: none; cursor: pointer;
+  color: var(--text-muted);
+  font-family: ui-monospace, "JetBrains Mono", SFMono-Regular, Menlo, monospace;
+  font-size: 11px; letter-spacing: .06em;
+  min-width: 44px; min-height: 36px; padding: 6px 10px; border-radius: 6px;
+}
+.lang-switch-group button:hover { color: var(--text-main); }
+.lang-switch-group button.on { background: var(--bg-card); color: var(--text-main); font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,.4); }
+/* 布局 */
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+.hero { display: grid; grid-template-columns: 1.05fr .95fr; gap: 28px; padding: 48px 0 28px; align-items: stretch; }
+.hero-copy h1 { font-size: clamp(34px, 5vw, 54px); line-height: 1.15; margin: 0 0 14px; letter-spacing: .01em; }
+.hero-copy .pan-explain {
+  border-left: 3px solid var(--accent);
+  padding: 10px 0 10px 14px; margin: 18px 0 22px;
+  color: var(--text-muted); font-size: 15px;
+}
+.hero-copy .pan-explain strong { color: var(--text-main); }
+.hero-cta { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn {
+  display: inline-flex; align-items: center; min-height: 44px;
+  padding: 10px 18px; border-radius: 10px; text-decoration: none; font-size: 14px;
+  border: 1px solid var(--line-main);
+}
+.btn-primary { background: var(--accent); border-color: var(--accent); color: #141210; font-weight: 700; }
+.btn-ghost { background: var(--bg-card); color: var(--text-main); }
+.btn:hover { filter: brightness(1.08); }
+/* 地震主视觉：静态缩略占位（CSS 渐变 + 星点 canvas，零 quake 依赖） */
+.hero-visual {
+  position: relative; overflow: hidden; border-radius: 16px;
+  background:
+    radial-gradient(120% 90% at 70% 20%, rgba(208,128,26,.28), transparent 55%),
+    radial-gradient(100% 100% at 30% 80%, rgba(7,102,120,.35), transparent 60%),
+    linear-gradient(160deg, #1d1a16 0%, #0d0c0b 70%);
+  border: 1px solid var(--line-main);
+  box-shadow: var(--shadow-card);
+  min-height: 340px;
+}
+.hero-visual canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.globe {
+  position: absolute; left: 50%; top: 54%; width: 300px; height: 300px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 30%, rgba(245,240,232,.22), transparent 42%),
+    radial-gradient(circle at 62% 62%, rgba(208,128,26,.5), transparent 46%),
+    radial-gradient(circle at 50% 50%, #2b2620 0%, #171412 58%, #0d0c0b 100%);
+  border: 1px solid rgba(255,244,232,.18);
+  box-shadow: 0 0 80px rgba(208,128,26,.25), inset -18px -24px 60px rgba(0,0,0,.6);
+}
+.globe::before, .globe::after {
+  content: ""; position: absolute; left: 8%; right: 8%; border-radius: 50%;
+  border: 1px dashed rgba(245,240,232,.22);
+}
+.globe::before { top: 26%; bottom: 26%; }
+.globe::after { top: 12%; bottom: 12%; border-color: rgba(245,240,232,.12); }
+.globe-dot { position: absolute; width: 7px; height: 7px; border-radius: 50%; background: #e8a33d; box-shadow: 0 0 10px #e8a33d; }
+.visual-cap {
+  position: absolute; left: 12px; right: 12px; bottom: 12px;
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  background: var(--capsule-bg); border: 1px solid var(--capsule-line);
+  border-radius: 10px; padding: 8px 12px;
+  font-family: ui-monospace, "JetBrains Mono", SFMono-Regular, Menlo, monospace;
+  font-size: 11px; letter-spacing: .08em; color: var(--text-muted);
+}
+.visual-cap a { color: var(--accent); text-decoration: none; font-weight: 700; padding: 8px 4px; }
+/* 卡片 */
+.section { padding: 20px 0 8px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.card {
+  display: flex; flex-direction: column; gap: 8px;
+  background: var(--bg-card); border: 1px solid var(--line-main);
+  border-radius: 14px; padding: 20px;
+  -webkit-backdrop-filter: var(--card-glass); backdrop-filter: var(--card-glass);
+  box-shadow: var(--shadow-card);
+  text-decoration: none;
+}
+a.card:hover { background: var(--bg-hover); border-color: var(--accent); }
+.card h2, .card h3 { margin: 0; font-size: 18px; line-height: 1.4; }
+.card p { margin: 0; color: var(--text-muted); font-size: 14px; }
+.card .domain {
+  font-family: ui-monospace, "JetBrains Mono", SFMono-Regular, Menlo, monospace;
+  font-size: 11px; letter-spacing: .08em; color: var(--text-faint);
+}
+.card .go { color: var(--accent); font-size: 13px; font-weight: 700; margin-top: auto; padding-top: 10px; }
+.card .go span { display: inline-block; min-height: 44px; line-height: 44px; }
+/* 新闻预告：静态占位零 JS */
+.news-card { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 14px; }
+.news-rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.news-rows li {
+  background: var(--bg-card-sub); border: 1px dashed var(--line-main);
+  border-radius: 10px; padding: 12px 14px; color: var(--text-faint); font-size: 13px;
+}
+.badge {
+  display: inline-block; align-self: flex-start;
+  font-family: ui-monospace, "JetBrains Mono", SFMono-Regular, Menlo, monospace;
+  font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--accent); background: var(--accent-soft);
+  border: 1px solid rgba(208,128,26,.4); border-radius: 999px; padding: 4px 12px;
+}
+/* 页脚 */
+footer { border-top: 1px solid var(--line-main); margin-top: 36px; padding: 22px 0 40px; color: var(--text-muted); font-size: 13px; }
+footer .frow { display: flex; gap: 14px; flex-wrap: wrap; justify-content: space-between; }
+footer a { color: var(--text-muted); }
+footer a:hover { color: var(--text-main); }
+.skip { position: absolute; left: -9999px; }
+.skip:focus { left: 12px; top: 12px; background: var(--accent); color: #141210; padding: 10px 16px; border-radius: 8px; z-index: 99; }
+@media (max-width: 860px) {
+  .hero { grid-template-columns: 1fr; padding-top: 32px; }
+  .hero-visual { min-height: 280px; }
+  .grid3 { grid-template-columns: 1fr; }
+  .sites-nav a { padding: 10px 8px; font-size: 12px; }
+  .topbar { flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body id="top">
+<a class="skip" href="#main" data-i18n="skip">スキップして本文へ</a>
+<header class="topbar">
+  <a class="brand" href="#top" aria-label="Pan Out Japan">
+    <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#1d1a16"/><circle cx="16" cy="16" r="9" fill="none" stroke="#d0801a" stroke-width="2.5"/><circle cx="16" cy="16" r="2.4" fill="#f5f0e8"/></svg>
+    <span class="brand-name">Pan Out Japan<small>japan.ouuut.com</small></span>
+  </a>
+  <nav class="sites-nav" aria-label="sites">
+    <a href="#top" aria-current="page" data-i18n="nav_hub">門面</a><span class="sep">·</span>
+    <a href="https://3d.saaaai.com/" data-i18n="nav_quake">地震</a><span class="sep">·</span>
+    <a href="https://crime.saaaai.com/" data-i18n="nav_crime">犯罪率</a><span class="sep">·</span>
+    <a href="https://japan.saaaai.com/" data-i18n="nav_cabinet">支持率</a>
+  </nav>
+  <div class="lang-switch-group" role="group" aria-label="language">
+    <button data-lang="ja" type="button">JA</button>
+    <button data-lang="zh" type="button">中</button>
+    <button data-lang="en" type="button">EN</button>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+  <section class="hero" aria-labelledby="h1">
+    <div class="hero-copy">
+      <p class="eyebrow"><b>ouuut</b> · <span data-i18n="eyebrow">JAPAN LOCAL INTEL — GATEWAY</span></p>
+      <h1 id="h1">Pan Out Japan</h1>
+      <p class="pan-explain" data-i18n="pan_explain"><strong>pan out</strong> —— カメラを引いて日本全体を見渡すこと。そして、うまくいくこと。</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="https://3d.saaaai.com/" data-i18n="cta_quake">地震マップを開く →</a>
+        <a class="btn btn-ghost" href="https://crime.saaaai.com/" data-i18n="cta_crime">犯罪率を見る</a>
+        <a class="btn btn-ghost" href="https://japan.saaaai.com/" data-i18n="cta_cabinet">支持率を見る</a>
+      </div>
+    </div>
+    <div class="hero-visual" role="img" aria-label="quake visual placeholder">
+      <canvas id="stars" width="640" height="420" aria-hidden="true"></canvas>
+      <div class="globe" aria-hidden="true">
+        <span class="globe-dot" style="left:63%;top:38%"></span>
+        <span class="globe-dot" style="left:58%;top:52%;width:5px;height:5px;opacity:.8"></span>
+        <span class="globe-dot" style="left:68%;top:55%;width:4px;height:4px;opacity:.7"></span>
+      </div>
+      <div class="visual-cap"><span data-i18n="visual_cap">STATIC PREVIEW · LIVE → 3D.SAAAAI.COM</span><a href="https://3d.saaaai.com/">3d.saaaai.com →</a></div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="gates-h">
+    <p class="eyebrow" id="gates-h"><b>03</b> · <span data-i18n="gates_eyebrow">THREE GATES — LIVE NOW</span></p>
+    <div class="grid3">
+      <a class="card" href="https://3d.saaaai.com/">
+        <span class="domain">3d.saaaai.com</span>
+        <h2 data-i18n="card_quake_t">地震マップ</h2>
+        <p data-i18n="card_quake_d">列島の震源を3D地球儀で俯瞰する。</p>
+        <span class="go"><span data-i18n="go">開く →</span></span>
+      </a>
+      <a class="card" href="https://crime.saaaai.com/">
+        <span class="domain">crime.saaaai.com</span>
+        <h2 data-i18n="card_crime_t">犯罪率マップ</h2>
+        <p data-i18n="card_crime_d">東京都 5,234 町丁の刑法犯千人率を分級着色で読む。</p>
+        <span class="go"><span data-i18n="go">開く →</span></span>
+      </a>
+      <a class="card" href="https://japan.saaaai.com/">
+        <span class="domain">japan.saaaai.com</span>
+        <h2 data-i18n="card_cabinet_t">内閣支持率 2000→</h2>
+        <p data-i18n="card_cabinet_d">NHK 月次世論調査 632 点の推移を月平均で追う。</p>
+        <span class="go"><span data-i18n="go">開く →</span></span>
+      </a>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="news-h">
+    <p class="eyebrow" id="news-h"><b>04</b> · <span data-i18n="news_eyebrow">NEWS PAN — COMING SOON</span></p>
+    <div class="card news-card">
+      <span class="badge" data-i18n="news_badge">COMING SOON</span>
+      <h3 data-i18n="news_t">News Pan 開発中</h3>
+      <p data-i18n="news_d">日本本土ニュースの日次聚合、ただいま準備中。首版は静的プレースホルダのみ（JS 取数なし）。</p>
+      <ul class="news-rows" aria-hidden="true">
+        <li>— · — · —</li>
+        <li>— · — · —</li>
+        <li>— · — · —</li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap frow">
+    <span>© 2026 Pan Out Japan · ouuut</span>
+    <span data-i18n="sources">數據來源：USGS · 警視庁 · NHK放送文化研究所 · CC BY 4.0</span>
+    <span><a href="#top">japan.ouuut.com</a> · <a href="https://3d.saaaai.com/">3d</a> · <a href="https://crime.saaaai.com/">crime</a> · <a href="https://japan.saaaai.com/">approval</a></span>
+  </div>
+</footer>
+
+<script>
+"use strict";
+var I18N = {
+  ja: {
+    skip: "スキップして本文へ", nav_hub: "門面", nav_quake: "地震", nav_crime: "犯罪率", nav_cabinet: "支持率",
+    eyebrow: "JAPAN LOCAL INTEL — GATEWAY",
+    pan_explain: "<strong>pan out</strong> —— カメラを引いて日本全体を見渡すこと。そして、うまくいくこと。",
+    cta_quake: "地震マップを開く →", cta_crime: "犯罪率を見る", cta_cabinet: "支持率を見る",
+    visual_cap: "STATIC PREVIEW · LIVE → 3D.SAAAAI.COM",
+    gates_eyebrow: "THREE GATES — LIVE NOW",
+    card_quake_t: "地震マップ", card_quake_d: "列島の震源を3D地球儀で俯瞰する。",
+    card_crime_t: "犯罪率マップ", card_crime_d: "東京都 5,234 町丁の刑法犯千人率を分級着色で読む。",
+    card_cabinet_t: "内閣支持率 2000→", card_cabinet_d: "NHK 月次世論調査 632 点の推移を月平均で追う。",
+    go: "開く →",
+    news_eyebrow: "NEWS PAN — COMING SOON", news_badge: "COMING SOON",
+    news_t: "News Pan 開発中", news_d: "日本本土ニュースの日次聚合、ただいま準備中。首版は静的プレースホルダのみ（JS 取数なし）。",
+    sources: "データ出典：USGS · 警視庁 · NHK放送文化研究所 · CC BY 4.0"
+  },
+  zh: {
+    skip: "跳到正文", nav_hub: "门面", nav_quake: "地震", nav_crime: "犯罪率", nav_cabinet: "支持率",
+    eyebrow: "日本本土情报 · 聚合门面",
+    pan_explain: "<strong>pan out</strong>——把镜头拉远，看见日本全景；事情也终将如人意。",
+    cta_quake: "打开地震地图 →", cta_crime: "查看犯罪率", cta_cabinet: "查看支持率",
+    visual_cap: "静态预览 · 实时站 → 3D.SAAAAI.COM",
+    gates_eyebrow: "三座门 · 均已上线",
+    card_quake_t: "地震地图", card_quake_d: "在 3D 地球仪上俯瞰列岛震源。",
+    card_crime_t: "犯罪率地图", card_crime_d: "东京都 5,234 町丁刑法犯千人率，分级设色。",
+    card_cabinet_t: "内阁支持率 2000→", card_cabinet_d: "NHK 月度舆论调查 632 点，月平均追踪。",
+    go: "打开 →",
+    news_eyebrow: "NEWS PAN · 即将上线", news_badge: "即将上线",
+    news_t: "News Pan 开发中", news_d: "日本本土新闻的日更聚合正在准备中。首版仅为静态占位（零 JS 取数）。",
+    sources: "數據來源：USGS · 警视厅 · NHK放送文化研究所 · CC BY 4.0"
+  },
+  en: {
+    skip: "Skip to content", nav_hub: "Gateway", nav_quake: "Quakes", nav_crime: "Crime", nav_cabinet: "Approval",
+    eyebrow: "JAPAN LOCAL INTEL — GATEWAY",
+    pan_explain: "<strong>pan out</strong> — to zoom out and see all of Japan; and for things to turn out well.",
+    cta_quake: "Open quake map →", cta_crime: "See crime rates", cta_cabinet: "See approval",
+    visual_cap: "STATIC PREVIEW · LIVE → 3D.SAAAAI.COM",
+    gates_eyebrow: "THREE GATES — LIVE NOW",
+    card_quake_t: "Quake map", card_quake_d: "Hypocenters across the archipelago on a 3D globe.",
+    card_crime_t: "Crime rates map", card_crime_d: "Per-1,000 rates for 5,234 Tokyo chome, classed colors.",
+    card_cabinet_t: "Cabinet approval 2000→", card_cabinet_d: "632 monthly NHK poll points, monthly-averaged.",
+    go: "Open →",
+    news_eyebrow: "NEWS PAN — COMING SOON", news_badge: "COMING SOON",
+    news_t: "News Pan in the works", news_d: "Daily aggregation of Japan-local news is being prepared. First edition is a static placeholder (zero JS fetching).",
+    sources: "Sources: USGS · TMPD (Keishicho) · NHK BCRI · CC BY 4.0"
+  }
+};
+function detectLang() {
+  try {
+    var q = new URLSearchParams(window.location.search).get("lang");
+    if (q && I18N[q]) return q;
+    var s = localStorage.getItem("panout-lang");
+    if (s && I18N[s]) return s;
+    var navs = navigator.languages || [navigator.language || ""];
+    for (var i = 0; i < navs.length; i++) {
+      var l = (navs[i] || "").toLowerCase();
+      if (l.indexOf("ja") === 0) return "ja";
+      if (l.indexOf("zh") === 0) return "zh";
+      if (l.indexOf("en") === 0) return "en";
+    }
+  } catch (e) {}
+  return "ja";
+}
+function setLang(lang) {
+  if (!I18N[lang]) lang = "ja";
+  var t = I18N[lang];
+  document.querySelectorAll("[data-i18n]").forEach(function (el) {
+    var k = el.getAttribute("data-i18n");
+    if (t[k] !== undefined) el.innerHTML = t[k];
+  });
+  document.documentElement.lang = lang === "zh" ? "zh-CN" : (lang === "ja" ? "ja" : "en");
+  document.querySelectorAll(".lang-switch-group button").forEach(function (b) {
+    b.classList.toggle("on", b.getAttribute("data-lang") === lang);
+  });
+  try {
+    localStorage.setItem("panout-lang", lang);
+    var u = new URL(window.location.href);
+    u.searchParams.set("lang", lang);
+    history.replaceState(null, "", u.toString());
+  } catch (e) {}
+}
+document.querySelectorAll(".lang-switch-group button").forEach(function (b) {
+  b.addEventListener("click", function () { setLang(b.getAttribute("data-lang")); });
+});
+setLang(detectLang());
+/* 星点 canvas：轻量静态+微闪，reduced-motion 时只画一帧 */
+(function () {
+  var cv = document.getElementById("stars");
+  if (!cv || !cv.getContext) return;
+  var ctx = cv.getContext("2d");
+  var W = cv.width, H = cv.height, stars = [], i;
+  var seed = 42;
+  function rnd() { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; }
+  for (i = 0; i < 130; i++) stars.push({ x: rnd() * W, y: rnd() * H, r: 0.4 + rnd() * 1.3, p: rnd() * 6.28 });
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function draw(t) {
+    ctx.clearRect(0, 0, W, H);
+    for (var k = 0; k < stars.length; k++) {
+      var s = stars[k];
+      var a = reduce ? 0.7 : (0.45 + 0.35 * Math.sin(t / 900 + s.p));
+      ctx.globalAlpha = a;
+      ctx.fillStyle = "#f5f0e8";
+      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 6.29); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    if (!reduce) requestAnimationFrame(draw);
+  }
+  if (reduce) draw(0); else requestAnimationFrame(draw);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+# 抓取缓存：可由 scripts/fetch_lod.mjs 重新抓（uedayou.net/loa），不入库
+data/lod_cache.json
+# QA 截图产物
+qa/out/
+# Python 缓存
+__pycache__/

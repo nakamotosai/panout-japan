@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1d1a17"/>
+      <stop offset="100%" stop-color="#141210"/>
+    </linearGradient>
+    <linearGradient id="amber" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d0801a"/>
+      <stop offset="100%" stop-color="#a86212"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="2" flood-color="#d0801a" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+  <!-- 背景圆角底板 -->
+  <rect width="64" height="64" rx="14" fill="url(#bg)"/>
+  <rect x="1" y="1" width="62" height="62" rx="13" fill="none" stroke="rgba(255,244,232,0.22)" stroke-width="1.5"/>
+  
+  <!-- 战术治安护盾 (外轮廓) -->
+  <path d="M 32 10 L 48 16 C 48 30 42 45 32 53 C 22 45 16 30 16 16 Z" 
+        fill="none" stroke="url(#amber)" stroke-width="2.5" stroke-linejoin="round" filter="url(#glow)"/>
+        
+  <!-- 内部几何内核 (银杏/十字准星形态) -->
+  <path d="M 32 20 L 32 42 M 22 29 L 42 29" 
+        stroke="rgba(208,128,26,0.85)" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="32" cy="29" r="4" fill="url(#amber)"/>
+  <circle cx="32" cy="29" r="7" fill="none" stroke="#d0801a" stroke-width="1.2" stroke-dasharray="2 3"/>
+</svg>

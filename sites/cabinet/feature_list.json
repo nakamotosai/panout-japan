@@ -1,0 +1,12 @@
+{
+  "v6_full_nhk_monthly": {
+    "desc": "v6 全量 NHK 官方月次线已上线",
+    "enabled": true
+  },
+  "four_themes": { "desc": "四主题切换", "enabled": true },
+  "zoom_pan_focus": { "desc": "首相聚焦平移不缩放 + 退出按钮", "enabled": true },
+  "unified_8px_style": { "desc": "全组件统一 8px 圆角设计语言", "enabled": true },
+  "cf_pages_live": { "desc": "CF Pages 子域名上线", "enabled": true },
+  "multi_poll_comparison": { "desc": "多源按月平均（v8.1 当前源集 NHK+日経/朝日/時事/読売/JNN，2000-01~2026-09 零断月）", "enabled": true },
+  "gap_fill_policy": { "desc": "缺月补数据策略（多源真实值补点禁断线；换相月按调查日分辨新旧首相）", "enabled": true }
+}

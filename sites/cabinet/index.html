@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="ja" data-variant="tactical" data-accent="amber">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"/>
+<link rel="shortcut icon" href="/favicon.ico"/>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
+<title>内閣支持率 2000→｜NHK 月次世論調査</title>
+<meta name="description" content="2000年から2026年までのNHK月次世論調査に基づく内閣支持率・不支持率の推移グラフ。NHK放送文化研究所・NHK選挙WEBを主軸に日経・朝日・時事・読売・JNN各社調査を統合し、月平均でプロット。">
+<link rel="canonical" href="https://japan.saaaai.com/">
+<meta property="og:title" content="内閣支持率 2000→｜NHK 月次世論調査">
+<meta property="og:description" content="2000年から2026年までのNHK月次世論調査に基づく内閣支持率・不支持率の推移グラフ。NHKを主軸に各社調査を統合し月平均でプロット。">
+<meta property="og:url" content="https://japan.saaaai.com/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:image" content="https://japan.saaaai.com/og-1200x630.png">
+<meta name="twitter:image" content="https://japan.saaaai.com/og-1200x630.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="内閣支持率 2000→｜NHK 月次世論調査">
+<meta name="twitter:description" content="2000年から2026年までのNHK月次世論調査に基づく内閣支持率・不支持率の推移グラフ。">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "内閣支持率 2000→",
+  "url": "https://japan.saaaai.com/",
+  "description": "2000年から2026年までのNHK月次世論調査に基づく内閣支持率・不支持率の推移グラフ",
+  "inLanguage": "ja",
+  "about": {
+    "@type": "Thing",
+    "name": "内閣支持率"
+  }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+<style>
+  /* ============================================================
+     tactical 深色默认 + editorial 可切（docs/THEME-TOKENS.md 冻结 token）。
+     数据逻辑（series/tooltip/dataZoom/月平均/pmByDate）与旧版一致，仅 chrome 重构。
+     ============================================================ */
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--ink) 22%, transparent);
+    border-radius: 999px; border: 2px solid transparent; background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--ink) 40%, transparent); background-clip: padding-box; }
+  * { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--ink) 22%, transparent) transparent; }
+
+  /* ===== Variant tokens（tactical 默认深色 / editorial 纸白） ===== */
+  :root, html[data-variant="tactical"] {
+    color-scheme: dark;
+    --bg: #141210; --bg2: #1c1a18; --bg3: #2c2825;
+    --font-masthead: "Noto Serif JP", "Songti SC", "Times New Roman", serif;
+    --ink: #f5f0e8; --muted: #a89d8d; --faint: #6f675b;
+    --accent: #d0801a; --accent2: #e8a33d;
+    --accent-soft: rgba(208,128,26,.16);
+    --panel: #1c1a18; --panel-border: rgba(255,244,232,.14);
+    --pillow: rgba(27,25,23,.62); --pill-border: rgba(255,244,232,.14);
+    --font-body: system-ui, "PingFang SC", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Microsoft YaHei UI", sans-serif;
+    --font-display: "Noto Serif JP", "Songti SC", serif;
+    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  html[data-variant="editorial"] {
+    color-scheme: light;
+    --bg: #faf8f5; --bg2: #fffdf9; --bg3: #efe9dd;
+    --font-masthead: "Noto Serif JP", "Songti SC", "Times New Roman", serif;
+    --ink: #181614; --muted: #6e675c; --faint: #9c9486;
+    --accent: #9f3c2c; --accent2: #c41e3a;
+    --accent-soft: rgba(159,60,44,.08);
+    --panel: #fffdf9; --panel-border: rgba(24,22,20,.14);
+    --pillow: rgba(255,255,255,.7); --pill-border: rgba(24,22,20,.14);
+    --font-body: system-ui, "PingFang SC", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Microsoft YaHei UI", sans-serif;
+    --font-display: "Noto Serif JP", "Songti SC", serif;
+    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 18px 28px 32px;
+    font-size: 16px;
+    transition: background 0.25s, color 0.25s;
+  }
+  .wrap { max-width: 1480px; margin: 0 auto; }
+
+  /* ===== Mono 11px 眉标 ===== */
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px; font-weight: 500;
+    letter-spacing: .12em; text-transform: uppercase;
+    color: var(--faint);
+    margin-bottom: 6px;
+  }
+
+  /* ===== 顶栏：brand + 四站互链 + 工具组（换行自适应） ===== */
+  .topline {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap;
+    min-height: 38px;
+    margin-bottom: 0;
+  }
+  .topline .brand { display: inline-flex; align-items: baseline; gap: 8px; flex-shrink: 0; min-width: 0; }
+  .topline .brand .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); flex-shrink: 0; align-self: center; }
+  .topline .brand .wordmark { font-family: var(--font-masthead); font-size: 18px; font-weight: 700; letter-spacing: -0.01em; color: var(--ink); white-space: nowrap; line-height: 1; }
+  .topline .brand .wordmark .yr { color: var(--faint); font-weight: 400; margin-left: 6px; font-size: 14px; }
+  .site-nav { display: inline-flex; align-items: center; gap: 2px; flex-wrap: wrap; }
+  .site-nav a {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--muted); text-decoration: none;
+    padding: 6px 10px; border-radius: 6px; line-height: 1;
+  }
+  .site-nav a:hover { color: var(--ink); background: var(--accent-soft); }
+  .site-nav a[aria-current="page"] { color: var(--accent); font-weight: 700; }
+  .topline .toolbar { display: inline-flex; align-items: center; gap: 10px; flex-shrink: 0; flex-wrap: wrap; }
+
+  /* 主题按钮（精炼化） */
+  .theme-drop { position: relative; flex-shrink: 0; }
+  .theme-btn { display: inline-flex; align-items: center; gap: 7px; background: var(--pillow); border: 1px solid var(--pill-border); color: var(--ink); padding: 6px 12px; border-radius: 8px; height: 28px; font-family: inherit; font-size: 14px; font-weight: 500; line-height: 1; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+  .theme-btn:hover { border-color: var(--accent); }
+  .theme-btn .sw { width: 11px; height: 11px; border-radius: 3px; border: 1px solid var(--pill-border); }
+  .theme-btn .caret { color: var(--faint); font-size: 11px; }
+  .theme-menu { position: absolute; right: 0; top: calc(100% + 6px); min-width: 200px; z-index: 30; background: var(--panel); border: 1px solid var(--pill-border); border-radius: 10px; padding: 6px; box-shadow: 0 10px 30px rgba(0,0,0,0.28); display: none; }
+  .theme-menu.open { display: block; }
+  .theme-menu button { display: flex; align-items: center; gap: 9px; width: 100%; background: none; border: none; border-radius: 7px; padding: 8px 10px; cursor: pointer; font-family: inherit; font-size: 14px; color: var(--muted); text-align: left; }
+  .theme-menu button:hover { background: var(--bg3); color: var(--ink); }
+  .theme-menu button.active { color: var(--ink); font-weight: 600; }
+  .theme-menu button .sw { width: 13px; height: 13px; border-radius: 4px; border: 1px solid var(--pill-border); flex-shrink: 0; }
+  .theme-menu button.active .sw { border-color: var(--accent); outline: 2px solid color-mix(in srgb, var(--accent) 35%, transparent); outline-offset: 1px; }
+
+  /* 三语切换器（?lang= > localStorage > navigator > 默认 ja） */
+  .lang-switch-group { display: inline-flex; align-items: center; background: var(--pillow); border: 1px solid var(--pill-border); border-radius: 8px; padding: 2px; height: 28px; }
+  .lang-switch-group button { border: none; background: none; color: var(--faint); padding: 0 11px; border-radius: 6px; height: 24px; font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; font-weight: 500; line-height: 1; cursor: pointer; transition: all 0.15s; }
+  .lang-switch-group button:hover { color: var(--ink); }
+  .lang-switch-group button.on { background: var(--accent); color: var(--bg); font-weight: 600; }
+
+  /* 分段箱跟胶囊容器：与主题按钮同一高度 */
+  .zoom { display: inline-flex; align-items: center; background: var(--pillow); border: 1px solid var(--pill-border); border-radius: 8px; padding: 2px; height: 28px; }
+  .zoom button { border: none; background: none; color: var(--faint); padding: 0 11px; border-radius: 6px; height: 24px; font-family: inherit; font-size: 14px; font-weight: 500; line-height: 1; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+  .zoom button:hover { color: var(--ink); }
+  .zoom button.active { background: var(--accent); color: var(--bg); font-weight: 600; }
+
+  /* ===== chips 图例行（稀疏、可换行/横滚） ===== */
+  /* buildLegend 仍输出 button.pill / button.pill.exit-focus / .real-mark/.derived-mark。
+     这里重置 CSS 语境 chips 风格，DOM 不动 JS。legend-bar 容器内横滚自动换行。 */
+  .legend-bar { margin: 8px 0 0; max-height: 68px; overflow-x: auto; overflow-y: hidden; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 2px 0; font-size: 14px; line-height: 1; scrollbar-width: thin; }
+  .legend-bar .pill { display: inline-flex; align-items: center; gap: 6px; padding: 0 10px; margin: 0; height: 28px; line-height: 1; border-radius: 20px; font-family: inherit; font-size: 14px; font-weight: 500; background: transparent; border: 1px solid transparent; color: var(--muted); cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: background .14s ease, color .14s ease, border-color .14s ease, opacity .14s ease; vertical-align: middle; }
+  /* chip 色点（6px)·替代 index 原来的 3px 左边框 */
+  .legend-bar .pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--faint); flex-shrink: 0; transition: background .14s ease; }
+  .legend-bar .pill:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); border-color: color-mix(in srgb, var(--ink) 12%, transparent); }
+  .legend-bar .pill.focused { background: var(--accent); color: var(--bg); font-weight: 600; border-color: var(--accent); }
+  /* 聚焦使用 accent 底+白字，色点保持原色但圈白变出 */
+  .legend-bar .pill.focused .dot { background: var(--bg) !important; box-shadow: 0 0 2px color-mix(in srgb, var(--bg) 50%, transparent); }
+  /* exit-focus chip */
+  .legend-bar .pill.exit-focus { background: color-mix(in srgb, var(--accent) 16%, transparent); border: 1px solid var(--accent); color: var(--accent); margin-right: 6px; font-weight: 600; }
+  .legend-bar .pill.exit-focus:hover { background: color-mix(in srgb, var(--accent) 28%, transparent); }
+  /* 停留标记 shape(多选标注），JS 仍渲染 .real-mark/.derived-mark */
+  .legend-bar .real-mark, .legend-bar .derived-mark { display: none; }
+
+  /* ===== 图表卡片：bg2 + 1px border 圆角 12 ===== */
+  .chart-card { margin-top: 10px; background: var(--bg2); border: 1px solid var(--panel-border); border-radius: 12px; padding: 0; overflow: hidden; transition: background 0.25s, border-color 0.25s; }
+  .chart-card .subline { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px 6px; flex-wrap: wrap; gap: 6px; }
+  .chart-card .subline .src { font-size: 14px; color: var(--muted); line-height: 1.5; flex: 1 1 100%; }
+  .chart-card .subline .sub-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-left: auto; }
+  .chart-card .subline .latest { font-size: 14px; font-weight: 700; line-height: 1; white-space: nowrap; color: var(--bg); background: var(--accent); border-radius: 6px; padding: 6px 10px; }
+  .chart-card .subline .range-now { font-size: 14px; color: var(--faint); font-weight: 500; white-space: nowrap; }
+  .chart-wrap { position: relative; }
+  #chart { width: 100%; height: 70vh; min-height: 460px; transition: background 0.25s; }
+  .chart-fail { display: flex; align-items: center; justify-content: center; height: 70vh; min-height: 460px; color: var(--muted); font-size: 14px; padding: 24px; text-align: center; }
+
+  /* ===== 页脚：© + 来源许可 + 回门面 ===== */
+  .site-foot {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 8px;
+    margin-top: 14px; padding-top: 12px;
+    border-top: 1px solid var(--panel-border);
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em;
+    color: var(--faint);
+  }
+  .site-foot a { color: var(--muted); text-decoration: none; }
+  .site-foot a:hover { color: var(--accent); }
+  .site-foot .sep { margin: 0 8px; }
+
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+  /* 窄小角药 13px 仅供辅助用；当前范围回显（可选用） */
+  @media (max-width: 880px) {
+    body { padding: 14px 12px 24px; }
+    .topline { flex-wrap: wrap; height: auto; row-gap: 6px; }
+    .topline .brand { flex-wrap: wrap; row-gap: 2px; flex-shrink: 1; }
+    .topline .toolbar { flex-wrap: wrap; justify-content: flex-end; row-gap: 6px; flex-shrink: 1; min-width: 0; }
+    .topline .zoom button { padding: 0 8px; font-size: 14px; }
+    .theme-btn, .legend-bar .pill { font-size: 14px; }
+  }
+  /* 移动端 14 个首相 pill 纵 5 行为 164px  Wim开到 168px 全显，免横滚 */
+  .legend-bar { max-height: 168px; overflow-y: auto; }
+  /* 窄屏副标题+徽标+当前三件套件：徽标独上一行，尾压住 markLine 挤坏 */
+  .chart-card .subline { flex-direction: column; align-items: flex-start; }
+  .chart-card .subline .sub-right { margin-left: 0; width: 100%; justify-content: space-between; }
+  @media (pointer: coarse) {
+    .site-nav a, .lang-switch-group button, .theme-btn, .zoom button { min-height: 44px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+<h1 class="sr-only" id="pageH1">内閣支持率 2000→｜NHK 月次世論調査</h1>
+<div class="wrap">
+
+  <div class="eyebrow" id="eyebrow">CABINET APPROVAL · NHK MONTHLY POLLS</div>
+
+  <!-- 顶栏：brand + 四站互链 + 主题 ｜ 三语 ｜ zoom（同一工具组） -->
+  <div class="topline">
+    <div class="brand">
+      <span class="dot"></span>
+      <span class="wordmark"><span id="wmMain">内閣支持率</span><span class="yr">2000→</span></span>
+    </div>
+    <nav class="site-nav" id="siteNav" aria-label="姉妹サイト">
+      <a href="#" data-site="home" id="navHome">トップ</a>
+      <a href="https://3d.saaaai.com" data-site="quake" id="navQuake">地震</a>
+      <a href="https://crime.saaaai.com" data-site="crime" id="navCrime">犯罪率</a>
+      <a href="https://japan.saaaai.com" data-site="cabinet" id="navCabinet" aria-current="page">内閣支持率</a>
+    </nav>
+    <div class="toolbar">
+      <div class="theme-drop" id="themeDrop">
+        <button class="theme-btn" id="themeBtn" type="button">
+          <span class="sw" id="themeSwatch"></span>
+          <span id="themeBtnLabel">テーマ</span>
+          <span class="caret">▾</span>
+        </button>
+        <div class="theme-menu" id="themeMenu"></div>
+      </div>
+      <div class="lang-switch-group" role="group" id="langGroup" aria-label="言語切り替え">
+        <button type="button" data-lang="ja">JA</button>
+        <button type="button" data-lang="zh">中</button>
+        <button type="button" data-lang="en">EN</button>
+      </div>
+      <div class="zoom" id="zoomSeg"></div>
+    </div>
+  </div>
+
+  <!-- 紧凑 chips 图例行（多源标注收起，JS 仍生成 button.pill + 色点） -->
+  <div class="legend-bar" id="legend"></div>
+
+  <!-- 图表卡片：副标题放卡片内顶部 + chart + dataZoom slider 仍在 ECharts 内 -->
+  <div class="chart-card">
+    <div class="subline">
+      <div class="src" id="srcLine">2000 年 1 月以降の NHK 月次世論調査（放送文化研究所 + 選挙WEB）・多社平均。縦線 = 首相交代 / 同色 = 同一首相。</div>
+      <div class="sub-right"><span class="latest" id="latestBadge"></span><span class="range-now" id="rangeNow"></span></div>
+    </div>
+    <div class="chart-wrap">
+      <div id="chart"></div>
+    </div>
+  </div>
+
+  <footer class="site-foot">
+    <span id="footRights">© Pan Out Japan</span>
+    <span><span id="footSources">データ：USGS · 警視庁 · NHK ｜ CC BY 公開統計</span><span class="sep">·</span><a id="footHome" href="#">← トップへ戻る</a></span>
+  </footer>
+
+</div>
+
+<script>
+/* ============================================================
+   三语字典（ja / zh / en 全分键；缺键阻断自查见 checkI18n）
+   语言优先级：?lang= > localStorage > navigator > 默认 ja
+   ============================================================ */
+const I18N = {
+  ja: {
+    htmlLang: 'ja', ogLocale: 'ja_JP',
+    h1: '内閣支持率 2000→｜NHK 月次世論調査',
+    title: '内閣支持率 2000→｜NHK 月次世論調査',
+    metaDesc: '2000年から2026年までのNHK月次世論調査に基づく内閣支持率・不支持率の推移グラフ。NHK放送文化研究所・NHK選挙WEBを主軸に日経・朝日・時事・読売・JNN各社調査を統合し、月平均でプロット。',
+    eyebrow: 'CABINET APPROVAL · NHK MONTHLY POLLS',
+    wmMain: '内閣支持率',
+    navAria: '姉妹サイト',
+    nav: { home: 'トップ', quake: '地震', crime: '犯罪率', cabinet: '内閣支持率' },
+    langAria: '言語切り替え',
+    themeLabel: 'テーマ',
+    variants: { tactical: '戦術·琥珀', editorial: '紙感·朱砂' },
+    srcLine: '2000 年 1 月以降の NHK 月次世論調査（放送文化研究所 + 選挙WEB）・多社平均。縦線 = 首相交代 / 同色 = 同一首相。',
+    ranges: { '3m': '3ヶ月', '1y': '1年', '2y': '2年', '5y': '5年', '10y': '10年', 'all': '全期間' },
+    exitFocus: '✕ 全部表示', exitTitle: 'クリックで全首相の線を元に戻す',
+    pillTitle: 'クリックでこの首相の線にフォーカス',
+    yName: '支持率 (%)', avgWord: '平均', corpAvg: '社平均',
+    footRights: '© Pan Out Japan',
+    footSources: 'データ：USGS · 警視庁 · NHK ｜ CC BY 公開統計',
+    footHome: '← トップへ戻る',
+    chartFail: 'グラフライブラリの読み込みに失敗しました。ネットワークと CDN フォールバックを確認してください。'
+  },
+  zh: {
+    htmlLang: 'zh-CN', ogLocale: 'zh_CN',
+    h1: '日本内阁支持率 2000→｜NHK 月度舆论调查',
+    title: '日本内阁支持率 2000→｜NHK 月度舆论调查',
+    metaDesc: '基于2000年至2026年NHK月度舆论调查的日本内阁支持率/不支持率走势图。以NHK放送文化研究所与NHK选举WEB为主，整合日经、朝日、时事、读卖、JNN各社调查，按月平均绘制。',
+    eyebrow: 'CABINET APPROVAL · NHK MONTHLY POLLS',
+    wmMain: '内阁支持率',
+    navAria: '姊妹站点',
+    nav: { home: '门面', quake: '地震', crime: '犯罪率', cabinet: '内阁支持率' },
+    langAria: '切换界面语言',
+    themeLabel: '主题',
+    variants: { tactical: '战术·琥珀', editorial: '纸感·朱砂' },
+    srcLine: '2000年1月以来的NHK月度舆论调查（放送文化研究所＋选举WEB）·多社平均。竖线＝首相交接／同色＝同一首相。',
+    exitFocus: '✕ 显示全部', exitTitle: '点击恢复全部首相曲线',
+    pillTitle: '点击聚焦该首相曲线',
+    ranges: { '3m': '3个月', '1y': '1年', '2y': '2年', '5y': '5年', '10y': '10年', 'all': '全期间' },
+    yName: '支持率 (%)', avgWord: '平均', corpAvg: '家媒体平均',
+    footRights: '© Pan Out Japan',
+    footSources: '数据：USGS · 警视厅 · NHK ｜ CC BY 公开统计',
+    footHome: '← 返回门面',
+    chartFail: '图表库加载失败，请检查网络与 CDN 备用链路。'
+  },
+  en: {
+    htmlLang: 'en', ogLocale: 'en_US',
+    h1: 'Japan Cabinet Approval 2000→｜NHK Monthly Polls',
+    title: 'Japan Cabinet Approval 2000→｜NHK Monthly Polls',
+    metaDesc: 'Japan cabinet approval/disapproval trends from NHK monthly opinion polls, 2000–2026. Anchored on the NHK Broadcasting Culture Research Institute and NHK Election WEB, merged with Nikkei, Asahi, Jiji, Yomiuri and JNN polls as monthly averages.',
+    eyebrow: 'CABINET APPROVAL · NHK MONTHLY POLLS',
+    wmMain: 'Cabinet Approval',
+    navAria: 'Sister sites',
+    nav: { home: 'Home', quake: 'Quakes', crime: 'Crime', cabinet: 'Approval' },
+    langAria: 'Switch interface language',
+    themeLabel: 'Theme',
+    variants: { tactical: 'Tactical Amber', editorial: 'Paper Cinnabar' },
+    srcLine: 'NHK monthly opinion polls since Jan 2000 (Broadcasting Culture Research Institute + Election WEB), multi-poll average. Vertical line = PM change / same colour = same PM.',
+    ranges: { '3m': '3M', '1y': '1Y', '2y': '2Y', '5y': '5Y', '10y': '10Y', 'all': 'All' },
+    exitFocus: '✕ Show all', exitTitle: 'Click to restore all PM lines',
+    pillTitle: 'Click to focus this PM’s line',
+    yName: 'Approval (%)', avgWord: 'avg', corpAvg: 'poll avg',
+    footRights: '© Pan Out Japan',
+    footSources: 'Data: USGS · MPD Tokyo · NHK ｜ CC BY open statistics',
+    footHome: '← Back to home',
+    chartFail: 'Failed to load the chart library. Check your network and the CDN fallback.'
+  }
+};
+
+const EN_MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function fmtMonth(lang, y, m) {
+  if (lang === 'en') return EN_MONTHS[m - 1] + ' ' + y;
+  return y + '年' + m + '月';
+}
+function fmtLatest(lang, y, m, avg, n) {
+  const t = I18N[lang];
+  if (lang === 'en') return 'Latest: ' + fmtMonth(lang, y, m) + ' · ' + avg + '% (' + n + '-' + t.corpAvg + ')';
+  if (lang === 'zh') return '最新 ' + fmtMonth(lang, y, m) + ' ' + avg + '%（' + n + t.corpAvg + '）';
+  return '最新 ' + fmtMonth(lang, y, m) + ' ' + avg + '%（' + n + t.corpAvg + '）';
+}
+
+/* 缺键阻断自查：以 ja 为基准，zh/en 逐键比对；缺键/类型不一致即阻断渲染 */
+function checkI18n() {
+  const problems = [];
+  const walk = (base, cand, path) => {
+    for (const k of Object.keys(base)) {
+      const p = path + '.' + k;
+      const bv = base[k];
+      const cv = cand ? cand[k] : undefined;
+      if (cv === undefined) { problems.push('missing ' + p); continue; }
+      if (bv && typeof bv === 'object' && !Array.isArray(bv)) {
+        if (!cv || typeof cv !== 'object' || Array.isArray(cv)) problems.push('type-mismatch ' + p);
+        else walk(bv, cv, p);
+      } else if (typeof bv !== typeof cv) {
+        problems.push('type-mismatch ' + p);
+      }
+    }
+  };
+  for (const lang of ['zh', 'en']) walk(I18N.ja, I18N[lang], lang);
+  return problems;
+}
+
+/* ============================================================
+   Variant（tactical 默认深色 / editorial 纸白可切）
+   ECharts 收敛到 tactical：曲线主色 accent，网格/文字按 token
+   ============================================================ */
+const VARIANTS = [
+  { id: 'tactical',   swatch: '#d0801a' },
+  { id: 'editorial',  swatch: '#9f3c2c' }
+];
+const VARIANT_CHART = {
+  tactical: {
+    palette: ['#d0801a', '#e8a33d', '#f0c46c', '#f7dd9a', '#bb7a24', '#9c6830', '#77542f', '#57412f', '#e07b39', '#c85a2e', '#d99a5b', '#b25f46', '#a89984', '#6f675b'],
+    chart: {
+      gridBorder: 'transparent',
+      tooltipBg: 'rgba(20,18,16,0.96)', tooltipBorder: 'rgba(255,244,232,0.14)',
+      tooltipText: '#f5f0e8', tooltipMuted: '#a89d8d', tooltipDim: '#6f675b',
+      axisLine: 'rgba(255,244,232,0.16)', axisLabel: '#a89d8d',
+      splitLine: 'rgba(255,244,232,0.10)', splitLineType: 'dashed',
+      zoomBorder: 'rgba(255,244,232,0.14)', zoomBg: '#0d0c0b', zoomFill: 'rgba(208,128,26,0.16)', zoomHandle: '#d0801a', zoomText: '#6f675b',
+      markLabelBg: 'rgba(20,18,16,0.92)', pointBorder: '#141210'
+    }
+  },
+  editorial: {
+    palette: ['#9f3c2c', '#c41e3a', '#b25f46', '#8a5a24', '#2c4a6e', '#4a6a8a', '#3d6b6b', '#5a8a7a', '#2f6b4f', '#6b4a6b', '#8a3a5a', '#7a6a4a', '#3a4a6a', '#1a1714'],
+    chart: {
+      gridBorder: 'transparent',
+      tooltipBg: 'rgba(250,248,245,0.97)', tooltipBorder: '#e2ddd3',
+      tooltipText: '#181614', tooltipMuted: '#6e675c', tooltipDim: '#9c9486',
+      axisLine: 'rgba(24,22,20,0.20)', axisLabel: '#6e675c',
+      splitLine: 'rgba(24,22,20,0.08)', splitLineType: 'dashed',
+      zoomBorder: '#e2ddd3', zoomBg: '#faf8f5', zoomFill: 'rgba(159,60,44,0.12)', zoomHandle: '#9f3c2c', zoomText: '#9c9486',
+      markLabelBg: 'rgba(250,248,245,0.93)', pointBorder: '#faf8f5'
+    }
+  }
+};
+
+let chart = null;
+let rawData = null;
+let activeRange = '10y';
+let focusCabinet = null;
+
+/* ---------- 语言：?lang= > localStorage > navigator > 默认 ja ---------- */
+function detectInitialLang() {
+  const q = new URLSearchParams(window.location.search).get('lang');
+  if (q) {
+    const s = q.toLowerCase();
+    if (s === 'ja' || s === 'ja-jp') return 'ja';
+    if (s === 'zh' || s === 'zh-cn' || s === 'zh-tw') return 'zh';
+    if (s === 'en' || s === 'en-us') return 'en';
+  }
+  const saved = localStorage.getItem('cabinet-lang');
+  if (saved && I18N[saved]) return saved;
+  const navs = navigator.languages || [navigator.language || ''];
+  for (const l of navs) {
+    const s = (l || '').toLowerCase();
+    if (s.startsWith('ja')) return 'ja';
+    if (s.startsWith('zh')) return 'zh';
+    if (s.startsWith('en')) return 'en';
+  }
+  return 'ja';
+}
+let currentLang = detectInitialLang();
+
+/* ---------- 主题：?theme= > localStorage > 旧键迁移 > 默认 tactical ---------- */
+function detectInitialVariant() {
+  const q = new URLSearchParams(window.location.search).get('theme');
+  const norm = (v) => {
+    if (v === 'tactical' || v === 'gruvbox-dark' || v === 'saaaai-mono') return 'tactical';
+    if (v === 'editorial' || v === 'paper-editorial' || v === 'claude-cream') return 'editorial';
+    return null;
+  };
+  if (q && norm(q)) return norm(q);
+  const saved = localStorage.getItem('cabinet-variant');
+  if (saved && VARIANTS.some(v => v.id === saved)) return saved;
+  const legacy = localStorage.getItem('cabinet-theme');
+  if (legacy && norm(legacy)) return norm(legacy);
+  return 'tactical';
+}
+let currentVariant = detectInitialVariant();
+
+function variantName(id) {
+  const t = I18N[currentLang] || I18N.ja;
+  return t.variants[id] || id;
+}
+function applyVariant(id) {
+  if (!VARIANTS.some(v => v.id === id)) id = 'tactical';
+  currentVariant = id;
+  document.documentElement.dataset.variant = id;
+  localStorage.setItem('cabinet-variant', id);
+  const meta = VARIANTS.find(v => v.id === id);
+  const t = I18N[currentLang] || I18N.ja;
+  document.getElementById('themeBtnLabel').textContent = t.themeLabel + '：' + variantName(id);
+  document.getElementById('themeSwatch').style.background = meta.swatch;
+}
+
+const themeMenu = document.getElementById('themeMenu');
+function renderThemeMenu() {
+  themeMenu.innerHTML = '';
+  VARIANTS.forEach(v => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.dataset.theme = v.id;
+    b.innerHTML = '<span class="sw" style="background:' + v.swatch + '"></span>' + variantName(v.id);
+    b.classList.toggle('active', v.id === currentVariant);
+    b.addEventListener('click', () => {
+      applyVariant(v.id);
+      renderThemeMenu();
+      renderChart();
+      closeThemeMenu();
+    });
+    themeMenu.appendChild(b);
+  });
+}
+function openThemeMenu() { themeMenu.classList.add('open'); }
+function closeThemeMenu() { themeMenu.classList.remove('open'); }
+document.getElementById('themeBtn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  themeMenu.classList.toggle('open');
+});
+document.addEventListener('click', () => closeThemeMenu());
+
+/* ---------- 三语切换 ---------- */
+function setMeta(sel, val) { const el = document.querySelector(sel); if (el && val) el.setAttribute('content', val); }
+function setLanguage(lang) {
+  if (!I18N[lang]) return;
+  currentLang = lang;
+  localStorage.setItem('cabinet-lang', lang);
+  const t = I18N[lang];
+  document.documentElement.lang = t.htmlLang;
+
+  document.getElementById('pageH1').textContent = t.h1;
+  document.title = t.title;
+  setMeta('meta[name="description"]', t.metaDesc);
+  setMeta('meta[property="og:title"]', t.title);
+  setMeta('meta[property="og:description"]', t.metaDesc);
+  setMeta('meta[property="og:locale"]', t.ogLocale);
+  setMeta('meta[name="twitter:title"]', t.title);
+  setMeta('meta[name="twitter:description"]', t.metaDesc);
+  const href = lang === 'ja' ? 'https://japan.saaaai.com/' : 'https://japan.saaaai.com/?lang=' + lang;
+  setMeta('meta[property="og:url"]', href);
+  const canon = document.querySelector('link[rel="canonical"]');
+  if (canon) canon.setAttribute('href', href);
+
+  document.getElementById('eyebrow').textContent = t.eyebrow;
+  document.getElementById('wmMain').textContent = t.wmMain;
+  document.getElementById('siteNav').setAttribute('aria-label', t.navAria);
+  document.getElementById('navHome').textContent = t.nav.home;
+  document.getElementById('navQuake').textContent = t.nav.quake;
+  document.getElementById('navCrime').textContent = t.nav.crime;
+  document.getElementById('navCabinet').textContent = t.nav.cabinet;
+  document.getElementById('langGroup').setAttribute('aria-label', t.langAria);
+  document.getElementById('srcLine').textContent = t.srcLine;
+  document.getElementById('footRights').textContent = t.footRights;
+  document.getElementById('footSources').textContent = t.footSources;
+  document.getElementById('footHome').textContent = t.footHome;
+
+  document.querySelectorAll('#langGroup button').forEach(b => {
+    b.classList.toggle('on', b.dataset.lang === lang);
+  });
+
+  applyVariant(currentVariant);
+  renderThemeMenu();
+  renderZoomSeg();
+  buildLegend();
+  renderChart();
+}
+document.querySelectorAll('#langGroup button').forEach(b => {
+  b.addEventListener('click', () => setLanguage(b.dataset.lang));
+});
+
+/* ---------- ECharts CDN fallback（jsdelivr 主 + unpkg 备） ---------- */
+function ensureEcharts() {
+  return new Promise((resolve, reject) => {
+    if (window.echarts) return resolve();
+    const s = document.createElement('script');
+    s.src = 'https://unpkg.com/echarts@5.5.1/dist/echarts.min.js';
+    s.onload = () => resolve();
+    s.onerror = () => reject(new Error('echarts CDN fallback failed'));
+    document.head.appendChild(s);
+  });
+}
+
+const RANGES = [
+  { id: '3m' }, { id: '1y' }, { id: '2y' },
+  { id: '5y' }, { id: '10y' }, { id: 'all' }
+];
+const RANGE_WINDOW_MONTHS = { '3m': 3, '1y': 12, '2y': 24, '5y': 60, '10y': 120, 'all': 0 };
+const zoomSeg = document.getElementById('zoomSeg');
+function renderZoomSeg() {
+  const t = I18N[currentLang] || I18N.ja;
+  zoomSeg.innerHTML = '';
+  RANGES.forEach(r => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = t.ranges[r.id];
+    b.classList.toggle('active', r.id === activeRange);
+    b.addEventListener('click', () => {
+      activeRange = r.id;
+      focusCabinet = null;
+      renderZoomSeg();
+      buildLegend();
+      renderChart();
+    });
+    zoomSeg.appendChild(b);
+  });
+}
+
+function tchart() { return VARIANT_CHART[currentVariant].chart; }
+function cabColors() { return VARIANT_CHART[currentVariant].palette; }
+
+async function loadData() {
+  const problems = checkI18n();
+  if (problems.length) {
+    console.error('i18n missing keys (render blocked):', problems);
+    document.getElementById('chart').innerHTML = '<div class="chart-fail">i18n missing keys: ' + problems.join(', ') + '</div>';
+    return;
+  }
+  try {
+    await ensureEcharts();
+  } catch (e) {
+    const t = I18N[currentLang] || I18N.ja;
+    console.error('echarts load failed', e);
+    document.getElementById('chart').innerHTML = '<div class="chart-fail">' + t.chartFail + '</div>';
+    return;
+  }
+  try {
+    const resp = await fetch('data.json');
+    rawData = await resp.json();
+  } catch (e) {
+    console.error('data.json load failed', e);
+    return;
+  }
+  setLanguage(currentLang);
+}
+
+/* ===== buildLegend 输出 DOM 适配 chips（色点 6px + 名）。
+       仍保留 button.pill / button.pill.exit-focus / .focused 类名以维持现有 CSS 选择器。
+       原始数据逻辑（focusCabinet toggle、cabColors 着色、cabinets 遍历）完全不变。 ===== */
+function buildLegend() {
+  if (!rawData) return;
+  const t = I18N[currentLang] || I18N.ja;
+  const el = document.getElementById('legend');
+  el.innerHTML = '';
+
+  if (focusCabinet) {
+    const exitBtn = document.createElement('button');
+    exitBtn.type = 'button';
+    exitBtn.className = 'pill exit-focus';
+    exitBtn.textContent = t.exitFocus;
+    exitBtn.title = t.exitTitle;
+    exitBtn.addEventListener('click', () => {
+      focusCabinet = null;
+      buildLegend();
+      renderChart();
+    });
+    el.appendChild(exitBtn);
+  }
+
+  rawData.cabinets.forEach((c, i) => {
+    const pill = document.createElement('button');
+    pill.type = 'button';
+    pill.className = 'pill';
+    pill.title = t.pillTitle;
+    const color = cabColors()[i % cabColors().length];
+    /* chip = 6px 色点 + 名（14px 灰字 hover 变亮，focus 显示 accent 底+白字） */
+    const dot = document.createElement('span');
+    dot.className = 'dot';
+    dot.style.background = color;
+    pill.appendChild(dot);
+    const name = document.createElement('span');
+    name.textContent = c.pm;
+    pill.appendChild(name);
+
+    if (focusCabinet === c.id) pill.classList.add('focused');
+    pill.addEventListener('click', () => {
+      focusCabinet = (focusCabinet === c.id) ? null : c.id;
+      buildLegend();
+      renderChart();
+    });
+    el.appendChild(pill);
+  });
+}
+
+function pmByDate(dateStr) {
+  const d = new Date(dateStr);
+  for (let i = rawData.cabinets.length - 1; i >= 0; i--) {
+    if (d >= new Date(rawData.cabinets[i].start)) return rawData.cabinets[i];
+  }
+  return rawData.cabinets[0];
+}
+
+function renderChart() {
+  if (!window.echarts || !rawData) return;
+  const t = I18N[currentLang] || I18N.ja;
+  if (!chart) chart = echarts.init(document.getElementById('chart'), null, {renderer: 'canvas'});
+
+  const polls = rawData.polls;
+  const cabinets = rawData.cabinets;
+  const C = cabColors();
+  const T = tchart();
+  const isNarrow = window.innerWidth <= 880;
+  const gridL = isNarrow ? 44 : 64;
+  const gridR = isNarrow ? 12 : 64;
+
+  const buckets = {};
+  polls.forEach(p => {
+    if (p.derived) return;
+    const cab = pmByDate(p.date);
+    const ym = p.date.slice(0, 7);
+    const key = cab.id + '|' + ym;
+    if (!buckets[key]) buckets[key] = { cab, ym, sums: 0, n: 0, sources: [] };
+    buckets[key].sums += p.value;
+    buckets[key].n += 1;
+    buckets[key].sources.push({ src: p.source, v: p.value, kind: p.kind || '' });
+  });
+
+  const series = [];
+  cabinets.forEach((c, i) => {
+    const color = C[i % C.length];
+    const points = [];
+    Object.keys(buckets).sort().forEach(key => {
+      const rec = buckets[key];
+      if (rec.cab.id !== c.id) return;
+      const d = rec.ym + '-15';
+      const avg = Math.round((rec.sums / rec.n) * 10) / 10;
+      points.push([d, avg, rec.n, rec.sources]);
+    });
+
+    if (points.length > 0) {
+      const focused = focusCabinet === c.id;
+      series.push({
+        name: c.pm,
+        type: 'line',
+        data: points,
+        showSymbol: true,
+        symbol: 'circle',
+        symbolSize: focused ? 7 : 5,
+        smooth: false,
+        connectNulls: false,
+        lineStyle: { color: color, width: focused ? 4 : 2, type: 'solid', opacity: focusCabinet ? (focused ? 1 : 0.22) : 1 },
+        itemStyle: { color: color, borderColor: T.pointBorder, borderWidth: 1, opacity: focusCabinet ? (focused ? 1 : 0.22) : 1 },
+        emphasis: { focus: 'series', scale: 1.4 },
+        z: focused ? 5 : 2,
+        markLine: {
+          silent: true,
+          symbol: ['none','none'],
+          lineStyle: { color: color, type: 'solid', width: focused ? 2 : 1.2, opacity: focusCabinet ? (focused ? 0.9 : 0.15) : 0.55 },
+          label: {
+            position: 'end',
+            formatter: c.pm,
+            color: color, fontSize: isNarrow ? 11 : 14, fontWeight: 700,
+            padding: isNarrow ? [1,4] : [3,8],
+            backgroundColor: T.markLabelBg,
+            borderColor: color, borderWidth: 1, borderRadius: 4,
+            distance: 6
+          },
+          // 窄屏首相交代线密集：重叠标签自动隐藏其一，免"菅義偉/岸田文雄"糊成一团
+          labelLayout: isNarrow ? { hideOverlap: true } : undefined,
+          data: [{ xAxis: c.start }]
+        }
+      });
+    }
+  });
+
+  const allDates = polls.map(p => p.date).sort();
+  const startDate = allDates[0];
+  const endDate = allDates[allDates.length - 1];
+  // 最新月 bucket 画在 ym-15（如 2026-09-15），raw 末点（如 2026-09-11）比它早：
+  // max 若用 raw 末点，9 月点会被裁在轴外。取两者较大者再向右垫 18 天，9 月点落在轴内。
+  const bucketDates = Object.values(buckets).map(r => r.ym + '-15').sort();
+  const lastBucket = bucketDates[bucketDates.length - 1];
+  const axisMaxTime = Math.max(new Date(endDate).getTime(), new Date(lastBucket).getTime()) + 18 * 86400000;
+  const axisMaxISO = new Date(axisMaxTime).toISOString().slice(0, 10);
+
+  const wMonths = RANGE_WINDOW_MONTHS[activeRange];
+  let zoomStart = 0;
+  if (wMonths > 0) {
+    const spanMs = new Date(endDate) - new Date(startDate);
+    const winMs = wMonths * 30.44 * 86400000;
+    zoomStart = Math.max(0, Math.round((1 - winMs / spanMs) * 1000) / 10);
+  }
+
+  const focusCab = focusCabinet ? rawData.cabinets.find(c => c.id === focusCabinet) : null;
+  let focusWindow = null;
+  if (focusCab && wMonths > 0) {
+    const winMs = wMonths * 30.44 * 86400000;
+    const tMin = new Date(startDate).getTime();
+    const tMax = new Date(endDate).getTime();
+    const cStart = new Date(focusCab.start).getTime();
+    const cEnd = new Date(focusCab.end).getTime();
+    const center = (cStart + cEnd) / 2;
+    let ws = center - winMs / 2;
+    let we = center + winMs / 2;
+    if (ws < tMin) { ws = tMin; we = tMin + winMs; }
+    if (we > tMax) { we = tMax; ws = tMax - winMs; }
+    focusWindow = { startValue: new Date(ws), endValue: new Date(we) };
+  }
+
+  const sliderDZ = {
+    type: 'slider', xAxisIndex: 0,
+    left: gridL, right: gridR,
+    height: 24, bottom: 18,
+    borderRadius: 8,
+    borderColor: T.zoomBorder,
+    backgroundColor: T.zoomBg,
+    fillerColor: T.zoomFill,
+    handleSize: 14,
+    brushSelect: false,
+    dataBackground: { lineStyle: { color: 'rgba(0,0,0,0)' }, areaStyle: { color: 'rgba(0,0,0,0)' } },
+    selectedDataBackground: { lineStyle: { color: 'rgba(0,0,0,0)' }, areaStyle: { color: 'rgba(0,0,0,0)' } },
+    moveHandleSize: 0,
+    handleIcon: 'path://M-8,-9h16a4,4 0 0 1 4,4v10a4,4 0 0 1 -4,4h-16a4,4 0 0 1 -4,-4v-10a4,4 0 0 1 4,-4z',
+    handleStyle: {
+      color: T.zoomHandle, borderColor: 'rgba(0,0,0,0.28)', borderWidth: 1,
+      shadowBlur: 5, shadowColor: 'rgba(0,0,0,0.35)', shadowOffsetY: 1.5
+    },
+    emphasis: { handleStyle: { color: T.zoomHandle, borderColor: '#fff', shadowBlur: 7 } },
+    textStyle: { color: T.zoomText, fontSize: 10 }
+  };
+  if (focusWindow) {
+    sliderDZ.startValue = focusWindow.startValue;
+    sliderDZ.endValue = focusWindow.endValue;
+  } else {
+    sliderDZ.start = zoomStart;
+    sliderDZ.end = 100;
+  }
+
+  const lang = currentLang;
+  const option = {
+    backgroundColor: 'transparent',
+    grid: { left: gridL, right: gridR, top: 30, bottom: 100, borderColor: T.gridBorder },
+    legend: { show: false },
+    tooltip: {
+      trigger: 'axis',
+      backgroundColor: T.tooltipBg,
+      borderColor: T.tooltipBorder,
+      textStyle: { color: T.tooltipText, fontSize: 12 },
+      formatter: function(params) {
+        if (!params || params.length === 0) return '';
+        const d = new Date(params[0].axisValue);
+        const ymStr = fmtMonth(lang, d.getFullYear(), d.getMonth() + 1);
+        const p = params[0];
+        const avg = p.data ? p.data[1] : null;
+        const n = p.data ? p.data[2] : 0;
+        const sources = p.data ? (p.data[3] || []) : [];
+        let html = '<div style="font-weight:700;margin-bottom:4px;font-size:13px">' + ymStr + ' ' + t.avgWord + ' <b>' + avg + '%</b></div>';
+        html += '<div style="color:' + T.tooltipMuted + ';font-size:11px;margin-bottom:6px">' + n + t.corpAvg + '</div>';
+        sources.forEach(s => {
+          html += '<span style="color:' + T.tooltipDim + '">▪</span> ' + s.src + ': <b>' + s.v + '%</b>'
+                + (s.kind ? ' <span style="color:' + T.tooltipDim + ';font-size:10px">(' + s.kind + ')</span>' : '') + '<br>';
+        });
+        return html;
+      }
+    },
+    xAxis: {
+      type: 'time', min: startDate, max: axisMaxISO,
+      axisLine: { lineStyle: { color: T.axisLine } },
+      axisLabel: { color: T.axisLabel, fontSize: 11, hideOverlap: true },
+      splitLine: { show: true, lineStyle: { color: T.splitLine, type: T.splitLineType } }
+    },
+    yAxis: {
+      type: 'value', min: 0, max: 100, interval: 10,
+      name: t.yName,
+      nameTextStyle: { color: T.axisLabel, fontSize: 11 },
+      axisLine: { show: false },
+      axisLabel: { color: T.axisLabel, formatter: '{value}%' },
+      splitLine: { show: true, lineStyle: { color: T.splitLine, type: T.splitLineType } }
+    },
+    dataZoom: [
+      sliderDZ,
+      {
+        type: 'inside', xAxisIndex: 0,
+        start: focusWindow ? undefined : zoomStart,
+        end: focusWindow ? undefined : 100,
+        startValue: focusWindow ? focusWindow.startValue : undefined,
+        endValue: focusWindow ? focusWindow.endValue : undefined,
+        zoomOnMouseWheel: 'shift', moveOnMouseWheel: true
+      }
+    ],
+    animation: false,
+    series: series
+  };
+
+  /* 最新月徽标：取 buckets 里最大 ym 的月平均，直接写"最新 2026年9月 57.8%"，不插值不手写 */
+  const latestYM = Object.values(buckets).map(r => r.ym).sort().pop();
+  const latestRecs = Object.values(buckets).filter(r => r.ym === latestYM);
+  const latestSum = latestRecs.reduce((a, r) => a + r.sums, 0);
+  const latestN = latestRecs.reduce((a, r) => a + r.n, 0);
+  const latestAvg = Math.round((latestSum / latestN) * 10) / 10;
+  const latestBadge = document.getElementById('latestBadge');
+  if (latestBadge && latestYM) {
+    const [ly, lm] = latestYM.split('-');
+    latestBadge.textContent = fmtLatest(lang, Number(ly), Number(lm), latestAvg, latestN);
+  }
+
+  chart.setOption(option, true);
+
+  /* 同步副标题右侧"当前范围"提示 */
+  const rn = document.getElementById('rangeNow');
+  if (rn) {
+    const rlabel = t.ranges[activeRange] || '';
+    if (focusCabinet) {
+      const fc = rawData.cabinets.find(c => c.id === focusCabinet);
+      rn.textContent = (fc ? fc.pm + ' · ' : '') + rlabel;
+    } else {
+      rn.textContent = rlabel;
+    }
+  }
+}
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeThemeMenu(); });
+window.addEventListener('resize', () => { if (chart) chart.resize(); });
+loadData();
+</script>
+</body>
+</html>

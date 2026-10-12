@@ -1,0 +1,5835 @@
+{
+  "_meta": {
+    "version": "8.0-multi-source-monthly-avg",
+    "description": "日本内閣支持率 2000→ 月度线 (多源按月平均): NHK放送文化研究所 2000-2017 (整数) + NHK選挙WEB PDF 2018-2026 (小数) + 缺月中央調査報・時事世論調査 (2011-03/2019-10/2025-10)。每月=当月所有已搜源真实调查值的算术平均, 禁断线",
+    "real_source_count": 626,
+    "derived_count": 0,
+    "official_gaps": [],
+    "note": "v7: 设计=多源按月平均 (用户2026-08-09拍板: 某月3家=3家平均, 1家=显示此值, 上限9家=9家平均; 目标每月都有数据不断线; 换相月按调查日分辨新旧首相)。当前源集=NHK世論調査+時事世論調査(3点), 其余媒体线后续补。"
+  },
+  "cabinets": [
+    {
+      "id": "obuchi",
+      "pm": "小渕恵三",
+      "start": "1998-07-30",
+      "end": "2000-04-05"
+    },
+    {
+      "id": "mori",
+      "pm": "森喜朗",
+      "start": "2000-04-05",
+      "end": "2001-04-26"
+    },
+    {
+      "id": "koizumi",
+      "pm": "小泉純一郎",
+      "start": "2001-04-26",
+      "end": "2006-09-26"
+    },
+    {
+      "id": "abe1",
+      "pm": "安倍晋三(1次)",
+      "start": "2006-09-26",
+      "end": "2007-09-26"
+    },
+    {
+      "id": "fukuda",
+      "pm": "福田康夫",
+      "start": "2007-09-26",
+      "end": "2008-09-24"
+    },
+    {
+      "id": "aso",
+      "pm": "麻生太郎",
+      "start": "2008-09-24",
+      "end": "2009-09-16"
+    },
+    {
+      "id": "hatoyama",
+      "pm": "鳩山由紀夫",
+      "start": "2009-09-16",
+      "end": "2010-06-08"
+    },
+    {
+      "id": "kan",
+      "pm": "菅直人",
+      "start": "2010-06-08",
+      "end": "2011-09-02"
+    },
+    {
+      "id": "noda",
+      "pm": "野田佳彦",
+      "start": "2011-09-02",
+      "end": "2012-12-26"
+    },
+    {
+      "id": "abe2",
+      "pm": "安倍晋三(2次)",
+      "start": "2012-12-26",
+      "end": "2020-09-16"
+    },
+    {
+      "id": "suga",
+      "pm": "菅義偉",
+      "start": "2020-09-16",
+      "end": "2021-10-04"
+    },
+    {
+      "id": "kishida",
+      "pm": "岸田文雄",
+      "start": "2021-10-04",
+      "end": "2024-10-01"
+    },
+    {
+      "id": "ishiba",
+      "pm": "石破茂",
+      "start": "2024-10-02",
+      "end": "2025-10-21"
+    },
+    {
+      "id": "takaichi",
+      "pm": "高市早苗",
+      "start": "2025-10-21",
+      "end": "2026-08-09"
+    }
+  ],
+  "polls": [
+    {
+      "date": "1998-08-01",
+      "pm": "小渕恵三",
+      "value": 25.1,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=199808",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "1998-10-01",
+      "pm": "小渕恵三",
+      "value": 17.3,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=199810",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "1998-12-01",
+      "pm": "小渕恵三",
+      "value": 22.1,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=199812",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "1999-01-01",
+      "pm": "小渕恵三",
+      "value": 30.2,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=199901",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "1999-04-01",
+      "pm": "小渕恵三",
+      "value": 35.4,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=199904",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "1999-06-01",
+      "pm": "小渕恵三",
+      "value": 39.9,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=199906",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "1999-08-01",
+      "pm": "小渕恵三",
+      "value": 46.2,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=199908",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "1999-10-01",
+      "pm": "小渕恵三",
+      "value": 45.4,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=199910",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "1999-12-01",
+      "pm": "小渕恵三",
+      "value": 36.4,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=199912",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2000-01-15",
+      "pm": "小渕恵三",
+      "value": 44.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2000.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2000-02-01",
+      "pm": "小渕恵三",
+      "value": 40.9,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200002",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2000-02-15",
+      "pm": "小渕恵三",
+      "value": 41.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2000.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2000-03-15",
+      "pm": "小渕恵三",
+      "value": 35.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2000.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2000-04-15",
+      "pm": "森喜朗",
+      "value": 39.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2000.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2000-04-15",
+      "pm": "森喜朗",
+      "value": 36.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200004",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2000-05-15",
+      "pm": "森喜朗",
+      "value": 33.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2000.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2000-06-01",
+      "pm": "森喜朗",
+      "value": 16.7,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200006",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2000-06-15",
+      "pm": "森喜朗",
+      "value": 17.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2000.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2000-07-01",
+      "pm": "森喜朗",
+      "value": 22.2,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200007",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2000-07-15",
+      "pm": "森喜朗",
+      "value": 28.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2000.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2000-08-15",
+      "pm": "森喜朗",
+      "value": 22.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2000.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2000-09-01",
+      "pm": "森喜朗",
+      "value": 26.5,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200009",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2000-09-15",
+      "pm": "森喜朗",
+      "value": 28.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2000.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2000-10-15",
+      "pm": "森喜朗",
+      "value": 24.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2000.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2000-11-01",
+      "pm": "森喜朗",
+      "value": 19.6,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200011",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2000-11-15",
+      "pm": "森喜朗",
+      "value": 17.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2000.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2000-12-01",
+      "pm": "森喜朗",
+      "value": 18.1,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200012",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2000-12-15",
+      "pm": "森喜朗",
+      "value": 22.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2000.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2001-01-15",
+      "pm": "森喜朗",
+      "value": 22.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2001.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2001-02-01",
+      "pm": "森喜朗",
+      "value": 15.7,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200102",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2001-02-15",
+      "pm": "森喜朗",
+      "value": 15.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2001.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2001-03-15",
+      "pm": "森喜朗",
+      "value": 9.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2001.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2001-04-15",
+      "pm": "森喜朗",
+      "value": 7.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2001.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2001-04-30",
+      "pm": "小泉純一郎",
+      "value": 80.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200104",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2001-05-15",
+      "pm": "小泉純一郎",
+      "value": 81.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2001.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2001-06-01",
+      "pm": "小泉純一郎",
+      "value": 85.3,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200106",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2001-06-15",
+      "pm": "小泉純一郎",
+      "value": 85.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2001.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2001-07-15",
+      "pm": "小泉純一郎",
+      "value": 77.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2001.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2001-08-15",
+      "pm": "小泉純一郎",
+      "value": 72.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2001.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2001-09-01",
+      "pm": "小泉純一郎",
+      "value": 79.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200109",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2001-09-15",
+      "pm": "小泉純一郎",
+      "value": 74.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2001.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2001-10-15",
+      "pm": "小泉純一郎",
+      "value": 75.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2001.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2001-11-01",
+      "pm": "小泉純一郎",
+      "value": 78.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200111",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2001-11-15",
+      "pm": "小泉純一郎",
+      "value": 71.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2001.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2001-12-15",
+      "pm": "小泉純一郎",
+      "value": 77.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2001.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2002-01-15",
+      "pm": "小泉純一郎",
+      "value": 79.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2002.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2002-02-01",
+      "pm": "小泉純一郎",
+      "value": 55.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200202",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2002-02-15",
+      "pm": "小泉純一郎",
+      "value": 53.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2002.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2002-03-01",
+      "pm": "小泉純一郎",
+      "value": 48.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200203",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2002-03-15",
+      "pm": "小泉純一郎",
+      "value": 51.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2002.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2002-04-15",
+      "pm": "小泉純一郎",
+      "value": 45.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2002.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2002-05-15",
+      "pm": "小泉純一郎",
+      "value": 43.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2002.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2002-06-01",
+      "pm": "小泉純一郎",
+      "value": 43.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200206",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2002-06-15",
+      "pm": "小泉純一郎",
+      "value": 39.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2002.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2002-07-15",
+      "pm": "小泉純一郎",
+      "value": 42.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2002.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2002-08-01",
+      "pm": "小泉純一郎",
+      "value": 44.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200208",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2002-08-15",
+      "pm": "小泉純一郎",
+      "value": 45.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2002.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2002-09-15",
+      "pm": "小泉純一郎",
+      "value": 55.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2002.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2002-10-01",
+      "pm": "小泉純一郎",
+      "value": 61.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200210",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2002-10-15",
+      "pm": "小泉純一郎",
+      "value": 64.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2002.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2002-11-15",
+      "pm": "小泉純一郎",
+      "value": 68.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2002.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2002-12-01",
+      "pm": "小泉純一郎",
+      "value": 51.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200212",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2002-12-15",
+      "pm": "小泉純一郎",
+      "value": 61.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2002.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2003-01-15",
+      "pm": "小泉純一郎",
+      "value": 59.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2003.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2003-02-01",
+      "pm": "小泉純一郎",
+      "value": 46.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200302",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2003-02-15",
+      "pm": "小泉純一郎",
+      "value": 52.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2003.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2003-03-01",
+      "pm": "小泉純一郎",
+      "value": 42.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200303",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2003-03-15",
+      "pm": "小泉純一郎",
+      "value": 45.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2003.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2003-04-15",
+      "pm": "小泉純一郎",
+      "value": 53.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2003.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2003-05-01",
+      "pm": "小泉純一郎",
+      "value": 48.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200305",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2003-05-15",
+      "pm": "小泉純一郎",
+      "value": 54.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2003.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2003-06-01",
+      "pm": "小泉純一郎",
+      "value": 49.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200306",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2003-06-15",
+      "pm": "小泉純一郎",
+      "value": 59.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2003.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2003-07-15",
+      "pm": "小泉純一郎",
+      "value": 55.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2003.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2003-08-01",
+      "pm": "小泉純一郎",
+      "value": 45.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200308",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2003-08-15",
+      "pm": "小泉純一郎",
+      "value": 53.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2003.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2003-09-01",
+      "pm": "小泉純一郎",
+      "value": 65.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200309",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2003-09-15",
+      "pm": "小泉純一郎",
+      "value": 61.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2003.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2003-10-15",
+      "pm": "小泉純一郎",
+      "value": 62.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2003.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2003-11-15",
+      "pm": "小泉純一郎",
+      "value": 56.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2003.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2003-12-01",
+      "pm": "小泉純一郎",
+      "value": 43.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200312",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2003-12-15",
+      "pm": "小泉純一郎",
+      "value": 46.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2003.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2004-01-15",
+      "pm": "小泉純一郎",
+      "value": 54.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2004.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2004-02-01",
+      "pm": "小泉純一郎",
+      "value": 48.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200402",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2004-02-15",
+      "pm": "小泉純一郎",
+      "value": 49.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2004.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2004-03-15",
+      "pm": "小泉純一郎",
+      "value": 54.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2004.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2004-04-01",
+      "pm": "小泉純一郎",
+      "value": 48.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200404",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2004-04-15",
+      "pm": "小泉純一郎",
+      "value": 53.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2004.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2004-05-01",
+      "pm": "小泉純一郎",
+      "value": 56.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200405",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2004-05-15",
+      "pm": "小泉純一郎",
+      "value": 53.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2004.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2004-06-15",
+      "pm": "小泉純一郎",
+      "value": 54.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2004.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2004-07-15",
+      "pm": "小泉純一郎",
+      "value": 43.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2004.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2004-08-15",
+      "pm": "小泉純一郎",
+      "value": 43.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2004.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2004-09-01",
+      "pm": "小泉純一郎",
+      "value": 42.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200409",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2004-09-01",
+      "pm": "小泉純一郎",
+      "value": 44.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200409",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2004-09-15",
+      "pm": "小泉純一郎",
+      "value": 43.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2004.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2004-10-15",
+      "pm": "小泉純一郎",
+      "value": 45.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2004.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2004-11-01",
+      "pm": "小泉純一郎",
+      "value": 44.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200411",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2004-11-15",
+      "pm": "小泉純一郎",
+      "value": 54.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2004.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2004-12-01",
+      "pm": "小泉純一郎",
+      "value": 41.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200412",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2004-12-15",
+      "pm": "小泉純一郎",
+      "value": 44.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2004.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2005-01-15",
+      "pm": "小泉純一郎",
+      "value": 42.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2005.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2005-02-01",
+      "pm": "小泉純一郎",
+      "value": 44.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200502",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2005-02-15",
+      "pm": "小泉純一郎",
+      "value": 46.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2005.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2005-03-15",
+      "pm": "小泉純一郎",
+      "value": 46.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2005.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2005-04-01",
+      "pm": "小泉純一郎",
+      "value": 44.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200504",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2005-04-15",
+      "pm": "小泉純一郎",
+      "value": 45.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2005.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2005-05-15",
+      "pm": "小泉純一郎",
+      "value": 52.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2005.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2005-06-01",
+      "pm": "小泉純一郎",
+      "value": 48.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200506",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2005-06-15",
+      "pm": "小泉純一郎",
+      "value": 49.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2005.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2005-07-01",
+      "pm": "小泉純一郎",
+      "value": 43.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200507",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2005-07-15",
+      "pm": "小泉純一郎",
+      "value": 46.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2005.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2005-08-01",
+      "pm": "小泉純一郎",
+      "value": 47.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200508",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2005-08-01",
+      "pm": "小泉純一郎",
+      "value": 49.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200508",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2005-08-15",
+      "pm": "小泉純一郎",
+      "value": 47.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2005.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2005-09-15",
+      "pm": "小泉純一郎",
+      "value": 58.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2005.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2005-10-15",
+      "pm": "小泉純一郎",
+      "value": 59.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2005.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2005-11-01",
+      "pm": "小泉純一郎",
+      "value": 56.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200511",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2005-11-15",
+      "pm": "小泉純一郎",
+      "value": 57.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2005.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2005-12-01",
+      "pm": "小泉純一郎",
+      "value": 59.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200512",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2005-12-15",
+      "pm": "小泉純一郎",
+      "value": 58.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2005.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2006-01-15",
+      "pm": "小泉純一郎",
+      "value": 54.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2006.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2006-02-01",
+      "pm": "小泉純一郎",
+      "value": 45.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200602",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2006-02-15",
+      "pm": "小泉純一郎",
+      "value": 47.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2006.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2006-03-01",
+      "pm": "小泉純一郎",
+      "value": 48.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200603",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2006-03-15",
+      "pm": "小泉純一郎",
+      "value": 49.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2006.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2006-04-15",
+      "pm": "小泉純一郎",
+      "value": 51.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2006.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2006-05-01",
+      "pm": "小泉純一郎",
+      "value": 49.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200605",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2006-05-15",
+      "pm": "小泉純一郎",
+      "value": 47.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2006.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2006-06-01",
+      "pm": "小泉純一郎",
+      "value": 47.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200606",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2006-06-15",
+      "pm": "小泉純一郎",
+      "value": 47.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2006.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2006-07-01",
+      "pm": "小泉純一郎",
+      "value": 46.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200607",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2006-07-15",
+      "pm": "小泉純一郎",
+      "value": 46.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2006.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2006-08-01",
+      "pm": "小泉純一郎",
+      "value": 50.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200608",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2006-08-15",
+      "pm": "小泉純一郎",
+      "value": 46.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2006.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2006-09-15",
+      "pm": "小泉純一郎",
+      "value": 51.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2006.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2006-09-29",
+      "pm": "安倍晋三(1次)",
+      "value": 71.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200609",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2006-10-01",
+      "pm": "安倍晋三(1次)",
+      "value": 68.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200610",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2006-10-15",
+      "pm": "安倍晋三(1次)",
+      "value": 65.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2006.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2006-11-01",
+      "pm": "安倍晋三(1次)",
+      "value": 59.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200611",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2006-11-15",
+      "pm": "安倍晋三(1次)",
+      "value": 59.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2006.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2006-12-01",
+      "pm": "安倍晋三(1次)",
+      "value": 51.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200612",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2006-12-15",
+      "pm": "安倍晋三(1次)",
+      "value": 48.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2006.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2007-01-01",
+      "pm": "安倍晋三(1次)",
+      "value": 48.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200701",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2007-01-15",
+      "pm": "安倍晋三(1次)",
+      "value": 51.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2007.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2007-02-01",
+      "pm": "安倍晋三(1次)",
+      "value": 49.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200702",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2007-02-15",
+      "pm": "安倍晋三(1次)",
+      "value": 41.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2007.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2007-03-01",
+      "pm": "安倍晋三(1次)",
+      "value": 43.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200703",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2007-03-15",
+      "pm": "安倍晋三(1次)",
+      "value": 44.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2007.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2007-04-01",
+      "pm": "安倍晋三(1次)",
+      "value": 53.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200704",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2007-04-15",
+      "pm": "安倍晋三(1次)",
+      "value": 44.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2007.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2007-05-01",
+      "pm": "安倍晋三(1次)",
+      "value": 41.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200705",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2007-05-15",
+      "pm": "安倍晋三(1次)",
+      "value": 50.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2007.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2007-06-01",
+      "pm": "安倍晋三(1次)",
+      "value": 36.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200706",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2007-06-15",
+      "pm": "安倍晋三(1次)",
+      "value": 37.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2007.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2007-07-01",
+      "pm": "安倍晋三(1次)",
+      "value": 28.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200707",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2007-07-15",
+      "pm": "安倍晋三(1次)",
+      "value": 38.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2007.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2007-08-01",
+      "pm": "安倍晋三(1次)",
+      "value": 41.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200708",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2007-08-15",
+      "pm": "安倍晋三(1次)",
+      "value": 29.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2007.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2007-09-15",
+      "pm": "安倍晋三(1次)",
+      "value": 34.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2007.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2007-09-30",
+      "pm": "福田康夫",
+      "value": 59.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200709",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2007-10-01",
+      "pm": "福田康夫",
+      "value": 55.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200710",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2007-10-15",
+      "pm": "福田康夫",
+      "value": 58.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2007.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2007-11-01",
+      "pm": "福田康夫",
+      "value": 55.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200711",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2007-11-15",
+      "pm": "福田康夫",
+      "value": 54.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2007.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2007-12-01",
+      "pm": "福田康夫",
+      "value": 43.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200712",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2007-12-15",
+      "pm": "福田康夫",
+      "value": 51.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2007.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2008-01-01",
+      "pm": "福田康夫",
+      "value": 42.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200801",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2008-01-15",
+      "pm": "福田康夫",
+      "value": 43.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2008.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2008-02-01",
+      "pm": "福田康夫",
+      "value": 40.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200802",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2008-02-15",
+      "pm": "福田康夫",
+      "value": 41.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2008.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2008-03-01",
+      "pm": "福田康夫",
+      "value": 31.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200803",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2008-03-15",
+      "pm": "福田康夫",
+      "value": 38.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2008.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2008-04-01",
+      "pm": "福田康夫",
+      "value": 29.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200804",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2008-04-15",
+      "pm": "福田康夫",
+      "value": 35.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2008.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2008-05-01",
+      "pm": "福田康夫",
+      "value": 21.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200805",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2008-05-01",
+      "pm": "福田康夫",
+      "value": 24.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200805",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2008-05-15",
+      "pm": "福田康夫",
+      "value": 21.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2008.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2008-06-01",
+      "pm": "福田康夫",
+      "value": 26.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200806",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2008-06-15",
+      "pm": "福田康夫",
+      "value": 26.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2008.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2008-07-15",
+      "pm": "福田康夫",
+      "value": 30.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2008.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2008-08-01",
+      "pm": "福田康夫",
+      "value": 38.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200808",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2008-08-01",
+      "pm": "福田康夫",
+      "value": 29.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200808",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2008-08-15",
+      "pm": "福田康夫",
+      "value": 33.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2008.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2008-09-15",
+      "pm": "福田康夫",
+      "value": 48.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2008.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2008-09-30",
+      "pm": "麻生太郎",
+      "value": 53.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200809",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2008-10-01",
+      "pm": "麻生太郎",
+      "value": 48.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200810",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2008-10-15",
+      "pm": "麻生太郎",
+      "value": 48.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2008.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2008-11-01",
+      "pm": "麻生太郎",
+      "value": 31.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200811",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2008-11-15",
+      "pm": "麻生太郎",
+      "value": 46.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2008.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2008-12-01",
+      "pm": "麻生太郎",
+      "value": 21.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200812",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2008-12-15",
+      "pm": "麻生太郎",
+      "value": 49.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2008.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2009-01-01",
+      "pm": "麻生太郎",
+      "value": 19.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200901",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2009-01-15",
+      "pm": "麻生太郎",
+      "value": 20.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2009.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2009-02-01",
+      "pm": "麻生太郎",
+      "value": 15.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200902",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2009-02-15",
+      "pm": "麻生太郎",
+      "value": 18.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2009.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2009-03-01",
+      "pm": "麻生太郎",
+      "value": 25.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200903",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2009-03-15",
+      "pm": "麻生太郎",
+      "value": 18.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2009.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2009-04-01",
+      "pm": "麻生太郎",
+      "value": 32.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200904",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2009-04-15",
+      "pm": "麻生太郎",
+      "value": 30.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2009.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2009-05-01",
+      "pm": "麻生太郎",
+      "value": 30.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200905",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2009-05-15",
+      "pm": "麻生太郎",
+      "value": 35.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2009.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2009-06-01",
+      "pm": "麻生太郎",
+      "value": 25.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200906",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2009-06-15",
+      "pm": "麻生太郎",
+      "value": 29.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2009.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2009-07-01",
+      "pm": "麻生太郎",
+      "value": 21.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200907",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2009-07-01",
+      "pm": "麻生太郎",
+      "value": 20.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200907",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2009-07-15",
+      "pm": "麻生太郎",
+      "value": 21.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2009.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2009-08-15",
+      "pm": "麻生太郎",
+      "value": 23.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2009.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2009-09-15",
+      "pm": "麻生太郎",
+      "value": 72.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2009.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2009-09-30",
+      "pm": "鳩山由紀夫",
+      "value": 75.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200909",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2009-10-01",
+      "pm": "鳩山由紀夫",
+      "value": 73.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200910",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2009-10-15",
+      "pm": "鳩山由紀夫",
+      "value": 72.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2009.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2009-11-01",
+      "pm": "鳩山由紀夫",
+      "value": 68.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200911",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2009-11-15",
+      "pm": "鳩山由紀夫",
+      "value": 70.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2009.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2009-12-01",
+      "pm": "鳩山由紀夫",
+      "value": 50.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=200912",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2009-12-15",
+      "pm": "鳩山由紀夫",
+      "value": 65.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2009.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2010-01-01",
+      "pm": "鳩山由紀夫",
+      "value": 45.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201001",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2010-01-15",
+      "pm": "鳩山由紀夫",
+      "value": 52.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2010.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2010-02-01",
+      "pm": "鳩山由紀夫",
+      "value": 43.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201002",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2010-02-15",
+      "pm": "鳩山由紀夫",
+      "value": 47.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2010.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2010-03-01",
+      "pm": "鳩山由紀夫",
+      "value": 36.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201003",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2010-03-15",
+      "pm": "鳩山由紀夫",
+      "value": 38.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2010.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2010-04-01",
+      "pm": "鳩山由紀夫",
+      "value": 24.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201004",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2010-04-15",
+      "pm": "鳩山由紀夫",
+      "value": 32.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2010.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2010-05-01",
+      "pm": "鳩山由紀夫",
+      "value": 22.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201005",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2010-05-15",
+      "pm": "鳩山由紀夫",
+      "value": 21.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2010.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2010-06-15",
+      "pm": "菅直人",
+      "value": 61.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2010.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2010-06-15",
+      "pm": "菅直人",
+      "value": 68.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201006",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2010-07-15",
+      "pm": "菅直人",
+      "value": 39.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2010.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2010-08-01",
+      "pm": "菅直人",
+      "value": 54.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201008",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2010-08-15",
+      "pm": "菅直人",
+      "value": 41.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2010.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2010-09-01",
+      "pm": "菅直人",
+      "value": 71.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201009",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2010-09-15",
+      "pm": "菅直人",
+      "value": 65.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2010.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2010-10-01",
+      "pm": "菅直人",
+      "value": 40.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201010",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2010-10-15",
+      "pm": "菅直人",
+      "value": 48.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2010.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2010-11-01",
+      "pm": "菅直人",
+      "value": 30.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201011",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2010-11-15",
+      "pm": "菅直人",
+      "value": 31.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2010.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2010-12-01",
+      "pm": "菅直人",
+      "value": 26.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201012",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2010-12-15",
+      "pm": "菅直人",
+      "value": 25.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2010.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2011-01-01",
+      "pm": "菅直人",
+      "value": 31.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201101",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2011-01-15",
+      "pm": "菅直人",
+      "value": 29.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2011.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2011-02-01",
+      "pm": "菅直人",
+      "value": 22.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201102",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2011-02-15",
+      "pm": "菅直人",
+      "value": 21.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2011.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2011-03-04",
+      "pm": "菅直人",
+      "value": 18.9,
+      "source": "時事世論調査",
+      "url": "https://www.crs.or.jp/backno/pdf/No.642.pdf",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2011-04-01",
+      "pm": "菅直人",
+      "value": 27.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201104",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2011-04-15",
+      "pm": "菅直人",
+      "value": 27.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2011.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2011-05-01",
+      "pm": "菅直人",
+      "value": 28.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201105",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2011-05-15",
+      "pm": "菅直人",
+      "value": 28.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2011.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2011-06-01",
+      "pm": "菅直人",
+      "value": 26.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201106",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2011-06-15",
+      "pm": "菅直人",
+      "value": 25.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2011.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2011-07-01",
+      "pm": "菅直人",
+      "value": 19.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201107",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2011-07-15",
+      "pm": "菅直人",
+      "value": 16.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2011.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2011-08-15",
+      "pm": "菅直人",
+      "value": 18.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2011.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2011-09-03",
+      "pm": "野田佳彦",
+      "value": 67.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201109",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2011-09-15",
+      "pm": "野田佳彦",
+      "value": 60.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2011.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2011-10-01",
+      "pm": "野田佳彦",
+      "value": 58.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201110",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2011-10-15",
+      "pm": "野田佳彦",
+      "value": 53.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2011.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2011-11-01",
+      "pm": "野田佳彦",
+      "value": 51.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201111",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2011-11-15",
+      "pm": "野田佳彦",
+      "value": 45.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2011.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2011-12-01",
+      "pm": "野田佳彦",
+      "value": 36.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201112",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2011-12-15",
+      "pm": "野田佳彦",
+      "value": 37.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2011.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2012-01-01",
+      "pm": "野田佳彦",
+      "value": 37.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201201",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2012-01-15",
+      "pm": "野田佳彦",
+      "value": 30.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2012.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2012-02-01",
+      "pm": "野田佳彦",
+      "value": 32.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201202",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2012-02-15",
+      "pm": "野田佳彦",
+      "value": 31.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2012.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2012-03-01",
+      "pm": "野田佳彦",
+      "value": 34.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201203",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2012-03-15",
+      "pm": "野田佳彦",
+      "value": 33.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2012.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2012-04-01",
+      "pm": "野田佳彦",
+      "value": 29.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201204",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2012-04-15",
+      "pm": "野田佳彦",
+      "value": 30.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2012.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2012-05-01",
+      "pm": "野田佳彦",
+      "value": 28.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201205",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2012-05-15",
+      "pm": "野田佳彦",
+      "value": 29.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2012.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2012-06-01",
+      "pm": "野田佳彦",
+      "value": 33.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201206",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2012-06-15",
+      "pm": "野田佳彦",
+      "value": 27.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2012.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2012-07-01",
+      "pm": "野田佳彦",
+      "value": 28.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201207",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2012-07-15",
+      "pm": "野田佳彦",
+      "value": 27.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2012.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2012-08-01",
+      "pm": "野田佳彦",
+      "value": 31.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201208",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2012-08-15",
+      "pm": "野田佳彦",
+      "value": 28.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2012.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2012-09-01",
+      "pm": "野田佳彦",
+      "value": 33.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201209",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2012-09-15",
+      "pm": "野田佳彦",
+      "value": 31.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2012.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2012-10-01",
+      "pm": "野田佳彦",
+      "value": 20.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201210",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2012-10-15",
+      "pm": "野田佳彦",
+      "value": 26.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2012.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2012-11-01",
+      "pm": "野田佳彦",
+      "value": 27.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201211",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2012-11-01",
+      "pm": "野田佳彦",
+      "value": 23.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201211",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2012-11-15",
+      "pm": "野田佳彦",
+      "value": 23.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2012.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2012-12-15",
+      "pm": "野田佳彦",
+      "value": 20.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2012.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2012-12-30",
+      "pm": "安倍晋三(2次)",
+      "value": 62.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201212",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2013-01-01",
+      "pm": "安倍晋三(2次)",
+      "value": 68.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201301",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2013-01-15",
+      "pm": "安倍晋三(2次)",
+      "value": 64.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2013.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2013-02-01",
+      "pm": "安倍晋三(2次)",
+      "value": 70.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201302",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2013-02-15",
+      "pm": "安倍晋三(2次)",
+      "value": 64.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2013.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2013-03-01",
+      "pm": "安倍晋三(2次)",
+      "value": 69.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201303",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2013-03-15",
+      "pm": "安倍晋三(2次)",
+      "value": 66.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2013.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2013-04-01",
+      "pm": "安倍晋三(2次)",
+      "value": 76.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201304",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2013-04-15",
+      "pm": "安倍晋三(2次)",
+      "value": 66.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2013.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2013-05-01",
+      "pm": "安倍晋三(2次)",
+      "value": 68.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201305",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2013-05-15",
+      "pm": "安倍晋三(2次)",
+      "value": 65.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2013.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2013-06-01",
+      "pm": "安倍晋三(2次)",
+      "value": 66.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201306",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2013-06-15",
+      "pm": "安倍晋三(2次)",
+      "value": 62.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2013.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2013-07-01",
+      "pm": "安倍晋三(2次)",
+      "value": 63.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201307",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2013-07-15",
+      "pm": "安倍晋三(2次)",
+      "value": 57.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2013.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2013-08-01",
+      "pm": "安倍晋三(2次)",
+      "value": 68.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201308",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2013-08-15",
+      "pm": "安倍晋三(2次)",
+      "value": 57.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2013.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2013-09-01",
+      "pm": "安倍晋三(2次)",
+      "value": 66.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201309",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2013-09-15",
+      "pm": "安倍晋三(2次)",
+      "value": 59.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2013.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2013-10-01",
+      "pm": "安倍晋三(2次)",
+      "value": 66.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201310",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2013-10-15",
+      "pm": "安倍晋三(2次)",
+      "value": 58.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2013.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2013-11-01",
+      "pm": "安倍晋三(2次)",
+      "value": 63.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201311",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2013-11-15",
+      "pm": "安倍晋三(2次)",
+      "value": 60.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2013.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2013-12-01",
+      "pm": "安倍晋三(2次)",
+      "value": 56.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201312",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2013-12-15",
+      "pm": "安倍晋三(2次)",
+      "value": 50.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2013.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2014-01-01",
+      "pm": "安倍晋三(2次)",
+      "value": 57.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201401",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2014-01-15",
+      "pm": "安倍晋三(2次)",
+      "value": 54.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2014.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2014-02-01",
+      "pm": "安倍晋三(2次)",
+      "value": 56.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201402",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2014-02-15",
+      "pm": "安倍晋三(2次)",
+      "value": 52.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2014.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2014-03-01",
+      "pm": "安倍晋三(2次)",
+      "value": 59.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201403",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2014-03-15",
+      "pm": "安倍晋三(2次)",
+      "value": 51.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2014.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2014-04-01",
+      "pm": "安倍晋三(2次)",
+      "value": 56.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201404",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2014-04-15",
+      "pm": "安倍晋三(2次)",
+      "value": 52.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2014.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2014-05-01",
+      "pm": "安倍晋三(2次)",
+      "value": 53.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201405",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2014-05-15",
+      "pm": "安倍晋三(2次)",
+      "value": 56.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2014.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2014-06-01",
+      "pm": "安倍晋三(2次)",
+      "value": 53.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201406",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2014-06-15",
+      "pm": "安倍晋三(2次)",
+      "value": 52.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2014.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2014-07-01",
+      "pm": "安倍晋三(2次)",
+      "value": 48.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201407",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2014-07-15",
+      "pm": "安倍晋三(2次)",
+      "value": 47.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2014.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2014-08-01",
+      "pm": "安倍晋三(2次)",
+      "value": 49.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201408",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2014-08-15",
+      "pm": "安倍晋三(2次)",
+      "value": 51.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2014.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2014-09-01",
+      "pm": "安倍晋三(2次)",
+      "value": 60.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201409",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2014-09-01",
+      "pm": "安倍晋三(2次)",
+      "value": 53.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201409",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2014-09-15",
+      "pm": "安倍晋三(2次)",
+      "value": 58.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2014.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2014-10-01",
+      "pm": "安倍晋三(2次)",
+      "value": 48.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201410",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2014-10-15",
+      "pm": "安倍晋三(2次)",
+      "value": 52.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2014.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2014-11-01",
+      "pm": "安倍晋三(2次)",
+      "value": 44.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201411",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2014-11-15",
+      "pm": "安倍晋三(2次)",
+      "value": 44.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2014.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2014-12-01",
+      "pm": "安倍晋三(2次)",
+      "value": 51.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201412",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2014-12-15",
+      "pm": "安倍晋三(2次)",
+      "value": 47.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2014.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2015-01-01",
+      "pm": "安倍晋三(2次)",
+      "value": 51.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201501",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2015-01-15",
+      "pm": "安倍晋三(2次)",
+      "value": 50.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2015.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2015-02-01",
+      "pm": "安倍晋三(2次)",
+      "value": 50.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201502",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2015-02-15",
+      "pm": "安倍晋三(2次)",
+      "value": 54.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2015.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2015-03-01",
+      "pm": "安倍晋三(2次)",
+      "value": 51.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201503",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2015-03-15",
+      "pm": "安倍晋三(2次)",
+      "value": 46.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2015.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2015-04-01",
+      "pm": "安倍晋三(2次)",
+      "value": 52.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201504",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2015-04-15",
+      "pm": "安倍晋三(2次)",
+      "value": 51.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2015.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2015-05-01",
+      "pm": "安倍晋三(2次)",
+      "value": 50.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201505",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2015-05-15",
+      "pm": "安倍晋三(2次)",
+      "value": 51.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2015.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2015-06-01",
+      "pm": "安倍晋三(2次)",
+      "value": 47.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201506",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2015-06-15",
+      "pm": "安倍晋三(2次)",
+      "value": 48.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2015.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2015-07-01",
+      "pm": "安倍晋三(2次)",
+      "value": 38.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201507",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2015-07-15",
+      "pm": "安倍晋三(2次)",
+      "value": 41.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2015.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2015-08-01",
+      "pm": "安倍晋三(2次)",
+      "value": 46.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201508",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2015-08-15",
+      "pm": "安倍晋三(2次)",
+      "value": 37.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2015.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2015-09-01",
+      "pm": "安倍晋三(2次)",
+      "value": 40.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201509",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2015-09-15",
+      "pm": "安倍晋三(2次)",
+      "value": 43.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2015.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2015-10-01",
+      "pm": "安倍晋三(2次)",
+      "value": 44.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201510",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2015-10-01",
+      "pm": "安倍晋三(2次)",
+      "value": 41.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201510",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2015-10-15",
+      "pm": "安倍晋三(2次)",
+      "value": 43.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2015.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2015-11-01",
+      "pm": "安倍晋三(2次)",
+      "value": 49.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201511",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2015-11-15",
+      "pm": "安倍晋三(2次)",
+      "value": 47.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2015.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2015-12-01",
+      "pm": "安倍晋三(2次)",
+      "value": 48.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201512",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2015-12-15",
+      "pm": "安倍晋三(2次)",
+      "value": 46.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/yoron/political/2015.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2016-01-01",
+      "pm": "安倍晋三(2次)",
+      "value": 47.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201601",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2016-01-15",
+      "pm": "安倍晋三(2次)",
+      "value": 46.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/research/yoron/political/2016.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2016-02-01",
+      "pm": "安倍晋三(2次)",
+      "value": 47.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201602",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2016-02-15",
+      "pm": "安倍晋三(2次)",
+      "value": 50.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/research/yoron/political/2016.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2016-03-01",
+      "pm": "安倍晋三(2次)",
+      "value": 46.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201603",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2016-03-15",
+      "pm": "安倍晋三(2次)",
+      "value": 46.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/research/yoron/political/2016.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2016-04-15",
+      "pm": "安倍晋三(2次)",
+      "value": 42.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/research/yoron/political/2016.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2016-05-01",
+      "pm": "安倍晋三(2次)",
+      "value": 53.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201605",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2016-05-01",
+      "pm": "安倍晋三(2次)",
+      "value": 56.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201605",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2016-05-15",
+      "pm": "安倍晋三(2次)",
+      "value": 45.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/research/yoron/political/2016.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2016-06-15",
+      "pm": "安倍晋三(2次)",
+      "value": 48.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/research/yoron/political/2016.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2016-07-01",
+      "pm": "安倍晋三(2次)",
+      "value": 58.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201607",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2016-07-15",
+      "pm": "安倍晋三(2次)",
+      "value": 48.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/research/yoron/political/2016.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2016-08-01",
+      "pm": "安倍晋三(2次)",
+      "value": 58.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201608",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2016-08-01",
+      "pm": "安倍晋三(2次)",
+      "value": 62.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201608",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2016-08-15",
+      "pm": "安倍晋三(2次)",
+      "value": 53.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/research/yoron/political/2016.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2016-09-01",
+      "pm": "安倍晋三(2次)",
+      "value": 58.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201609",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2016-09-15",
+      "pm": "安倍晋三(2次)",
+      "value": 57.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/research/yoron/political/2016.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2016-10-01",
+      "pm": "安倍晋三(2次)",
+      "value": 60.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201610",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2016-10-15",
+      "pm": "安倍晋三(2次)",
+      "value": 50.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/research/yoron/political/2016.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2016-11-01",
+      "pm": "安倍晋三(2次)",
+      "value": 58.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201611",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2016-11-15",
+      "pm": "安倍晋三(2次)",
+      "value": 55.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/research/yoron/political/2016.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2016-12-01",
+      "pm": "安倍晋三(2次)",
+      "value": 64.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201612",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2016-12-15",
+      "pm": "安倍晋三(2次)",
+      "value": 50.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/research/yoron/political/2016.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2017-01-01",
+      "pm": "安倍晋三(2次)",
+      "value": 66.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201701",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2017-01-15",
+      "pm": "安倍晋三(2次)",
+      "value": 55.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/research/yoron/political/2017.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2017-02-01",
+      "pm": "安倍晋三(2次)",
+      "value": 60.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201702",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2017-02-15",
+      "pm": "安倍晋三(2次)",
+      "value": 58.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/research/yoron/political/2017.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2017-03-01",
+      "pm": "安倍晋三(2次)",
+      "value": 62.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201703",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2017-03-15",
+      "pm": "安倍晋三(2次)",
+      "value": 51.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/research/yoron/political/2017.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2017-04-01",
+      "pm": "安倍晋三(2次)",
+      "value": 60.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201704",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2017-04-15",
+      "pm": "安倍晋三(2次)",
+      "value": 53.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/research/yoron/political/2017.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2017-05-01",
+      "pm": "安倍晋三(2次)",
+      "value": 56.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201705",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2017-05-15",
+      "pm": "安倍晋三(2次)",
+      "value": 51.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/research/yoron/political/2017.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2017-06-01",
+      "pm": "安倍晋三(2次)",
+      "value": 49.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201706",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2017-06-15",
+      "pm": "安倍晋三(2次)",
+      "value": 48.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/research/yoron/political/2017.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2017-07-01",
+      "pm": "安倍晋三(2次)",
+      "value": 39.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201707",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2017-07-15",
+      "pm": "安倍晋三(2次)",
+      "value": 35.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/research/yoron/political/2017.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2017-08-01",
+      "pm": "安倍晋三(2次)",
+      "value": 42.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201708",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2017-08-15",
+      "pm": "安倍晋三(2次)",
+      "value": 39.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/research/yoron/political/2017.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2017-08-27",
+      "pm": "安倍晋三(2次)",
+      "value": 46.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201708",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2017-09-01",
+      "pm": "安倍晋三(2次)",
+      "value": 50.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201709",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2017-09-15",
+      "pm": "安倍晋三(2次)",
+      "value": 44.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/research/yoron/political/2017.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2017-10-15",
+      "pm": "安倍晋三(2次)",
+      "value": 37.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/research/yoron/political/2017.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2017-11-01",
+      "pm": "安倍晋三(2次)",
+      "value": 54.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201711",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2017-11-15",
+      "pm": "安倍晋三(2次)",
+      "value": 46.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/research/yoron/political/2017.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2017-11-27",
+      "pm": "安倍晋三(2次)",
+      "value": 52.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201711",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2017-12-15",
+      "pm": "安倍晋三(2次)",
+      "value": 49.0,
+      "source": "NHK世論調査",
+      "url": "https://www.nhk.or.jp/bunken/research/yoron/political/2017.html",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2017-12-17",
+      "pm": "安倍晋三(2次)",
+      "value": 50.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201712",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2018-01-01",
+      "pm": "安倍晋三(2次)",
+      "value": 55.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201801",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2018-01-06",
+      "survey_end": "2018-01-08",
+      "pm": "安倍晋三(2次)",
+      "value": 45.7,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2018/y201801.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2018-02-01",
+      "pm": "安倍晋三(2次)",
+      "value": 56.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201802",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2018-02-10",
+      "survey_end": "2018-02-12",
+      "pm": "安倍晋三(2次)",
+      "value": 46.4,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2018/y201802.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2018-03-01",
+      "pm": "安倍晋三(2次)",
+      "value": 42.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201803",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2018-03-09",
+      "survey_end": "2018-03-11",
+      "pm": "安倍晋三(2次)",
+      "value": 43.8,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2018/y201803.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2018-04-01",
+      "pm": "安倍晋三(2次)",
+      "value": 43.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201804",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2018-04-06",
+      "survey_end": "2018-04-08",
+      "pm": "安倍晋三(2次)",
+      "value": 37.7,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2018/y201804.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2018-05-01",
+      "pm": "安倍晋三(2次)",
+      "value": 42.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201805",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2018-05-11",
+      "survey_end": "2018-05-13",
+      "pm": "安倍晋三(2次)",
+      "value": 37.8,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2018/y201805.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2018-06-01",
+      "pm": "安倍晋三(2次)",
+      "value": 52.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201806",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2018-06-08",
+      "survey_end": "2018-06-10",
+      "pm": "安倍晋三(2次)",
+      "value": 37.8,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2018/y201806.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2018-07-01",
+      "pm": "安倍晋三(2次)",
+      "value": 45.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201807",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2018-07-06",
+      "survey_end": "2018-07-08",
+      "pm": "安倍晋三(2次)",
+      "value": 44.1,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2018/y201807.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2018-08-01",
+      "pm": "安倍晋三(2次)",
+      "value": 48.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201808",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2018-08-03",
+      "survey_end": "2018-08-05",
+      "pm": "安倍晋三(2次)",
+      "value": 41.4,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2018/y201808.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2018-09-01",
+      "pm": "安倍晋三(2次)",
+      "value": 55.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201809",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2018-09-15",
+      "survey_end": "2018-09-17",
+      "pm": "安倍晋三(2次)",
+      "value": 42.1,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2018/y201809.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2018-10-01",
+      "pm": "安倍晋三(2次)",
+      "value": 50.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201810",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2018-10-06",
+      "survey_end": "2018-10-08",
+      "pm": "安倍晋三(2次)",
+      "value": 42.3,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2018/y201810.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2018-10-28",
+      "pm": "安倍晋三(2次)",
+      "value": 48.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201810",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2018-11-01",
+      "pm": "安倍晋三(2次)",
+      "value": 51.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201811",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2018-11-09",
+      "survey_end": "2018-11-11",
+      "pm": "安倍晋三(2次)",
+      "value": 45.6,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2018/y201811.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2018-12-01",
+      "pm": "安倍晋三(2次)",
+      "value": 47.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201812",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2018-12-08",
+      "survey_end": "2018-12-09",
+      "pm": "安倍晋三(2次)",
+      "value": 41.3,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2018/y201812.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2019-01-01",
+      "pm": "安倍晋三(2次)",
+      "value": 53.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201901",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2019-01-12",
+      "survey_end": "2019-01-14",
+      "pm": "安倍晋三(2次)",
+      "value": 42.5,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2019/y201901.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2019-02-01",
+      "pm": "安倍晋三(2次)",
+      "value": 51.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201902",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2019-02-09",
+      "survey_end": "2019-02-11",
+      "pm": "安倍晋三(2次)",
+      "value": 43.7,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2019/y201902.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2019-03-01",
+      "pm": "安倍晋三(2次)",
+      "value": 48.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201903",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2019-03-08",
+      "survey_end": "2019-03-10",
+      "pm": "安倍晋三(2次)",
+      "value": 42.0,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2019/y201903.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2019-04-05",
+      "survey_end": "2019-04-07",
+      "pm": "安倍晋三(2次)",
+      "value": 47.4,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2019/y201904.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2019-05-01",
+      "pm": "安倍晋三(2次)",
+      "value": 55.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201905",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2019-05-10",
+      "survey_end": "2019-05-12",
+      "pm": "安倍晋三(2次)",
+      "value": 47.6,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2019/y201905.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2019-06-01",
+      "pm": "安倍晋三(2次)",
+      "value": 56.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201906",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2019-06-07",
+      "survey_end": "2019-06-09",
+      "pm": "安倍晋三(2次)",
+      "value": 47.9,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2019/y201906.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2019-07-01",
+      "pm": "安倍晋三(2次)",
+      "value": 52.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201907",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2019-07-05",
+      "survey_end": "2019-07-07",
+      "pm": "安倍晋三(2次)",
+      "value": 45.4,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2019/y201907.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2019-08-01",
+      "pm": "安倍晋三(2次)",
+      "value": 58.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201908",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2019-08-02",
+      "survey_end": "2019-08-04",
+      "pm": "安倍晋三(2次)",
+      "value": 48.5,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2019/y201908.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2019-09-01",
+      "pm": "安倍晋三(2次)",
+      "value": 59.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201909",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2019-09-06",
+      "survey_end": "2019-09-08",
+      "pm": "安倍晋三(2次)",
+      "value": 47.5,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2019/y201909.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2019-10-01",
+      "pm": "安倍晋三(2次)",
+      "value": 57.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201910",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2019-10-11",
+      "pm": "安倍晋三(2次)",
+      "value": 44.2,
+      "source": "時事世論調査",
+      "url": "https://www.crs.or.jp/backno/pdf/No.745.pdf",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2019-11-01",
+      "pm": "安倍晋三(2次)",
+      "value": 50.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201911",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2019-11-08",
+      "survey_end": "2019-11-10",
+      "pm": "安倍晋三(2次)",
+      "value": 47.4,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2019/y201911.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2019-12-01",
+      "pm": "安倍晋三(2次)",
+      "value": 50.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=201912",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2019-12-06",
+      "survey_end": "2019-12-08",
+      "pm": "安倍晋三(2次)",
+      "value": 44.5,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2019/y201912.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2020-01-01",
+      "pm": "安倍晋三(2次)",
+      "value": 48.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202001",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2020-01-11",
+      "survey_end": "2020-01-13",
+      "pm": "安倍晋三(2次)",
+      "value": 43.5,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2020/y202001.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2020-02-01",
+      "pm": "安倍晋三(2次)",
+      "value": 46.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202002",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2020-02-07",
+      "survey_end": "2020-02-09",
+      "pm": "安倍晋三(2次)",
+      "value": 44.6,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2020/y202002.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2020-03-01",
+      "pm": "安倍晋三(2次)",
+      "value": 48.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202003",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2020-03-06",
+      "survey_end": "2020-03-08",
+      "pm": "安倍晋三(2次)",
+      "value": 42.7,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2020/y202003.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2020-04-10",
+      "survey_end": "2020-04-12",
+      "pm": "安倍晋三(2次)",
+      "value": 39.0,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2020/y202004.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2020-05-01",
+      "pm": "安倍晋三(2次)",
+      "value": 49.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202005",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2020-05-15",
+      "survey_end": "2020-05-17",
+      "pm": "安倍晋三(2次)",
+      "value": 37.1,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2020/y202005.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2020-06-01",
+      "pm": "安倍晋三(2次)",
+      "value": 38.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202006",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2020-06-19",
+      "survey_end": "2020-06-21",
+      "pm": "安倍晋三(2次)",
+      "value": 36.2,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2020/y202006.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2020-07-01",
+      "pm": "安倍晋三(2次)",
+      "value": 43.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202007",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2020-07-10",
+      "survey_end": "2020-07-12",
+      "pm": "安倍晋三(2次)",
+      "value": 36.2,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2020/y202007.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2020-08-01",
+      "pm": "安倍晋三(2次)",
+      "value": 55.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202008",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2020-08-08",
+      "survey_end": "2020-08-10",
+      "pm": "安倍晋三(2次)",
+      "value": 33.8,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2020/y202008.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2020-09-17",
+      "pm": "菅義偉",
+      "value": 74.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202009",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2020-09-21",
+      "survey_end": "2020-09-22",
+      "pm": "菅義偉",
+      "value": 62.4,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2020/y202009.pdf",
+      "derived": false,
+      "kind": "NHK月次",
+      "note": "NHK 调查 9-21~22 实施晚于菅義偉 9-16 就任；原 merge 脚本按 survey_start 月日 cabinet.end=2020-09-16 区间误挂给安倍晋三(2次)。安倍 8-08 NHK 33.8% 已是末任真实低位；9-21 调查值 62.4% 应为菅蜜月开始小幅回落"
+    },
+    {
+      "date": "2020-10-01",
+      "pm": "菅義偉",
+      "value": 63.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202010",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2020-10-09",
+      "survey_end": "2020-10-11",
+      "pm": "菅義偉",
+      "value": 55.1,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2020/y202010.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2020-11-01",
+      "pm": "菅義偉",
+      "value": 58.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202011",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2020-11-06",
+      "survey_end": "2020-11-08",
+      "pm": "菅義偉",
+      "value": 55.6,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2020/y202011.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2020-12-01",
+      "pm": "菅義偉",
+      "value": 42.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202012",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2020-12-11",
+      "survey_end": "2020-12-13",
+      "pm": "菅義偉",
+      "value": 42.4,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2020/y202012.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2021-01-01",
+      "pm": "菅義偉",
+      "value": 43.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202101",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2021-01-09",
+      "survey_end": "2021-01-11",
+      "pm": "菅義偉",
+      "value": 39.5,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2021/y202101.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2021-02-01",
+      "pm": "菅義偉",
+      "value": 44.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202102",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2021-02-05",
+      "survey_end": "2021-02-07",
+      "pm": "菅義偉",
+      "value": 37.6,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2021/y202102.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2021-03-01",
+      "pm": "菅義偉",
+      "value": 45.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202103",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2021-03-05",
+      "survey_end": "2021-03-07",
+      "pm": "菅義偉",
+      "value": 40.3,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2021/y202103.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2021-04-01",
+      "pm": "菅義偉",
+      "value": 47.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202104",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2021-04-09",
+      "survey_end": "2021-04-11",
+      "pm": "菅義偉",
+      "value": 43.9,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2021/y202104.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2021-05-01",
+      "pm": "菅義偉",
+      "value": 40.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202105",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2021-05-07",
+      "survey_end": "2021-05-09",
+      "pm": "菅義偉",
+      "value": 34.6,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2021/y202105.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2021-06-01",
+      "pm": "菅義偉",
+      "value": 43.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202106",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2021-06-11",
+      "survey_end": "2021-06-13",
+      "pm": "菅義偉",
+      "value": 36.7,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2021/y202106.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2021-07-01",
+      "pm": "菅義偉",
+      "value": 34.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202107",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2021-07-09",
+      "survey_end": "2021-07-11",
+      "pm": "菅義偉",
+      "value": 33.3,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2021/y202107.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2021-08-01",
+      "pm": "菅義偉",
+      "value": 34.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202108",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2021-08-07",
+      "survey_end": "2021-08-09",
+      "pm": "菅義偉",
+      "value": 28.8,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2021/y202108.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2021-09-01",
+      "pm": "菅義偉",
+      "value": 36.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202109",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2021-09-10",
+      "survey_end": "2021-09-12",
+      "pm": "菅義偉",
+      "value": 30.2,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2021/y202109.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2021-09-25",
+      "pm": "菅義偉",
+      "value": 38.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202109",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2021-10-06",
+      "pm": "岸田文雄",
+      "value": 59.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202110",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2021-10-08",
+      "survey_end": "2021-10-10",
+      "pm": "岸田文雄",
+      "value": 49.1,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2021/y202110.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2021-11-01",
+      "pm": "岸田文雄",
+      "value": 61.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202111",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2021-11-05",
+      "survey_end": "2021-11-07",
+      "pm": "岸田文雄",
+      "value": 52.8,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2021/y202111.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2021-12-01",
+      "pm": "岸田文雄",
+      "value": 65.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202112",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2021-12-10",
+      "survey_end": "2021-12-12",
+      "pm": "岸田文雄",
+      "value": 50.3,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2021/y202112.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2022-01-01",
+      "pm": "岸田文雄",
+      "value": 59.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202201",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2022-01-08",
+      "survey_end": "2022-01-10",
+      "pm": "岸田文雄",
+      "value": 56.8,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2022/y202201.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2022-02-01",
+      "pm": "岸田文雄",
+      "value": 55.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202202",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2022-02-11",
+      "survey_end": "2022-02-13",
+      "pm": "岸田文雄",
+      "value": 53.5,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2022/y202202.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2022-03-01",
+      "pm": "岸田文雄",
+      "value": 61.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202203",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2022-03-11",
+      "survey_end": "2022-03-13",
+      "pm": "岸田文雄",
+      "value": 53.1,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2022/y202203.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2022-04-01",
+      "pm": "岸田文雄",
+      "value": 64.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202204",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2022-04-08",
+      "survey_end": "2022-04-10",
+      "pm": "岸田文雄",
+      "value": 53.0,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2022/y202204.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2022-05-01",
+      "pm": "岸田文雄",
+      "value": 66.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202205",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2022-05-06",
+      "survey_end": "2022-05-08",
+      "pm": "岸田文雄",
+      "value": 55.4,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2022/y202205.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2022-06-01",
+      "pm": "岸田文雄",
+      "value": 60.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202206",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2022-06-10",
+      "survey_end": "2022-06-12",
+      "pm": "岸田文雄",
+      "value": 58.8,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2022/y202206.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2022-07-01",
+      "pm": "岸田文雄",
+      "value": 58.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202207",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2022-07-16",
+      "survey_end": "2022-07-18",
+      "pm": "岸田文雄",
+      "value": 59.4,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2022/y202207.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2022-08-01",
+      "pm": "岸田文雄",
+      "value": 57.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202208",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2022-08-05",
+      "survey_end": "2022-08-07",
+      "pm": "岸田文雄",
+      "value": 46.4,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2022/y202208.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2022-09-01",
+      "pm": "岸田文雄",
+      "value": 43.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202209",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2022-09-09",
+      "survey_end": "2022-09-11",
+      "pm": "岸田文雄",
+      "value": 40.4,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2022/y202209.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2022-10-01",
+      "pm": "岸田文雄",
+      "value": 42.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202210",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2022-10-08",
+      "survey_end": "2022-10-10",
+      "pm": "岸田文雄",
+      "value": 37.5,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2022/y202210.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2022-11-01",
+      "pm": "岸田文雄",
+      "value": 37.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202211",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2022-11-11",
+      "survey_end": "2022-11-13",
+      "pm": "岸田文雄",
+      "value": 32.6,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2022/y202211.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2022-12-01",
+      "pm": "岸田文雄",
+      "value": 35.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202212",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2022-12-09",
+      "survey_end": "2022-12-11",
+      "pm": "岸田文雄",
+      "value": 36.3,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2022/y202212.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2023-01-01",
+      "pm": "岸田文雄",
+      "value": 39.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202301",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2023-01-07",
+      "survey_end": "2023-01-09",
+      "pm": "岸田文雄",
+      "value": 32.7,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2023/y202301.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2023-02-01",
+      "pm": "岸田文雄",
+      "value": 43.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202302",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2023-02-10",
+      "survey_end": "2023-02-12",
+      "pm": "岸田文雄",
+      "value": 35.7,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2023/y202302.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2023-03-01",
+      "pm": "岸田文雄",
+      "value": 48.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202303",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2023-03-10",
+      "survey_end": "2023-03-12",
+      "pm": "岸田文雄",
+      "value": 41.4,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2023/y202303.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2023-04-01",
+      "pm": "岸田文雄",
+      "value": 52.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202304",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2023-04-07",
+      "survey_end": "2023-04-09",
+      "pm": "岸田文雄",
+      "value": 42.0,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2023/y202304.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2023-05-01",
+      "pm": "岸田文雄",
+      "value": 47.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202305",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2023-05-12",
+      "survey_end": "2023-05-14",
+      "pm": "岸田文雄",
+      "value": 46.4,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2023/y202305.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2023-06-01",
+      "pm": "岸田文雄",
+      "value": 39.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202306",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2023-06-09",
+      "survey_end": "2023-06-11",
+      "pm": "岸田文雄",
+      "value": 43.0,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2023/y202306.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2023-07-01",
+      "pm": "岸田文雄",
+      "value": 40.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202307",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2023-07-07",
+      "survey_end": "2023-07-09",
+      "pm": "岸田文雄",
+      "value": 38.2,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2023/y202307.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2023-08-01",
+      "pm": "岸田文雄",
+      "value": 42.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202308",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2023-08-11",
+      "survey_end": "2023-08-13",
+      "pm": "岸田文雄",
+      "value": 33.4,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2023/y202308.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2023-09-01",
+      "pm": "岸田文雄",
+      "value": 42.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202309",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2023-09-08",
+      "survey_end": "2023-09-10",
+      "pm": "岸田文雄",
+      "value": 36.3,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2023/y202309.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2023-10-01",
+      "pm": "岸田文雄",
+      "value": 33.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202310",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2023-10-07",
+      "survey_end": "2023-10-09",
+      "pm": "岸田文雄",
+      "value": 36.3,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2023/y202310.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2023-11-01",
+      "pm": "岸田文雄",
+      "value": 30.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202311",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2023-11-10",
+      "survey_end": "2023-11-12",
+      "pm": "岸田文雄",
+      "value": 29.0,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2023/y202311.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2023-12-01",
+      "pm": "岸田文雄",
+      "value": 26.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202312",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2023-12-08",
+      "survey_end": "2023-12-10",
+      "pm": "岸田文雄",
+      "value": 23.2,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2023/y202312.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2024-01-01",
+      "pm": "岸田文雄",
+      "value": 27.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202401",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2024-01-12",
+      "survey_end": "2024-01-14",
+      "pm": "岸田文雄",
+      "value": 26.4,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2024/y202401.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2024-02-01",
+      "pm": "岸田文雄",
+      "value": 25.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202402",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2024-02-10",
+      "survey_end": "2024-02-12",
+      "pm": "岸田文雄",
+      "value": 25.1,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2024/y202402.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2024-03-01",
+      "pm": "岸田文雄",
+      "value": 26.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202403",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2024-03-08",
+      "survey_end": "2024-03-10",
+      "pm": "岸田文雄",
+      "value": 24.9,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2024/y202403.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2024-04-01",
+      "pm": "岸田文雄",
+      "value": 26.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202404",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2024-04-05",
+      "survey_end": "2024-04-07",
+      "pm": "岸田文雄",
+      "value": 23.0,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2024/y202404.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2024-05-01",
+      "pm": "岸田文雄",
+      "value": 28.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202405",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2024-05-10",
+      "survey_end": "2024-05-12",
+      "pm": "岸田文雄",
+      "value": 23.9,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2024/y202405.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2024-06-01",
+      "pm": "岸田文雄",
+      "value": 25.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202406",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2024-06-07",
+      "survey_end": "2024-06-09",
+      "pm": "岸田文雄",
+      "value": 21.4,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2024/y202406.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2024-07-01",
+      "pm": "岸田文雄",
+      "value": 28.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202407",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2024-07-05",
+      "survey_end": "2024-07-07",
+      "pm": "岸田文雄",
+      "value": 24.9,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2024/y202407.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2024-08-01",
+      "pm": "岸田文雄",
+      "value": 28.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202408",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2024-08-02",
+      "survey_end": "2024-08-04",
+      "pm": "岸田文雄",
+      "value": 24.9,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2024/y202408.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2024-09-01",
+      "pm": "岸田文雄",
+      "value": 27.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202409",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2024-09-06",
+      "survey_end": "2024-09-08",
+      "pm": "岸田文雄",
+      "value": 20.2,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2024/y202409.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2024-10-12",
+      "survey_end": "2024-10-14",
+      "pm": "石破茂",
+      "value": 44.2,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2024/y202410.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2024-11-01",
+      "pm": "石破茂",
+      "value": 46.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202411",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2024-11-15",
+      "survey_end": "2024-11-17",
+      "pm": "石破茂",
+      "value": 40.8,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2024/y202411.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2024-12-01",
+      "pm": "石破茂",
+      "value": 41.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202412",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2024-12-06",
+      "survey_end": "2024-12-08",
+      "pm": "石破茂",
+      "value": 37.7,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2024/y202412.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2025-01-01",
+      "pm": "石破茂",
+      "value": 43.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202501",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2025-01-11",
+      "survey_end": "2025-01-13",
+      "pm": "石破茂",
+      "value": 38.7,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2025/y202501.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2025-02-01",
+      "pm": "石破茂",
+      "value": 40.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202502",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2025-02-07",
+      "survey_end": "2025-02-09",
+      "pm": "石破茂",
+      "value": 43.8,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2025/y202502.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2025-03-01",
+      "pm": "石破茂",
+      "value": 35.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202503",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2025-03-07",
+      "survey_end": "2025-03-09",
+      "pm": "石破茂",
+      "value": 36.2,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2025/y202503.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2025-04-01",
+      "pm": "石破茂",
+      "value": 33.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202504",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2025-04-11",
+      "survey_end": "2025-04-13",
+      "pm": "石破茂",
+      "value": 35.3,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2025/y202504.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2025-05-01",
+      "pm": "石破茂",
+      "value": 34.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202505",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2025-05-09",
+      "survey_end": "2025-05-11",
+      "pm": "石破茂",
+      "value": 33.4,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2025/y202505.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2025-06-01",
+      "pm": "石破茂",
+      "value": 37.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202506",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2025-06-06",
+      "survey_end": "2025-06-08",
+      "pm": "石破茂",
+      "value": 39.1,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2025/y202506.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2025-07-01",
+      "pm": "石破茂",
+      "value": 32.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202507",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2025-07-11",
+      "survey_end": "2025-07-13",
+      "pm": "石破茂",
+      "value": 30.7,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2025/y202507.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2025-08-01",
+      "pm": "石破茂",
+      "value": 42.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202508",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2025-08-09",
+      "survey_end": "2025-08-11",
+      "pm": "石破茂",
+      "value": 38.1,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2025/y202508.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2025-08-16",
+      "pm": "石破茂",
+      "value": 36.0,
+      "source": "朝日新聞世論調査",
+      "url": "https://www.asahi.com/yoron/database/chosa/M20250816B70B9",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2025-09-01",
+      "pm": "石破茂",
+      "value": 37.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202509",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2025-09-05",
+      "survey_end": "2025-09-07",
+      "pm": "石破茂",
+      "value": 39.2,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2025/y202509.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2025-10-25",
+      "pm": "高市早苗",
+      "value": 74.0,
+      "source": "日経世論調査",
+      "url": "https://txbiz.tv-tokyo.co.jp/txn/news_txn/post_328494",
+      "derived": false,
+      "kind": "月次",
+      "note": "日経 vdata 标 date=202510 实为高市就任 10-21 后调查 (テレ東 BIZ 报道 10/26 发表「高市内閣支持率74%で歴代2位」)，原 merge 脚本按 cabinet.end=10-21 区间误挂给石破；调查实际期间 10-22~25，归属高市，date 修正为 10-25"
+    },
+    {
+      "date": "2025-10-10",
+      "pm": "石破茂",
+      "value": 25.1,
+      "source": "時事世論調査",
+      "url": "https://www.crs.or.jp/backno/pdf/No.817.pdf",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2025-10-25",
+      "pm": "高市早苗",
+      "value": 68.0,
+      "source": "朝日新聞世論調査",
+      "url": "https://www.asahi.com/yoron/database/chosa/M20251025B70B9",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2025-11-01",
+      "pm": "高市早苗",
+      "value": 75.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202511",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2025-11-07",
+      "survey_end": "2025-11-09",
+      "pm": "高市早苗",
+      "value": 65.6,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2025/y202511.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2025-11-15",
+      "pm": "高市早苗",
+      "value": 69.0,
+      "source": "朝日新聞世論調査",
+      "url": "https://www.asahi.com/yoron/database/chosa/M20251115B70B9",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2025-12-01",
+      "pm": "高市早苗",
+      "value": 75.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202512",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2025-12-05",
+      "survey_end": "2025-12-07",
+      "pm": "高市早苗",
+      "value": 64.3,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2025/y202512.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2025-12-20",
+      "pm": "高市早苗",
+      "value": 68.0,
+      "source": "朝日新聞世論調査",
+      "url": "https://www.asahi.com/yoron/database/chosa/M20251220B70B9",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2026-01-01",
+      "pm": "高市早苗",
+      "value": 67.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202601",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2026-01-10",
+      "survey_end": "2026-01-12",
+      "pm": "高市早苗",
+      "value": 61.9,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2026/y202601.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2026-01-17",
+      "pm": "高市早苗",
+      "value": 67.0,
+      "source": "朝日新聞世論調査",
+      "url": "https://www.asahi.com/yoron/database/chosa/M20260117B70B9",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2026-02-01",
+      "pm": "高市早苗",
+      "value": 69.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202602",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2026-02-13",
+      "survey_end": "2026-02-15",
+      "pm": "高市早苗",
+      "value": 65.2,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2026/y202602.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2026-02-14",
+      "pm": "高市早苗",
+      "value": 63.0,
+      "source": "朝日新聞世論調査",
+      "url": "https://www.asahi.com/yoron/database/chosa/M20260214B70B9",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2026-03-01",
+      "pm": "高市早苗",
+      "value": 72.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202603",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2026-03-03",
+      "pm": "高市早苗",
+      "value": 64.0,
+      "source": "朝日新聞世論調査",
+      "url": "https://www.asahi.com/yoron/database/chosa/M20260303B70B9",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2026-03-06",
+      "survey_end": "2026-03-08",
+      "pm": "高市早苗",
+      "value": 58.6,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2026/y202603.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2026-03-14",
+      "pm": "高市早苗",
+      "value": 61.0,
+      "source": "朝日新聞世論調査",
+      "url": "https://www.asahi.com/yoron/database/chosa/M20260314B70B9",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2026-04-01",
+      "pm": "高市早苗",
+      "value": 69.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202604",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2026-04-10",
+      "survey_end": "2026-04-12",
+      "pm": "高市早苗",
+      "value": 61.2,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2026/y202604.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2026-04-18",
+      "pm": "高市早苗",
+      "value": 64.0,
+      "source": "朝日新聞世論調査",
+      "url": "https://www.asahi.com/yoron/database/chosa/M20260418B70B9",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2026-05-01",
+      "pm": "高市早苗",
+      "value": 66.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202605",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2026-05-08",
+      "survey_end": "2026-05-10",
+      "pm": "高市早苗",
+      "value": 60.7,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2026/y202605.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2026-05-16",
+      "pm": "高市早苗",
+      "value": 60.0,
+      "source": "朝日新聞世論調査",
+      "url": "https://www.asahi.com/yoron/database/chosa/M20260516B70B9",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2026-06-01",
+      "pm": "高市早苗",
+      "value": 68.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202606",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2026-06-05",
+      "survey_end": "2026-06-07",
+      "pm": "高市早苗",
+      "value": 60.1,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2026/y202606.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2026-06-20",
+      "pm": "高市早苗",
+      "value": 60.0,
+      "source": "朝日新聞世論調査",
+      "url": "https://www.asahi.com/yoron/database/chosa/M20260620B70B9",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2026-07-01",
+      "pm": "高市早苗",
+      "value": 58.0,
+      "source": "日経世論調査",
+      "url": "https://vdata.nikkei.com/newsgraphics/cabinet-approval-rating/#?ym=202607",
+      "derived": false,
+      "kind": "月次"
+    },
+    {
+      "date": "2026-07-10",
+      "survey_end": "2026-07-12",
+      "pm": "高市早苗",
+      "value": 57.8,
+      "source": "NHK世論調査",
+      "url": "https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2026/y202607.pdf",
+      "derived": false,
+      "kind": "NHK月次"
+    },
+    {
+      "date": "2026-07-18",
+      "pm": "高市早苗",
+      "value": 53.0,
+      "source": "朝日新聞世論調査",
+      "url": "https://www.asahi.com/yoron/database/chosa/M20260718B70B9",
+      "derived": false,
+      "kind": "月次"
+    }
+  ]
+}

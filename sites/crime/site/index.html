@@ -1,0 +1,2456 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-variant="editorial">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>东京都犯罪率地图 · Tokyo Crime Rates by Municipality</title>
+<meta name="description" content="基于警视厅官方统计的东京都 5,234 町丁犯罪率态势图。提供刑法犯认知件数、千人率分级设色、罪种细分与高发排行。東京都犯罪情勢マップ。">
+<meta name="theme-color" content="#141210">
+<link rel="canonical" href="https://crime.saaaai.com/">
+
+<!-- 多语言声明（与 sitemap.xml 中的 xhtml:link 保持一致） -->
+<link rel="alternate" hreflang="ja" href="https://crime.saaaai.com/?lang=ja">
+<link rel="alternate" hreflang="zh-Hans" href="https://crime.saaaai.com/">
+<link rel="alternate" hreflang="en" href="https://crime.saaaai.com/?lang=en">
+<link rel="alternate" hreflang="x-default" href="https://crime.saaaai.com/">
+
+<!-- GEO：机器可读的数据集与站点实体声明 -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://crime.saaaai.com/#website",
+      "url": "https://crime.saaaai.com/",
+      "name": "东京都犯罪率地图",
+      "alternateName": ["Tokyo Crime Rates Map", "東京都犯罪率マップ"],
+      "description": "基于警视厅官方统计的东京都 5,234 町丁犯罪率分级设色交互地图，支持中/日/英三语。",
+      "inLanguage": ["zh-Hans", "ja", "en"],
+      "isAccessibleForFree": true,
+      "license": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://crime.saaaai.com/#dataset",
+      "name": "东京都町丁别犯罪认知件数与千人率数据集",
+      "alternateName": "Tokyo crime counts by chome (Keishicho open data)",
+      "description": "东京都 62 个区市町村 / 5,234 个町丁的刑法犯认知件数（6 类罪种）、常住人口与千人率，来源于警视厅公开统计与东京都住民基本台帐人口。千人率经小样本收缩 (K=2000) 后做分级设色。",
+      "url": "https://crime.saaaai.com/",
+      "inLanguage": ["zh-Hans", "ja", "en"],
+      "isAccessibleForFree": true,
+      "spatialCoverage": {
+        "@type": "Place",
+        "name": "东京都",
+        "geo": { "@type": "GeoShape", "box": "35.53 139.56 35.83 139.92" }
+      },
+      "temporalCoverage": "2025/2026",
+      "creator": {
+        "@type": "Organization",
+        "name": "警視庁（Tokyo Metropolitan Police Department）",
+        "url": "https://www.keishicho.metro.tokyo.lg.jp/about_mpd/jokyo_tokei/jokyo/ninchikensu.html"
+      },
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "keywords": ["犯罪率", "东京都", "町丁", "警视厅", "开放数据", "crime rate", "Tokyo", "open data"],
+      "distribution": [
+        {
+          "@type": "DataDownload",
+          "encodingFormat": "application/json",
+          "contentUrl": "https://crime.saaaai.com/data/muni.json",
+          "name": "区市町村别统计"
+        },
+        {
+          "@type": "DataDownload",
+          "encodingFormat": "application/json",
+          "contentUrl": "https://crime.saaaai.com/data/chome_poly.json",
+          "name": "町丁别统计与多边形"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://crime.saaaai.com/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "千人率是怎么算的？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "千人率 = 该町丁的刑法犯认知件数 ÷ 常住人口 × 1000。为削弱小人口町丁的极端值，分档前做了小样本收缩（K = 2000）。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "为什么繁华街的犯罪率看起来特别高？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "分母用的是常住人口，而繁华街与车站前的白天流动人口远高于常住人口，导致千人率被推高。这属于口径偏差，不代表居住安全水平。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "数据多久更新一次，来源是什么？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "数据来自警视厅公开的「区市町村の町丁別、罪種別及び手口別認知件数」（令和7年年計与令和8年月次累计）以及东京都住民基本台帐人口，许可为 CC BY，随官方发布更新。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "可以用这些数据做租房或投资决策吗？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "认知件数不等于发案数，且受报案率影响；本图仅呈现官方统计的分布形态，不构成对任何地区安全性的评价或担保，请勿作为单一决策依据。"
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+
+<!-- 网站图标全套 -->
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+<link rel="alternate icon" href="./favicon.ico">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="manifest" href="./manifest.json">
+
+<!-- 社交分享卡片 (Open Graph / Twitter Card) -->
+<meta property="og:type" content="website">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:locale:alternate" content="ja_JP">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:url" content="https://crime.saaaai.com/">
+<meta property="og:title" content="东京都犯罪率地图 · Tokyo Crime Rates by Municipality">
+<meta property="og:description" content="基于警视厅官方统计的东京都 5,234 町丁犯罪率态势图。提供刑法犯认知件数、千人率分级设色、罪种细分与高发排行。">
+<meta property="og:image" content="https://crime.saaaai.com/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="东京都犯罪率地图 · Tokyo Crime Rates by Municipality">
+<meta name="twitter:description" content="基于警视厅官方统计的东京都 5,234 町丁犯罪率态势图。提供刑法犯认知件数、千人率分级设色、罪种细分与高发排行。">
+<meta name="twitter:image" content="https://crime.saaaai.com/og-image.png">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/misans@5.0.0/lib/Normal/MiSansVF.min.css">
+<style>
+/* 首屏极简雷达加载器 (第一毫秒绘制，平滑淡出) */
+#app-loader {
+  position: fixed; inset: 0; z-index: 9999;
+  background: #141210;
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+#app-loader.fade-out {
+  opacity: 0; visibility: hidden; pointer-events: none;
+}
+.loader-inner {
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  text-align: center; user-select: none;
+}
+.loader-radar {
+  position: relative; width: 48px; height: 48px; border-radius: 50%;
+  border: 1.5px solid rgba(245, 158, 11, 0.25);
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
+  overflow: hidden;
+}
+.loader-radar::before {
+  content: ""; position: absolute; inset: 8px; border-radius: 50%;
+  border: 1px dashed rgba(245, 158, 11, 0.35);
+}
+.radar-sweep {
+  position: absolute; inset: 0; border-radius: 50%;
+  background: conic-gradient(from 0deg, rgba(245, 158, 11, 0.45) 0deg, transparent 90deg, transparent 360deg);
+  animation: radarRotate 1.2s linear infinite;
+}
+.radar-dot {
+  position: absolute; left: 50%; top: 50%; width: 6px; height: 6px;
+  background: #f59e0b; border-radius: 50%; transform: translate(-50%, -50%);
+  box-shadow: 0 0 8px #f59e0b;
+}
+@keyframes radarRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.loader-title {
+  font-size: 15px; font-weight: 350; letter-spacing: 1px; color: #f5f0e8;
+  font-family: var(--font-sans);
+}
+.loader-status {
+  font-size: 11.5px; color: #a89d8d; font-family: var(--font-sans);
+  letter-spacing: 0.5px;
+}
+/* =====================================================================
+   1. 设计系统基础变量 (严格色彩克制与统一度规)
+   ===================================================================== */
+:root {
+  --trans: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  --hh: 54px; /* 紧凑单行顶栏 */
+  --radius-ui: 6px;    /* 统一步调：所有控件严格 6px */
+  --radius-inner: 4px; /* 内嵌药丸/徽章严格 4px */
+  --radius-card: 8px;  /* 卡片外框严格 8px */
+  --zoom-accent: var(--accent); /* 缩放拖动条跟随当前全局重点色 */
+  --zoom-accent-soft: var(--accent-soft);
+  /* ---- 全站统一字体：无衬线极细（MiSans VF，可变字重 150–700） ---- */
+  --font-sans: "MiSans VF", "MiSans", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --font-num: var(--font-sans);
+  --title-font: var(--font-sans);
+  --fw-xs: 350;      /* ≤12px 小字（再细会笔画溶解） */
+  --fw-sm: 330;      /* 12.5–13.5px 控件/正文 */
+  --fw-body: 310;    /* 15px+ */
+  --fw-mid: 250;     /* 19–20px 标题 */
+  --fw-display: 180; /* ≥34px 大字 */
+}
+
+/* ---- 方案 A：大报典范 · 纸感白 (Editorial Newsroom / Parchment) ---- */
+html[data-variant="editorial"] {
+  color-scheme: light;
+  --bg-page: #faf8f5;
+  --bg-glass: rgba(250, 248, 245, 0.45);
+  --bg-map: #f4efe6;
+  --bg-card: rgba(255, 255, 255, 0.60);
+  --bg-card-sub: rgba(255, 255, 255, 0.38);
+  --text-main: #181614;
+  --text-muted: #6e675c;
+  --text-faint: #9c9486;
+  --line-main: #e2ddd3;
+  --line-strong: #181614;
+  --accent: #9f3c2c; /* 传统朱印墨 */
+  --accent-soft: rgba(159, 60, 44, 0.08);
+  --shadow-card: 0 4px 20px rgba(24, 22, 20, 0.08), 0 0 0 1px rgba(24, 22, 20, 0.05);
+  --card-glass: blur(26px) saturate(1.9);
+  --capsule-bg: rgba(255, 253, 249, 0.95);
+  --capsule-line: rgba(24, 22, 20, 0.14);
+}
+
+/* ---- 方案 B：暖炭黑 (Warm Charcoal / 深色去蓝定稿) ---- */
+html[data-variant="tactical"] {
+  color-scheme: dark;
+  --bg-page: #141210;
+  --bg-glass: rgba(20, 18, 16, 0.55);
+  --bg-map: #0d0c0b;
+  --bg-card: rgba(27, 25, 23, 0.62);
+  --bg-card-sub: rgba(53, 47, 42, 0.42);
+  --bg-hover: rgba(255, 244, 232, 0.08);
+  --text-main: #f5f0e8;
+  --text-muted: #a89d8d;
+  --text-faint: #6f675b;
+  --line-main: rgba(255, 244, 232, 0.1);
+  --line-strong: #f5f0e8;
+  --accent: #d0801a; /* 暖琥珀：已调低饱和度，温润内敛，夜间极度舒适 */
+  --accent-soft: rgba(208, 128, 26, 0.16);
+  --shadow-card: 0 12px 32px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 244, 232, 0.08);
+  --card-glass: blur(26px) saturate(1.5);
+  --capsule-bg: rgba(18, 16, 14, 0.94);
+  --capsule-line: rgba(255, 244, 232, 0.14);
+}
+
+/* =====================================================================
+   低饱和优雅重点色系统 (4 套精心调配 · 深浅双模式全域无感热切换)
+   ===================================================================== */
+/* 1. 焦糖暖橙 (Amber - 柔和暖橙) */
+html[data-accent="amber"] {
+  --accent: #d0801a;
+  --accent-soft: rgba(208, 128, 26, 0.16);
+}
+html[data-variant="editorial"][data-accent="amber"] {
+  --accent: #9f3c2c;
+  --accent-soft: rgba(159, 60, 44, 0.1);
+}
+
+/* 2. 朱砂绯红 (Crimson - 低饱和冷红，克制不刺目) */
+html[data-accent="crimson"] {
+  --accent: #de4848;
+  --accent-soft: rgba(222, 72, 72, 0.16);
+}
+html[data-variant="editorial"][data-accent="crimson"] {
+  --accent: #b91c1c;
+  --accent-soft: rgba(185, 28, 28, 0.1);
+}
+
+/* 3. 战术钢蓝 (Steel - 理性战术灰蓝) */
+html[data-accent="steel"] {
+  --accent: #4a8bb2;
+  --accent-soft: rgba(74, 139, 178, 0.16);
+}
+html[data-variant="editorial"][data-accent="steel"] {
+  --accent: #2c5e8a;
+  --accent-soft: rgba(44, 94, 138, 0.1);
+}
+
+/* =====================================================================
+   2. 全局基础排版
+   ===================================================================== */
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0; height: 100%; overflow: hidden;
+  background: var(--bg-page); color: var(--text-main);
+  font-family: var(--font-sans);
+  font-weight: var(--fw-body);
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color var(--trans), color var(--trans);
+}
+
+/* =====================================================================
+   3. 极简单行顶栏 (54px)
+   ===================================================================== */
+header {
+  position: fixed; top: 0; left: 0; right: 0; height: var(--hh); z-index: 1000;
+  background: var(--bg-glass);
+  -webkit-backdrop-filter: var(--card-glass);
+  backdrop-filter: var(--card-glass);
+  border-bottom: 1px solid var(--line-main);
+  padding: 0 18px; display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; transition: background-color var(--trans), border-color var(--trans);
+}
+html[data-variant="tactical"] header {
+  border-bottom: 1px solid rgba(255, 244, 232, 0.1);
+}
+
+.nav-brand {
+  display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+}
+.brand-logo {
+  width: 22px; height: 22px; border-radius: 5px; flex-shrink: 0;
+  display: block; box-shadow: 0 0 8px var(--accent-soft);
+}
+.nav-brand h1 {
+  margin: 0; font-size: 19px; font-family: var(--title-font); font-weight: var(--fw-mid);
+  letter-spacing: -0.2px; white-space: nowrap; color: var(--text-main);
+}
+.brand-tag {
+  font-size: 11.5px; font-weight: 350; letter-spacing: 0.5px; color: var(--text-muted);
+  font-family: var(--font-num); padding: 2px 6px; border-radius: var(--radius-inner);
+  background: var(--bg-hover); white-space: nowrap; border: 1px solid var(--line-main);
+}
+
+.nav-center {
+  display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+}
+.nav-divider {
+  width: 1px; height: 16px; background: var(--line-main); margin: 0 2px;
+}
+
+.metric-pill-select {
+  height: 32px; line-height: 30px; box-sizing: border-box;
+  font: inherit; font-size: 13px; font-weight: 350; padding: 0 24px 0 10px;
+  border-radius: var(--radius-ui); border: 1px solid var(--line-main);
+  background: var(--bg-card); color: var(--text-main); cursor: pointer; outline: none;
+  appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'%3E%3Cpath fill='%236e675c' d='M0 0l4 5 4-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 8px center;
+  transition: all var(--trans);
+}
+html[data-variant="tactical"] .metric-pill-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'%3E%3Cpath fill='%23a89d8d' d='M0 0l4 5 4-5z'/%3E%3C/svg%3E");
+}
+.metric-pill-select:focus {
+  border-color: var(--line-strong);
+}
+
+.pill-group {
+  height: 32px; box-sizing: border-box;
+  display: inline-flex; align-items: center; background: rgba(0, 0, 0, 0.04);
+  padding: 2px; border-radius: var(--radius-ui); border: 1px solid var(--line-main);
+  gap: 2px;
+}
+html[data-variant="tactical"] .pill-group {
+  background: rgba(255, 244, 232, 0.04);
+  border: 1px solid rgba(255, 244, 232, 0.08);
+}
+.pill-group button {
+  height: 26px; line-height: 26px; box-sizing: border-box;
+  font: inherit; font-size: 12.5px; font-weight: 350; padding: 0 9px;
+  border-radius: var(--radius-inner); border: none; background: transparent;
+  color: var(--text-muted); cursor: pointer; transition: all 0.15s ease;
+  white-space: nowrap;
+}
+.pill-group button:hover { color: var(--text-main); }
+.pill-group button.on {
+  background: var(--bg-card); color: var(--text-main); font-weight: 350;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+html[data-variant="tactical"] .pill-group button.on {
+  background: rgba(255, 244, 232, 0.14); color: #f5f0e8;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.nav-right {
+  display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+}
+.search-box {
+  height: 32px; box-sizing: border-box;
+  position: relative; width: 180px; transition: width 0.2s ease;
+}
+.search-box:focus-within {
+  width: 230px;
+}
+.search-box input {
+  height: 32px; line-height: 30px; box-sizing: border-box;
+  width: 100%; font: inherit; font-size: 13px; padding: 0 10px 0 26px;
+  border-radius: var(--radius-ui); border: 1px solid var(--line-main);
+  background: var(--bg-card); color: var(--text-main); outline: none; transition: all var(--trans);
+}
+.search-box input:focus {
+  border-color: var(--line-strong);
+}
+.search-box svg {
+  position: absolute; left: 8px; top: 50%; transform: translateY(-50%);
+  width: 12px; height: 12px; fill: var(--text-faint); pointer-events: none;
+}
+
+.theme-switch-btn {
+  display: flex; align-items: center; gap: 5px; font: inherit; font-size: 13.5px;
+  font-weight: 350; padding: 5px 10px; border-radius: var(--radius-ui);
+  background: var(--bg-card); color: var(--text-main); border: 1px solid var(--line-main);
+  cursor: pointer; transition: all var(--trans); white-space: nowrap;
+}
+.theme-switch-btn:hover {
+  background: var(--bg-hover); border-color: var(--line-strong);
+}
+html[data-variant="tactical"] .theme-switch-btn {
+  background: rgba(255, 244, 232, 0.05); color: #f5f0e8;
+}
+
+/* =====================================================================
+   4. 地图画布与地标注记样式
+   ===================================================================== */
+/* 地图满屏铺底，顶栏以亚克力毛玻璃覆盖其上（毛玻璃才有真实内容可透） */
+#map {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 0; background: var(--bg-map); transition: background-color var(--trans);
+}
+
+/* 自带柔和地标/区名浮动标签 (解决地图无文字盲区) */
+.map-ward-label {
+  background: transparent !important; border: none !important;
+  text-align: center; pointer-events: none; white-space: nowrap;
+}
+.map-ward-label span {
+  display: inline-block; font-size: 12.5px; font-weight: 350; letter-spacing: 0.5px;
+  color: var(--text-muted); opacity: 0.85;
+  text-shadow: 0 0 4px var(--bg-map), 0 0 2px var(--bg-map), 0 1px 2px var(--bg-map);
+  font-family: var(--font-sans); transition: color var(--trans);
+}
+html[data-variant="tactical"] .map-ward-label span {
+  color: #a89d8d;
+  text-shadow: 0 0 4px #0d0c0b, 0 0 3px #0d0c0b, 0 1px 2px #0d0c0b;
+}
+
+/* =====================================================================
+   5. 左下角「态势分布仪」
+   ===================================================================== */
+#legend-instrument {
+  position: fixed; left: 20px; bottom: 20px; width: 360px; z-index: 1000;
+  background: var(--bg-card); -webkit-backdrop-filter: var(--card-glass); backdrop-filter: var(--card-glass);
+  border: 1px solid var(--line-main); border-radius: var(--radius-card);
+  padding: 10px 14px 8px; box-shadow: var(--shadow-card);
+  transition: all var(--trans);
+}
+.inst-header {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 12.5px; margin-bottom: 5px; gap: 8px;
+}
+.inst-title {
+  font-weight: 350; color: var(--text-main); font-size: 12.5px; white-space: nowrap;
+}
+.inst-readout {
+  font-size: 12.5px; font-weight: 350; color: var(--accent); font-family: var(--font-num);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: right;
+}
+.inst-hist-wrap {
+  position: relative; height: 22px; margin-bottom: 4px;
+}
+#hist-svg {
+  width: 100%; height: 100%; display: block; overflow: visible;
+}
+.hist-bar {
+  fill: var(--text-muted); opacity: 0.25;
+}
+html[data-variant="tactical"] .hist-bar {
+  fill: #a89d8d; opacity: 0.3;
+}
+#hist-cursor {
+  position: absolute; top: -2px; bottom: 0; width: 2px;
+  background: var(--accent); pointer-events: none; opacity: 0;
+  transition: left 0.15s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s;
+  z-index: 10;
+}
+.inst-bar {
+  display: flex; height: 6px; border-radius: 3px; overflow: hidden;
+  border: 1px solid var(--line-main);
+}
+.inst-bar div { flex: 1; }
+.inst-ticks {
+  display: flex; justify-content: space-between; font-size: 11px; font-weight: var(--fw-xs);
+  color: var(--text-muted); margin-top: 3px; font-family: var(--font-num);
+}
+
+/* =====================================================================
+   6. 右侧自适应贴合数据面板
+   ===================================================================== */
+#card {
+  position: fixed; right: 20px; top: calc(var(--hh) + 16px);
+  width: 344px; max-height: calc(100vh - var(--hh) - 36px);
+  overflow-y: auto; overflow-x: hidden; z-index: 1000;
+  display: flex; flex-direction: column; gap: 12px;
+  background: transparent; border: none; padding: 0; box-shadow: none;
+  /* 隐形滚动条：保留滚动能力，不显示灰条 */
+  scrollbar-width: none;      /* Firefox */
+  -ms-overflow-style: none;   /* 旧 Edge / IE */
+}
+#card::-webkit-scrollbar { width: 0; height: 0; display: none; } /* Chromium / Safari */
+/* 单张数据卡（町丁卡 / 区市卡 各自独立成卡） */
+.panel-card {
+  flex-shrink: 0;
+  background: var(--bg-card); -webkit-backdrop-filter: var(--card-glass); backdrop-filter: var(--card-glass);
+  border: 1px solid var(--line-main); border-radius: var(--radius-card);
+  padding: 14px 16px; font-size: 15px; box-shadow: var(--shadow-card);
+  transition: all var(--trans);
+}
+/* 层级标签：町丁 / 区市 */
+.card-level {
+  display: inline-block; font-size: 11px; font-weight: 350; letter-spacing: 1px;
+  padding: 1px 5px; border-radius: var(--radius-inner); margin-bottom: 5px;
+  font-family: var(--font-num);
+}
+.card-level.lv-chome {
+  background: var(--accent-soft); color: var(--accent); border: 1px solid var(--accent-soft);
+}
+.card-level.lv-ward {
+  background: rgba(0, 0, 0, 0.05); color: var(--text-muted); border: 1px solid var(--line-main);
+}
+html[data-variant="tactical"] .card-level.lv-ward {
+  background: rgba(255, 244, 232, 0.06); color: #a89d8d;
+}
+
+.card-head {
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;
+  margin-bottom: 6px;
+}
+.card-head h2 {
+  margin: 0; font-size: 20px; font-family: var(--title-font); font-weight: var(--fw-mid);
+  line-height: 1.25; color: var(--text-main);
+}
+
+.rank-badge {
+  font-size: 11.5px; font-weight: 350; padding: 2px 6px; border-radius: var(--radius-inner);
+  white-space: nowrap; font-family: var(--font-num);
+}
+.rank-badge.danger {
+  background: var(--accent-soft); color: var(--accent);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+html[data-variant="editorial"] .rank-badge.danger {
+  border-color: rgba(159, 60, 44, 0.3);
+}
+.rank-badge.neutral {
+  background: rgba(0, 0, 0, 0.04); color: var(--text-muted);
+  border: 1px solid var(--line-main);
+}
+html[data-variant="tactical"] .rank-badge.neutral {
+  background: rgba(255, 244, 232, 0.05); color: #a89d8d;
+  border: 1px solid rgba(255, 244, 232, 0.1);
+}
+
+.metric-hero {
+  margin: 8px 0 12px; padding: 10px 12px; border-radius: var(--radius-inner);
+  background: var(--bg-card-sub); border: 1px solid var(--line-main);
+}
+.metric-hero .val-row {
+  display: flex; align-items: baseline; gap: 5px;
+}
+.metric-hero .big-val {
+  font-size: 34px; font-weight: var(--fw-display); line-height: 1; font-family: var(--font-num);
+  color: var(--text-main); letter-spacing: -0.5px;
+}
+.metric-hero .unit {
+  font-size: 12.5px; color: var(--text-muted); font-weight: 350;
+}
+.metric-hero .benchmark {
+  font-size: 12.5px; color: var(--text-muted); margin-top: 4px; font-weight: var(--fw-xs);
+}
+
+.breakdown-section { margin-top: 10px; }
+.section-title {
+  font-size: 11.5px; font-weight: 350; text-transform: uppercase; letter-spacing: 0.5px;
+  color: var(--text-muted); margin-bottom: 6px; font-family: var(--font-num);
+}
+.crime-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 4px 0; border-bottom: 1px solid var(--line-main); font-size: 12px;
+}
+.crime-row.active {
+  font-weight: 450; color: var(--text-main);
+}
+.crime-label { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 12px; }
+.crime-bar-wrap {
+  width: 64px; height: 4px; background: rgba(0, 0, 0, 0.06); border-radius: 2px;
+  margin: 0; overflow: hidden; flex-shrink: 0;
+}
+html[data-variant="tactical"] .crime-bar-wrap {
+  background: rgba(255, 244, 232, 0.08);
+}
+.crime-bar-fill {
+  height: 100%; background: var(--accent); border-radius: 2px;
+  transition: width 0.2s ease;
+}
+.crime-count {
+  font-family: var(--font-num); font-weight: 350; min-width: 44px; text-align: right;
+  font-size: 12px; flex-shrink: 0;
+}
+
+.tops-box { margin-top: 12px; }
+.top-item {
+  padding: 5px 6px; border-radius: var(--radius-inner); font-size: 12.5px; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center;
+  transition: background 0.15s; border-bottom: 1px dashed var(--line-main);
+}
+.top-item:hover { background: var(--bg-hover); }
+.top-item .tname { color: var(--text-main); }
+.top-item .trate {
+  font-family: var(--font-num); font-size: 12.5px; color: var(--accent); font-weight: 350;
+}
+
+#drop {
+  position: fixed; z-index: 1500; background: var(--bg-card); -webkit-backdrop-filter: var(--card-glass); backdrop-filter: var(--card-glass);
+  color: var(--text-main); border: 1px solid var(--line-main); border-radius: var(--radius-ui);
+  max-height: 260px; overflow: auto; display: none; box-shadow: var(--shadow-card);
+}
+#drop div {
+  padding: 7px 12px; font-size: 13.5px; cursor: pointer; border-bottom: 1px solid var(--line-main);
+}
+#drop div:hover { background: var(--bg-hover); }
+
+/* =====================================================================
+   7. 地图选中标注 (脉冲锚点 → 三环长脉冲 + 上浮地名胶囊)
+   ===================================================================== */
+#lx-svg { position: fixed; left: 0; top: 0; z-index: 1500; pointer-events: none; display: block; overflow: visible; }
+#lx-svg .lx-ring { fill: none; stroke: var(--accent); stroke-width: 2; opacity: 0; }
+#lx-svg .lx-dot { fill: var(--accent); }
+#lx-capsule {
+  position: fixed; left: 0; top: 0; z-index: 1501; pointer-events: none;
+  display: flex; gap: 14px; align-items: center;
+  background: var(--capsule-bg); -webkit-backdrop-filter: var(--card-glass); backdrop-filter: var(--card-glass);
+  border: 1px solid var(--capsule-line); border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 10px 18px;
+  color: var(--text-main);
+  white-space: nowrap; opacity: 0;
+  transform: translate(-50%, -100%) translateY(6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+#lx-capsule.on { opacity: 1; transform: translate(-50%, -100%) translateY(0); }
+#lx-capsule .lx-main { display: flex; gap: 10px; align-items: baseline; }
+#lx-capsule .lx-lvl {
+  font-size: 13px; font-weight: 700; color: var(--accent);
+  font-family: var(--font-num); letter-spacing: 0.5px; flex-shrink: 0;
+}
+#lx-capsule .lx-name {
+  font-size: 22px; font-weight: var(--fw-mid); line-height: 1.25;
+  color: var(--text-main); font-family: var(--title-font);
+}
+#lx-capsule .lx-num { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; font-variant-numeric: tabular-nums; }
+#lx-capsule .lx-val {
+  font-size: 26px; font-weight: var(--fw-display); line-height: 1;
+  color: var(--text-main); font-family: var(--font-num); letter-spacing: -0.5px;
+}
+#lx-capsule .lx-unit {
+  font-size: 11px; color: var(--text-muted); font-weight: var(--fw-xs); line-height: 1;
+  white-space: nowrap;
+}
+
+/* =====================================================================
+   8. 左侧竖向缩放拖动条 (橙色 · 替代 Leaflet 默认缩放按钮)
+   ===================================================================== */
+#zoom-slider {
+  position: fixed; left: 16px; top: 50%; transform: translateY(-50%);
+  z-index: 1200; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  background: var(--bg-card);
+  -webkit-backdrop-filter: var(--card-glass);
+  backdrop-filter: var(--card-glass);
+  border: 1px solid var(--line-main); border-radius: var(--radius-card);
+  padding: 7px 6px; box-shadow: var(--shadow-card);
+  user-select: none; -webkit-user-select: none;
+}
+#zoom-slider .zs-cap {
+  font-size: 15px; font-weight: 350; line-height: 1; color: var(--text-muted);
+  width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; border-radius: var(--radius-inner); transition: color 0.15s, background 0.15s;
+  font-family: var(--font-num);
+}
+#zoom-slider .zs-cap:hover { color: var(--zoom-accent); background: var(--bg-hover); }
+.zs-track {
+  position: relative; width: 6px; height: 164px; margin: 3px 0;
+  background: var(--line-main); border-radius: 3px; cursor: pointer;
+  touch-action: none;
+}
+.zs-fill {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 0%;
+  background: var(--zoom-accent); border-radius: 3px;
+  transition: height 0.12s linear;
+}
+.zs-thumb {
+  position: absolute; left: 50%; bottom: 0%; width: 18px; height: 8px;
+  background: var(--zoom-accent); border-radius: var(--radius-inner);
+  transform: translate(-50%, 50%);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+  transition: box-shadow 0.15s, bottom 0.12s linear;
+}
+.zs-track:hover .zs-thumb, .zs-thumb:active {
+  box-shadow: 0 0 0 4px var(--zoom-accent-soft), 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+@media (max-width: 900px) {
+  header {
+    height: auto; padding: 8px 12px; flex-wrap: wrap; gap: 6px;
+  }
+  :root { --hh: 92px; }
+  .nav-brand h1 { font-size: 16px; font-weight: var(--fw-body); }
+  .brand-tag { font-size: 11px; padding: 1px 5px; }
+  .nav-right { order: 2; width: 100%; gap: 6px; }
+  .search-box { flex: 1; width: auto; }
+  .search-box:focus-within { width: auto; }
+  .nav-center { order: 3; width: 100%; justify-content: flex-start; flex-wrap: wrap; gap: 6px; }
+  .metric-pill-select { height: 30px; line-height: 28px; font-size: 12.5px; padding: 0 22px 0 8px; }
+  .pill-group { height: 30px; }
+  .pill-group button { height: 24px; line-height: 24px; padding: 0 8px; font-size: 12.5px; }
+  .theme-switch-btn, .palette-swatch-btn { width: 30px; height: 30px; }
+  .theme-switch-btn svg, .palette-swatch-btn svg { width: 14px; height: 14px; }
+  .lang-switch-group { height: 30px; }
+  .lang-switch-group button { height: 24px; line-height: 24px; }
+  .search-box, .search-box input { height: 30px; line-height: 28px; }
+  #card {
+    left: 12px; right: 12px; top: auto; bottom: 12px; width: auto; max-height: 38%;
+    padding: 0; background: transparent; border: none; box-shadow: none;
+    overflow-x: clip;
+  }
+  #card .panel-card { padding: 12px 14px; }
+  #lx-capsule { max-width: calc(100vw - 24px); font-size: 14px; }
+  #lx-capsule .lx-name { font-size: 16px; }
+  #lx-capsule .lx-val { font-size: 20px; }
+  #legend-instrument { display: none; }
+  /* 手机端缩放条收短、贴近左缘 */
+  #zoom-slider { left: 10px; top: 46%; padding: 6px 5px; }
+  .zs-track { height: 110px; }
+}
+/* =====================================================================
+   9. 地图左上角 HUD 状态胶囊 (对齐 GPT 专业情报站)
+   ===================================================================== */
+#hud-capsule {
+  position: fixed; left: 16px; top: calc(var(--hh) + 14px); z-index: 1200;
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg-card); -webkit-backdrop-filter: var(--card-glass); backdrop-filter: var(--card-glass);
+  border: 1px solid var(--line-main); border-radius: var(--radius-ui);
+  box-shadow: var(--shadow-card); padding: 5px 12px;
+  font-size: 12px; color: var(--text-main); font-family: var(--font-sans);
+  pointer-events: auto; user-select: none;
+}
+.hud-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+  box-shadow: 0 0 6px var(--accent); flex-shrink: 0;
+}
+.hud-sep { color: var(--text-faint); font-size: 11px; }
+.hud-item { font-weight: var(--fw-sm); }
+.hud-sub { color: var(--text-muted); font-size: 11.5px; }
+#hud-reset {
+  margin-left: 4px; background: var(--bg-card-sub); border: 1px solid var(--line-main);
+  color: var(--text-main); padding: 2px 7px; border-radius: var(--radius-inner);
+  font-size: 11px; cursor: pointer; transition: all 0.15s; font-family: var(--font-sans);
+}
+#hud-reset:hover { background: var(--bg-hover); color: var(--accent); }
+@media (max-width: 768px) {
+  #hud-capsule { display: none; }
+}
+
+/* =====================================================================
+   10. 双列核心 KPI 与全东京都排名看板
+   ===================================================================== */
+.metric-grid-2col {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  margin: 8px 0 10px;
+}
+.mg-col {
+  background: var(--bg-card-sub); border: 1px solid var(--line-main);
+  border-radius: var(--radius-inner); padding: 8px 10px;
+}
+.mg-val {
+  font-size: 24px; font-weight: var(--fw-display); line-height: 1.1;
+  font-family: var(--font-num); color: var(--text-main); letter-spacing: -0.5px;
+}
+.mg-lbl {
+  font-size: 11px; color: var(--text-muted); font-weight: var(--fw-xs); margin-top: 3px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.rank-card-list { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
+.rank-card-item {
+  display: flex; align-items: center; gap: 8px; padding: 4px 6px;
+  border-radius: var(--radius-inner); font-size: 12px; cursor: pointer;
+  transition: background 0.15s; border-bottom: 1px dashed var(--line-main);
+}
+.rank-card-item:hover { background: var(--bg-hover); }
+.rci-idx { font-family: var(--font-num); font-size: 11px; color: var(--text-faint); width: 16px; }
+.rci-name { width: 56px; color: var(--text-main); white-space: nowrap; font-size: 12px; }
+.rci-bar-wrap { flex: 1; height: 3px; background: rgba(0,0,0,0.06); border-radius: 2px; overflow: hidden; }
+html[data-variant="tactical"] .rci-bar-wrap { background: rgba(255,244,232,0.08); }
+.rci-bar-fill { height: 100%; background: var(--accent); border-radius: 2px; }
+.rci-val { font-family: var(--font-num); font-size: 12px; color: var(--accent); min-width: 44px; text-align: right; }
+
+/* 三语国际化切换药丸纽 */
+.lang-switch-group {
+  height: 32px; box-sizing: border-box; align-items: center;
+  display: inline-flex; background: var(--bg-card-sub); border: 1px solid var(--line-main);
+  border-radius: var(--radius-inner); padding: 2px; gap: 2px; flex-shrink: 0;
+}
+.lang-switch-group button {
+  height: 26px; line-height: 26px; box-sizing: border-box;
+  background: transparent; border: none; color: var(--text-muted);
+  font-family: var(--font-num); font-size: 11.5px; font-weight: 350;
+  padding: 0 7px; border-radius: 3px; cursor: pointer; transition: all 0.15s;
+}
+.lang-switch-group button:hover { color: var(--text-main); }
+.lang-switch-group button.on {
+  background: var(--bg-card); color: var(--text-main); font-weight: 450;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+/* 极简主题图标圆钮 */
+.theme-switch-btn, .palette-swatch-btn {
+  width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-inner); background: var(--bg-card); border: 1px solid var(--line-main);
+  cursor: pointer; transition: all 0.15s ease; color: var(--text-muted);
+}
+.theme-switch-btn:hover, .palette-swatch-btn:hover { background: var(--bg-hover); color: var(--text-main); }
+.theme-switch-btn svg, .palette-swatch-btn svg { width: 16px; height: 16px; display: block; }
+/* 比例尺微调样式 */
+.leaflet-control-scale { margin-bottom: 74px !important; margin-left: 16px !important; }
+.leaflet-control-scale-line {
+  background: var(--bg-card) !important; border: 1px solid var(--line-main) !important;
+  border-top: none !important; color: var(--text-muted) !important;
+  font-family: var(--font-num) !important; font-size: 11px !important;
+  line-height: 1.1 !important; padding: 2px 5px !important;
+  -webkit-backdrop-filter: var(--card-glass); backdrop-filter: var(--card-glass);
+}
+/* 选中父级边界外发光 (对齐 GPT 突出选区质感) */
+.sel-parent-glow path {
+  filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.75));
+}
+html[data-variant="editorial"] .sel-parent-glow path {
+  filter: drop-shadow(0 0 6px rgba(159, 60, 44, 0.45));
+}
+/* 国土地理院纯净白图滤镜 (免 API Key，黑曜石模式自动转暗黑战术风) */
+.leaflet-tile-pane { transition: opacity 0.25s, filter 0.25s; }
+html[data-variant="tactical"] .leaflet-tile-pane {
+  filter: invert(100%) hue-rotate(180deg) brightness(70%) contrast(120%);
+  opacity: 0.45;
+}
+html[data-variant="editorial"] .leaflet-tile-pane {
+  filter: brightness(98%) contrast(95%);
+  opacity: 0.55;
+}
+/* 调色盘切换按钮 */
+.palette-swatch-btn {
+  width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-inner); background: var(--bg-card); border: 1px solid var(--line-main);
+  cursor: pointer; transition: all 0.15s ease;
+}
+.palette-swatch-btn:hover { background: var(--bg-hover); }
+.palette-swatch-dot {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent-soft), 0 0 0 1.5px var(--bg-card);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Leaflet 署名小标签磨砂适配 (彻底消灭深色模式下的刺眼白底) */
+.leaflet-control-attribution {
+  font-family: var(--font-sans) !important;
+  font-size: 11px !important;
+  border-radius: var(--radius-inner) 0 0 0 !important;
+  padding: 3px 8px !important;
+  line-height: 1.2 !important;
+}
+html[data-variant="tactical"] .leaflet-control-attribution {
+  background: rgba(20, 18, 16, 0.78) !important;
+  color: #7e7668 !important;
+  border-top: 1px solid rgba(255, 244, 232, 0.08) !important;
+  border-left: 1px solid rgba(255, 244, 232, 0.08) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  backdrop-filter: blur(12px) !important;
+}
+html[data-variant="tactical"] .leaflet-control-attribution a {
+  color: #a89d8d !important;
+  text-decoration: none !important;
+}
+html[data-variant="tactical"] .leaflet-control-attribution a:hover {
+  color: var(--accent) !important;
+  text-decoration: underline !important;
+}
+html[data-variant="editorial"] .leaflet-control-attribution {
+  background: rgba(250, 248, 245, 0.78) !important;
+  color: #6e675c !important;
+  border-top: 1px solid var(--line-main) !important;
+  border-left: 1px solid var(--line-main) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  backdrop-filter: blur(12px) !important;
+}
+html[data-variant="editorial"] .leaflet-control-attribution a {
+  color: #181614 !important;
+  text-decoration: none !important;
+}
+html[data-variant="editorial"] .leaflet-control-attribution a:hover {
+  color: var(--accent) !important;
+  text-decoration: underline !important;
+}
+/* 口径与免责（可见文字，与 FAQPage 结构化数据一致） */
+.faq-block { margin-top: 10px; border-top: 1px solid var(--line-main); padding-top: 8px; }
+.faq-head { margin-bottom: 4px; }
+.faq-title { display: block; font-size: 11.5px; font-weight: var(--fw-mid); color: var(--text-main); letter-spacing: 0.5px; }
+.faq-sub { display: block; font-size: 11px; color: var(--text-faint); margin-top: 2px; }
+.faq-item { border-bottom: 1px dashed var(--line-main); }
+.faq-item summary {
+  cursor: pointer; list-style: none; padding: 5px 0;
+  font-size: 12px; color: var(--text-main); position: relative; padding-right: 16px;
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after {
+  content: "+"; position: absolute; right: 2px; top: 4px;
+  font-size: 13px; line-height: 1; color: var(--accent); font-family: var(--font-num);
+}
+.faq-item[open] summary::after { content: "−"; }
+.faq-item summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+.faq-a { font-size: 11.5px; color: var(--text-muted); line-height: 1.55; padding: 0 0 8px; }
+.faq-source { margin-top: 8px; font-size: 11px; color: var(--text-faint); }
+
+/* 页面正下方底部中央域名标识 */
+#site-domain {
+  position: fixed; left: 50%; bottom: 10px; transform: translateX(-50%);
+  z-index: 1000; pointer-events: none; user-select: none;
+  font-family: var(--font-num); font-size: 11px; font-weight: var(--fw-xs);
+  letter-spacing: 2.5px; text-indent: 2.5px; white-space: nowrap;
+  color: var(--text-faint); opacity: 0.75;
+  text-shadow: 0 0 6px var(--bg-map), 0 1px 2px var(--bg-map);
+}
+@media (max-width: 768px) {
+  #site-domain { bottom: calc(38% + 18px); top: auto; font-size: 10px; opacity: 0.6; }
+}
+</style>
+</head>
+<body>
+<!-- 首屏数据装载遮罩 -->
+<div id="app-loader" role="progressbar" aria-label="正在载入空间数据">
+  <div class="loader-inner">
+    <div class="loader-radar">
+      <div class="radar-sweep"></div>
+      <div class="radar-dot"></div>
+    </div>
+    <div class="loader-title" id="loader-title">东京都犯罪率地图</div>
+    <div class="loader-status" id="loader-status">● 正在装配东京都 5,234 町丁空间统计数据...</div>
+  </div>
+</div>
+
+
+<header id="main-header">
+  <div class="nav-brand">
+    <img src="./favicon.svg" class="brand-logo" alt="Logo" width="22" height="22">
+    <h1 id="hdr-title">东京都犯罪率地势图</h1>
+    <span class="brand-tag" id="hdr-tag">2026 EDITION</span>
+  </div>
+
+  <div class="nav-center">
+    <select id="metric" class="metric-pill-select" title="选择罪种">
+      <option value="total" selected>全部刑法犯</option>
+      <option value="nb">非入室盗窃</option>
+      <option value="bi">入室盗窃</option>
+      <option value="r">粗暴犯</option>
+      <option value="v">凶恶犯</option>
+      <option value="o">其他</option>
+    </select>
+
+    <div class="nav-divider"></div>
+
+    <div class="pill-group">
+      <button data-t="R7" class="on">R7年计</button>
+      <button data-t="R8">R8累计</button>
+    </div>
+
+    <div class="nav-divider"></div>
+
+    <div class="pill-group">
+      <button data-mode="muni">23区·市部</button>
+      <button data-mode="chome" class="on">町丁细分</button>
+    </div>
+  </div>
+
+  <div class="nav-right">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24"><path d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1114.32 4.906l4.387 4.387a1 1 0 01-1.414 1.414l-4.387-4.387A8 8 0 012 10z"/></svg>
+      <input type="search" id="q" placeholder="搜索区市或町丁..." autocomplete="off">
+    </div>
+
+    <div class="lang-switch-group" role="group" aria-label="语言切换">
+      <button data-lang="ja" onclick="setLanguage('ja')">JA</button>
+      <button data-lang="zh" onclick="setLanguage('zh')">中</button>
+      <button data-lang="en" onclick="setLanguage('en')">EN</button>
+    </div>
+    <button id="palette-btn" class="palette-swatch-btn" onclick="cycleAccentPalette()" title="切换重点色风格" aria-label="切换重点色风格">
+      <svg id="palette-icon-svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2C6.49 2 2 6.49 2 12c0 4.17 2.56 7.74 6.2 9.25.64.26 1.34-.14 1.34-.83v-.68c0-.66.54-1.2 1.2-1.2h.74c3.04 0 5.52-2.48 5.52-5.52 0-.33.27-.6.6-.6h1.2c2.87 0 5.2-2.33 5.2-5.2C24 6.49 18.61 2 12 2z"/>
+        <circle cx="7.5" cy="10.5" r="1.2" fill="#d0801a" stroke="none"/>
+        <circle cx="12" cy="7" r="1.2" fill="#de4848" stroke="none"/>
+        <circle cx="16.5" cy="10.5" r="1.2" fill="#4a8bb2" stroke="none"/>
+        <circle cx="11.5" cy="14.5" r="1.8" fill="var(--accent)" stroke="none"/>
+      </svg>
+    </button>
+
+    <button id="theme-btn" class="theme-switch-btn" onclick="toggleTheme()" title="切换浅色/深色主题" aria-label="切换主题">
+      <span id="theme-icon-wrap"></span>
+    </button>
+  </div>
+</header>
+
+<div id="drop"></div>
+<div id="map"></div>
+<div id="site-domain" aria-hidden="true">crime.saaaai.com</div>
+
+<!-- 地图左上角 HUD 状态胶囊 (对齐 GPT 专业情报站) -->
+<div id="hud-capsule" role="status">
+  <span class="hud-dot"></span>
+  <span class="hud-item" id="hud-dataset">R7年计</span>
+  <span class="hud-sep">/</span>
+  <span class="hud-item" id="hud-place">东京都全域</span>
+  <span class="hud-sep">/</span>
+  <span class="hud-sub" id="hud-metric">全部刑法犯</span>
+  <button id="hud-reset" onclick="fitTokyo23()" title="复位东京都全域视图">⟲ 复位全域</button>
+</div>
+<!-- 左侧竖向缩放拖动条 -->
+<div id="zoom-slider">
+  <span class="zs-cap" id="zsPlus" title="放大">+</span>
+  <div class="zs-track" id="zsTrack">
+    <div class="zs-fill" id="zsFill"></div>
+    <div class="zs-thumb" id="zsThumb"></div>
+  </div>
+  <span class="zs-cap" id="zsMinus" title="缩小">−</span>
+</div>
+
+<!-- 左下角「态势分布仪」 -->
+<aside id="legend-instrument">
+  <div class="inst-header">
+    <span class="inst-title" id="inst-title">全部刑法犯 · 每千人率分布</span>
+    <span class="inst-readout" id="inst-readout">全域中位数: 4.8 / 千人</span>
+  </div>
+  <div class="inst-hist-wrap">
+    <svg id="hist-svg" viewBox="0 0 332 22" preserveAspectRatio="none"></svg>
+    <div id="hist-cursor"></div>
+  </div>
+  <div class="inst-bar" id="legendBarDiv"></div>
+  <div class="inst-ticks" id="legendTicks">
+    <span>0</span>
+    <span>1.9</span>
+    <span>7.5</span>
+    <span>24</span>
+    <span>≥72</span>
+  </div>
+</aside>
+
+<!-- 右侧自适应贴合数据面板 -->
+<aside id="card"></aside>
+
+<!-- 地图选中标注（脉冲锚点 SVG 层 + 上浮地名胶囊） -->
+<svg id="lx-svg"></svg>
+<div id="lx-capsule"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// =====================================================================
+// 0. 三语国际化 (i18n: 日/中/英 · 严格对齐警视厅官方统计原名)
+// =====================================================================
+const I18N = {
+  zh: {
+    siteTitleEditorial: "东京都犯罪率地势图",
+    siteTitleTactical: "东京都犯罪率态势图",
+    edition: "2026 EDITION",
+    metrics: {
+      total: "全部刑法犯", nb: "非入室盗窃", bi: "入室盗窃",
+      r: "粗暴犯", v: "凶恶犯", o: "其他"
+    },
+    times: { R7: "R7年计", R8: "R8累计" },
+    modes: { muni: "23区·市部", chome: "町丁细分" },
+    searchPh: "搜索区市或町丁...",
+    hudWholeTokyo: "东京都全域",
+    hudReset: "⟲ 复位全域",
+    levelChome: "町丁",
+    levelWard: "区市",
+    popLabel: "常住人口",
+    popMissing: "暂无",
+    unitRate: "件 / 千人",
+    reportedCases: "认知件数",
+    totalCases: "认知总数",
+    wardTotalCases: "全区案发总量 (件)",
+    wardRate: "全区千人率",
+    wardBenchmark: "全区基准",
+    breakdownTitle: "罪种细分",
+    backTo: "← 返回",
+    top5ChomeTitle: "辖区高发町丁 TOP 5",
+    noChomeData: "该町村暂无细分数据",
+    top5WardTitle: "全东京都高发区市 TOP 5",
+    byRateDesc: "按千人率",
+    metaTitle: "数据源与渲染规格",
+    metaL1: "5,234 町丁全量渲染 · 常住人口 1,400 万基数",
+    metaL2: "小样本收缩 (K=2000) 消除昼夜畸变 · Leaflet Canvas",
+    rankExtreme: "极高",
+    rankHigh: "偏高",
+    rankNormal: "常规",
+    instTitle: "每千人率分布",
+    instMedian: "全域中位数",
+    instMax: "封顶",
+    calloutSelected: "已选中",
+    noGeoNotice: "暂无町丁界（新设/埋立/以下不詳）· 件数照常列",
+    seoTitle: "东京都犯罪率地图 · 5,234 町丁分级设色 | Tokyo Crime Rates",
+    seoDesc: "基于警视厅官方统计的东京都犯罪率交互地图：62 个区市町村 / 5,234 个町丁，6 类罪种、R7年计与R8累计，按千人率分级设色。支持中/日/英三语，可查高发排行。",
+    ogLocale: "zh_CN",
+    faqTitle: "口径与免责",
+    faqSub: "点开看统计口径 · 数据不构成地区安全性评价",
+    faq: [
+      { q: "千人率是怎么算的？", a: "千人率 = 该町丁的刑法犯认知件数 ÷ 常住人口 × 1000。为削弱小人口町丁的极端值，分档前做了小样本收缩（K = 2000）。" },
+      { q: "为什么繁华街的犯罪率看起来特别高？", a: "分母用的是常住人口，而繁华街与车站前的白天流动人口远高于常住人口，导致千人率被推高。这属于口径偏差，不代表居住安全水平。" },
+      { q: "数据多久更新一次，来源是什么？", a: "来自警视厅公开的「区市町村の町丁別、罪種別及び手口別認知件数」（令和7年年計与令和8年月次累计）及东京都住民基本台帐人口，许可 CC BY，随官方发布更新。" },
+      { q: "可以用这些数据做租房或投资决策吗？", a: "认知件数不等于发案数，且受报案率影响；本图仅呈现官方统计的分布形态，不构成对任何地区安全性的评价或担保，请勿作为单一决策依据。" }
+    ],
+    siteBy: "数据来源：警视厅 · 東京都在住人口",
+    loadingTitle: "东京都犯罪率地图",
+    loadingStatus: "● 正在装配东京都 5,234 町丁空间统计数据...",
+    casesUnit: "件",
+    areaFallback: "东京都",
+    tooltipMetric: "选择罪种",
+    tooltipLangGroup: "切换界面语言",
+    tooltipPalette: "切换重点色风格",
+    tooltipThemeLight: "切换至纸感白",
+    tooltipThemeDark: "切换至黑曜石",
+    tooltipReset: "复位东京都全域视图",
+    tooltipZoomIn: "放大",
+    tooltipZoomOut: "缩小",
+    loaderAria: "正在载入空间数据",
+    accentNames: { amber: "暖橙", crimson: "绯红", steel: "战术蓝" }
+  },
+  ja: {
+    siteTitleEditorial: "東京都犯罪発生状況アトラス",
+    siteTitleTactical: "東京都犯罪情勢マップ",
+    edition: "2026年版",
+    metrics: {
+      total: "刑法犯総数", nb: "非侵入窃盗", bi: "侵入窃盗",
+      r: "粗暴犯", v: "凶悪犯", o: "その他"
+    },
+    times: { R7: "令和7年計", R8: "令和8年累計" },
+    modes: { muni: "区市町村", chome: "町丁別" },
+    searchPh: "区市町村や町丁名を検索...",
+    hudWholeTokyo: "東京都全域",
+    hudReset: "⟲ 全域復帰",
+    levelChome: "町丁",
+    levelWard: "区市",
+    popLabel: "常住人口",
+    popMissing: "データなし",
+    unitRate: "件 / 千人",
+    reportedCases: "認知件数",
+    totalCases: "認知総数",
+    wardTotalCases: "全区認知総数 (件)",
+    wardRate: "全域千人率",
+    wardBenchmark: "全区基準",
+    breakdownTitle: "罪種別内訳",
+    backTo: "← 戻る",
+    top5ChomeTitle: "管内多発町丁 TOP 5",
+    noChomeData: "該当町村の町丁データなし",
+    top5WardTitle: "都内多発区市 TOP 5",
+    byRateDesc: "千人率順",
+    metaTitle: "データ出典と仕様",
+    metaL1: "都内 5,234 町丁全量描画 · 常住人口 1,400万人基準",
+    metaL2: "小標本収縮(K=2000)で昼夜間人口歪みを補正 · Leaflet Canvas",
+    rankExtreme: "極高",
+    rankHigh: "やや高",
+    rankNormal: "平均水準",
+    instTitle: "千人率の分布",
+    instMedian: "都内中央値",
+    instMax: "以上",
+    calloutSelected: "選択中",
+    noGeoNotice: "境界ポリゴンなし（以下不詳等）· 件数のみ表示",
+    seoTitle: "東京都犯罪率マップ · 5,234 町丁の認知件数ヒートマップ",
+    seoDesc: "警視庁の公式統計にもとづく東京都の犯罪率マップ。区市町村62・町丁5,234を罪種6分類・令和7年計／令和8年累計で千人率の階級別に色分け。多発ランキングも表示、日本語・中文・English対応。",
+    ogLocale: "ja_JP",
+    faqTitle: "口径と免責",
+    faqSub: "統計口径はこちら · 地域の安全性評価ではありません",
+    faq: [
+      { q: "千人率はどう算出していますか？", a: "千人率 = 当該町丁の刑法犯認知件数 ÷ 常住人口 × 1000。人口の少ない町丁の極端値を抑えるため、区分前に小標本収縮（K = 2000）を行っています。" },
+      { q: "繁華街の犯罪率が高く見えるのはなぜ？", a: "分母は常住人口ですが、繁華街や駅前は昼間の流動人口が常住人口を大きく上回るため、千人率が押し上げられます。口径による偏りであり、居住の安全性を示すものではありません。" },
+      { q: "データの更新頻度と出典は？", a: "警視庁公開の「区市町村の町丁別、罪種別及び手口別認知件数」（令和7年計・令和8年月次累計）と東京都住民基本台帳人口によるもので、ライセンスは CC BY、公表に合わせて更新します。" },
+      { q: "賃貸や投資の判断に使えますか？", a: "認知件数は発案件数とは異なり、届出率の影響も受けます。本図は公式統計の分布を示すのみで、いかなる地域の安全性の評価・保証も行いません。単独の判断材料としないでください。" }
+    ],
+    siteBy: "出典：警視庁 · 東京都常住人口",
+    loadingTitle: "東京都犯罪情勢マップ",
+    loadingStatus: "● 都内 5,234 町丁の空間統計データを読み込み中...",
+    casesUnit: "件",
+    areaFallback: "東京都",
+    tooltipMetric: "罪種を選択",
+    tooltipLangGroup: "表示言語を切り替え",
+    tooltipPalette: "重点色を切り替え",
+    tooltipThemeLight: "紙感ホワイトに切替",
+    tooltipThemeDark: "黒曜石に切替",
+    tooltipReset: "東京都全域表示に戻す",
+    tooltipZoomIn: "拡大",
+    tooltipZoomOut: "縮小",
+    loaderAria: "空間データを読み込み中",
+    accentNames: { amber: "暖橙", crimson: "クリムゾン", steel: "スチールブルー" }
+  },
+  en: {
+    siteTitleEditorial: "Tokyo Crime Rate Atlas",
+    siteTitleTactical: "Tokyo Crime Tactical Map",
+    edition: "2026 EDITION",
+    metrics: {
+      total: "Total Penal Code", nb: "Non-burglary Theft", bi: "Burglary",
+      r: "Violent Crimes", v: "Heinous Crimes", o: "Other Crimes"
+    },
+    times: { R7: "2025 Annual", R8: "2026 YTD" },
+    modes: { muni: "Municipalities", chome: "Districts (Chome)" },
+    searchPh: "Search municipality or district...",
+    hudWholeTokyo: "Tokyo Metro",
+    hudReset: "⟲ Reset View",
+    levelChome: "District",
+    levelWard: "Muni",
+    popLabel: "Resident Pop.",
+    popMissing: "N/A",
+    unitRate: "cases / 1k pop.",
+    reportedCases: "Reported Cases",
+    totalCases: "Total Cases",
+    wardTotalCases: "Total Muni Cases",
+    wardRate: "Muni Rate (‰)",
+    wardBenchmark: "Muni Avg",
+    breakdownTitle: "Crime Breakdown",
+    backTo: "← Back to",
+    top5ChomeTitle: "High-Crime Districts TOP 5",
+    noChomeData: "No subdivision data for this municipality",
+    top5WardTitle: "High-Crime Municipalities TOP 5",
+    byRateDesc: "by Rate per 1k",
+    metaTitle: "Data Source & Specs",
+    metaL1: "5,234 districts fully rendered · 14M population base",
+    metaL2: "Empirical Bayes shrinkage (K=2000) · Leaflet Canvas",
+    rankExtreme: "High",
+    rankHigh: "Elevated",
+    rankNormal: "Average",
+    instTitle: "Distribution per 1,000 Pop.",
+    instMedian: "Metro Median",
+    instMax: "& above",
+    calloutSelected: "Selected",
+    noGeoNotice: "Boundary geometry unavailable · Statistics included",
+    seoTitle: "Tokyo Crime Rates Map · 5,234 Districts Choropleth",
+    seoDesc: "Interactive Tokyo crime-rate map built on official Metropolitan Police statistics: 62 municipalities and 5,234 districts, six offense categories, FY2025 annual and FY2026 cumulative, coloured by rate per 1,000 residents. Available in Chinese, Japanese and English.",
+    ogLocale: "en_US",
+    faqTitle: "Methodology & Disclaimer",
+    faqSub: "Statistics definitions · not a safety rating",
+    faq: [
+      { q: "How is the rate per 1,000 computed?", a: "Rate = reported Penal Code offenses in that district ÷ resident population × 1000. To damp extreme values in small-population districts, an empirical-Bayes shrinkage (K = 2000) is applied before binning." },
+      { q: "Why do entertainment districts look so high?", a: "The denominator is resident population, while daytime footfall in entertainment and station areas far exceeds it, inflating the rate. This is a definitional bias, not a measure of residential safety." },
+      { q: "How often is data updated and what are the sources?", a: "Sources are the Tokyo Metropolitan Police Department's published crime counts by district and crime type (FY2025 annual and FY2026 monthly cumulative) plus Tokyo's Basic Resident Register population, licensed CC BY, refreshed as the authorities publish." },
+      { q: "Can I use this for renting or investment decisions?", a: "Reported counts differ from actual incidents and are affected by reporting rates. This map only visualises the distribution of official statistics; it is not an assessment or guarantee of any area's safety and must not be used as a sole basis for decisions." }
+    ],
+    siteBy: "Source: Tokyo Metropolitan Police Dept. · Tokyo resident population",
+    loadingTitle: "Tokyo Crime Rate Atlas",
+    loadingStatus: "● Loading spatial statistics for 5,234 Tokyo districts...",
+    casesUnit: "",
+    areaFallback: "Tokyo",
+    tooltipMetric: "Select crime type",
+    tooltipLangGroup: "Switch interface language",
+    tooltipPalette: "Switch accent color",
+    tooltipThemeLight: "Switch to paper light",
+    tooltipThemeDark: "Switch to obsidian dark",
+    tooltipReset: "Reset to Tokyo-wide view",
+    tooltipZoomIn: "Zoom in",
+    tooltipZoomOut: "Zoom out",
+    loaderAria: "Loading spatial data",
+    accentNames: { amber: "Amber", crimson: "Crimson", steel: "Steel Blue" }
+  }
+};
+
+function detectInitialLang() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const qLang = urlParams.get("lang");
+  if (qLang && I18N[qLang]) return qLang;
+  const saved = localStorage.getItem("tokyo-crime-lang");
+  if (saved && I18N[saved]) return saved;
+  const navLangs = navigator.languages || [navigator.language || ""];
+  for (const l of navLangs) {
+    const s = l.toLowerCase();
+    if (s.startsWith("ja")) return "ja";
+    if (s.startsWith("zh")) return "zh";
+    if (s.startsWith("en")) return "en";
+  }
+  return "zh"; // 默认中文兜底
+}
+
+let currentLang = detectInitialLang();
+const initLdr = document.getElementById("app-loader");
+if (initLdr) {
+  const ldrT = I18N[currentLang] || I18N.zh;
+  const lt = document.getElementById("loader-title");
+  const ls = document.getElementById("loader-status");
+  if (lt) lt.textContent = ldrT.loadingTitle;
+  if (ls) ls.textContent = ldrT.loadingStatus;
+}
+// =====================================================================
+// 0.5 低饱和重点色系统 (4 套精心调配 · 一键热切换)
+// =====================================================================
+const ACCENT_PALETTES = [
+  { id: "amber" },
+  { id: "crimson" },
+  { id: "steel" }
+];
+
+const COLOR_RAMPS = {
+  amber: {
+    tactical: ["#141210", "#1f1a16", "#2c251e", "#3e342a", "#57412f", "#77542f", "#9c6830", "#bb7a24", "#d0801a"],
+    editorial: ["#f7f4ed", "#f0e9dc", "#e5d4be", "#d7b497", "#c4886b", "#b25f46", "#9f3c2c", "#871f1f", "#520c0c"]
+  },
+  crimson: {
+    tactical: ["#141210", "#201a18", "#302224", "#452a2d", "#602b32", "#7f2c36", "#a02f3a", "#c03a3d", "#de4848"],
+    editorial: ["#faf5f5", "#f4e6e6", "#e8cfcf", "#d8b2b2", "#c48888", "#b05e5e", "#993a3a", "#802222", "#5e1414"]
+  },
+  steel: {
+    tactical: ["#141210", "#1d1d1f", "#292b2f", "#363c43", "#43505c", "#50637a", "#5c7690", "#527fa0", "#4a8bb2"],
+    editorial: ["#f4f6fa", "#e6ecf5", "#cfdced", "#b2c7e0", "#8eaecd", "#6c93b8", "#4b79a2", "#325f88", "#1e4468"]
+  }
+};
+
+function detectInitialAccent() {
+  const saved = localStorage.getItem("tokyo-crime-accent");
+  if (saved && ACCENT_PALETTES.some(p => p.id === saved)) return saved;
+  return "amber";
+}
+let currentAccent = detectInitialAccent();
+
+function applyAccentPalette(acc) {
+  if (!ACCENT_PALETTES.some(p => p.id === acc)) acc = "amber";
+  currentAccent = acc;
+  localStorage.setItem("tokyo-crime-accent", acc);
+  document.documentElement.setAttribute("data-accent", acc);
+
+  // 重新计算分级色标，全量重绘地图多边形、直方图与图例（实现地图背景重点色与UI完全同步）
+  if (typeof buildScales === "function") buildScales();
+  if (typeof updateLegendBar === "function") updateLegendBar();
+  if (typeof updateHistogram === "function") updateHistogram();
+  if (chomeLayer) chomeLayer.setStyle(chomeLayer.options.style);
+  if (muniLayer) muniLayer.setStyle(muniLayer.options.style);
+  if (parentBoundaryLayer && window.curSelected) {
+    const wardName = mode === "chome" ? window.curSelected?.properties?.ward : window.curSelected;
+    if (wardName) highlightParentBoundary(wardName);
+  }
+  if (typeof syncPaletteTooltip === "function") syncPaletteTooltip();
+}
+
+function cycleAccentPalette() {
+  const idx = ACCENT_PALETTES.findIndex(p => p.id === currentAccent);
+  const nextIdx = (idx + 1) % ACCENT_PALETTES.length;
+  applyAccentPalette(ACCENT_PALETTES[nextIdx].id);
+}
+
+// 调色盘按钮的 tooltip / aria-label（含当前重点色名，随语言与配色同步）
+function syncPaletteTooltip() {
+  const el = document.getElementById("palette-btn");
+  if (!el) return;
+  const t = I18N[currentLang] || I18N.zh;
+  const name = (t.accentNames && t.accentNames[currentAccent]) || currentAccent;
+  const tip = `${t.tooltipPalette} · ${name}`;
+  el.title = tip;
+  el.setAttribute("aria-label", tip);
+}
+
+// =====================================================================
+// 7. 色彩与主题管理 (单色调顺次色阶，琥珀暖调，根据时间自动感知)
+// =====================================================================
+const ICONS = {
+  moon: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`,
+  sun: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41m14.14-14.14l-1.41 1.41"/></svg>`
+};
+
+const VARIANTS = {
+  editorial: {
+    nodata: "#e8e3d8",
+    nopop: "#eae6dc",
+    lineColor: "rgba(24, 22, 20, 0.18)",
+    selLine: "#181614"
+  },
+  tactical: {
+    nodata: "#201c19",
+    nopop: "#161312",
+    lineColor: "rgba(255, 244, 232, 0.08)",
+    selLine: "#f5f0e8"
+  }
+};
+
+// 自动根据时间感知日夜模式 (晚 18:00 - 早 06:00 默认为黑曜石夜间模式)
+function detectInitialTheme() {
+  const saved = localStorage.getItem("tokyo-crime-theme");
+  if (saved && VARIANTS[saved]) return saved;
+  const hour = new Date().getHours();
+  return (hour >= 18 || hour < 6) ? "tactical" : "editorial";
+}
+
+let currentVariant = detectInitialTheme();
+let baseTileLayer = null;
+
+function applyThemeVariant(v) {
+  currentVariant = v;
+  document.documentElement.setAttribute("data-variant", v);
+  const t = I18N[currentLang] || I18N.zh;
+
+  document.getElementById("hdr-title").textContent = v === "editorial" ? t.siteTitleEditorial : t.siteTitleTactical;
+  document.getElementById("hdr-tag").textContent = t.edition;
+  const themeWrap = document.getElementById("theme-icon-wrap");
+  if (themeWrap) {
+    themeWrap.innerHTML = v === "tactical" ? ICONS.moon : ICONS.sun;
+  }
+  const themeBtn = document.getElementById("theme-btn");
+  if (themeBtn) {
+    themeBtn.title = v === "tactical" ? t.tooltipThemeLight : t.tooltipThemeDark;
+  }
+
+  buildScales();
+  updateLegendBar();
+  updateHistogram();
+  if (chomeLayer) chomeLayer.setStyle(chomeLayer.options.style);
+  if (muniLayer) muniLayer.setStyle(muniLayer.options.style);
+  if (parentBoundaryLayer && window.curSelected && window.curSelected.properties) {
+    highlightParentBoundary(window.curSelected.properties.ward);
+  }
+  if (window.applyMode) window.applyMode();
+  if (window.curSelected) {
+    if (mode === "chome") renderChomeCard(window.curSelected);
+    else renderWardCard(window.curSelected);
+  }
+}
+
+function setLanguage(lang) {
+  if (!I18N[lang]) return;
+  currentLang = lang;
+  localStorage.setItem("tokyo-crime-lang", lang);
+  document.documentElement.lang = lang === "zh" ? "zh-CN" : (lang === "ja" ? "ja-JP" : "en-US");
+
+  // 语言按钮高亮
+  document.querySelectorAll(".lang-switch-group button").forEach(b => {
+    b.classList.toggle("on", b.dataset.lang === lang);
+  });
+
+  const t = I18N[lang];
+  const titleEl = document.getElementById("hdr-title");
+  if (titleEl) titleEl.textContent = currentVariant === "editorial" ? t.siteTitleEditorial : t.siteTitleTactical;
+  const tagEl = document.getElementById("hdr-tag");
+  if (tagEl) tagEl.textContent = t.edition;
+
+  // 更新指标下拉框
+  const mSelect = document.getElementById("metric");
+  if (mSelect) {
+    const curVal = mSelect.value;
+    mSelect.innerHTML = Object.entries(t.metrics).map(([k, name]) =>
+      `<option value="${k}" ${k === curVal ? "selected" : ""}>${name}</option>`
+    ).join("");
+  }
+
+  // 更新时间切换按钮文字
+  document.querySelectorAll("[data-t]").forEach(b => {
+    if (t.times[b.dataset.t]) b.textContent = t.times[b.dataset.t];
+  });
+
+  // 更新模式按钮文字
+  document.querySelectorAll("[data-mode]").forEach(b => {
+    if (t.modes[b.dataset.mode]) b.textContent = t.modes[b.dataset.mode];
+  });
+
+  // 搜索框 placeholder
+  const qInput = document.getElementById("q");
+  if (qInput) qInput.placeholder = t.searchPh;
+
+  // 同步 MLABEL 词典
+  for (const k of Object.keys(t.metrics)) {
+    MLABEL[k] = t.metrics[k];
+  }
+
+  // 更新 HUD 胶囊
+  if (window.curSelected) {
+    if (mode === "chome" && window.curSelected.properties) {
+      const p = window.curSelected.properties;
+      const rate = chomeRateOf(p);
+      updateHudCapsule(p.name, `${rate != null ? rate.toFixed(1) + ' ‰' : '—'} (${MLABEL[curMetric]})`);
+    } else if (typeof window.curSelected === "string") {
+      const rate = rateOf(MUNI.find(x => x.ward === window.curSelected));
+      updateHudCapsule(window.curSelected, `${rate != null ? rate.toFixed(1) + ' ‰' : '—'} (${MLABEL[curMetric]})`);
+    }
+  } else {
+    updateHudCapsule(t.hudWholeTokyo, `62 ${t.levelWard} · ${MLABEL[curMetric]}`);
+  }
+  const resetBtn = document.getElementById("hud-reset");
+  if (resetBtn) {
+    resetBtn.textContent = t.hudReset;
+    resetBtn.title = t.tooltipReset;
+  }
+
+  // ---- 静态控件的 title / aria-label 全量本地化（此前遗漏的残留）----
+  const setTip = (sel, tip) => {
+    const el = document.querySelector(sel);
+    if (el) { el.title = tip; el.setAttribute("aria-label", tip); }
+  };
+  setTip("#metric", t.tooltipMetric);
+  setTip(".lang-switch-group", t.tooltipLangGroup);
+  setTip("#zsPlus", t.tooltipZoomIn);
+  setTip("#zsMinus", t.tooltipZoomOut);
+  if (typeof syncPaletteTooltip === "function") syncPaletteTooltip();
+  const loaderEl = document.getElementById("app-loader");
+  if (loaderEl) loaderEl.setAttribute("aria-label", t.loaderAria);
+  const themeBtnEl = document.getElementById("theme-btn");
+  if (themeBtnEl) {
+    const tip = currentVariant === "tactical" ? t.tooltipThemeLight : t.tooltipThemeDark;
+    themeBtnEl.title = tip;
+    themeBtnEl.setAttribute("aria-label", tip);
+  }
+  // SEO 元数据按语言同步（title / description / OG / Twitter / canonical）
+  document.title = t.seoTitle;
+  const setMeta = (sel, val) => { const el = document.querySelector(sel); if (el && val) el.setAttribute("content", val); };
+  setMeta('meta[name="description"]', t.seoDesc);
+  setMeta('meta[property="og:title"]', t.seoTitle);
+  setMeta('meta[property="og:description"]', t.seoDesc);
+  setMeta('meta[property="og:locale"]', t.ogLocale);
+  setMeta('meta[name="twitter:title"]', t.seoTitle);
+  setMeta('meta[name="twitter:description"]', t.seoDesc);
+  {
+    // 默认语言（中文）留在根路径，其余语言用 ?lang= 自指 canonical，避免重复内容
+    const href = lang === "zh"
+      ? "https://crime.saaaai.com/"
+      : `https://crime.saaaai.com/?lang=${lang}`;
+    setMeta('meta[property="og:url"]', href);
+    const link = document.querySelector('link[rel="canonical"]');
+    if (link) link.setAttribute("href", href);
+  }
+
+  // 若地名胶囊正显示，同步刷新其层级标签、数值与 aria-label
+  const coCap = document.getElementById("lx-capsule");
+  if (coCap && coCap.classList.contains("on") && coCap.dataset.placeName) {
+    const lvlText = levelLabel(coCap.dataset.lvlKey);
+    let syncRate = null;
+    if (coCap.dataset.lvlKey === "ward") {
+      const w0 = MUNI.find(x => x.ward === coCap.dataset.placeName);
+      if (w0) syncRate = rateOf(w0);
+    } else {
+      const hit0 = POLY.features.find(x => x.properties && x.properties.name === coCap.dataset.placeName);
+      if (hit0) syncRate = chomeRateOf(hit0.properties);
+    }
+    const syncRateText = syncRate != null ? syncRate.toFixed(1) : "—";
+    coCap.innerHTML = `<span class="lx-lvl">${lvlText}</span>` +
+      `<span class="lx-name">${coCap.dataset.placeName}</span>` +
+      `<span class="lx-num"><span class="lx-val">${syncRateText}</span>` +
+      `<span class="lx-unit">${t.unitRate}</span></span>`;
+    const sep = lang === 'en' ? ': ' : '：';
+    const sp = lang === 'en' ? ' ' : '';
+    coCap.setAttribute("aria-label", `${t.calloutSelected}${sp}${lvlText}${sep}${coCap.dataset.placeName}${sep}${syncRateText} ${t.unitRate}`);
+  }
+
+  // 重绘直方图与图例
+  updateLegendBar();
+  updateHistogram();
+
+  // 重绘右侧卡片
+  if (window.curSelected) {
+    if (mode === "chome") renderChomeCard(window.curSelected);
+    else renderWardCard(window.curSelected);
+  }
+}
+function toggleTheme() {
+  const next = currentVariant === "editorial" ? "tactical" : "editorial";
+  localStorage.setItem("tokyo-crime-theme", next);
+  applyThemeVariant(next);
+}
+
+// 地图折线标注：起点 → 斜线 → 横线 → 地名标签；线用 dashoffset 做生长动画
+function levelLabel(key) {
+  const t = I18N[currentLang] || I18N.zh;
+  if (key === "ward") return t.levelWard;
+  if (key === "chome") return t.levelChome;
+  return key; // 兼容旧调用传入的已本地化文本
+}
+function showToast(name, tag) { showCallout(name, tag || "chome"); }
+// 选中标注：锚点圆 + 三环长脉冲 + 上浮地名胶囊（方案一）
+function showCallout(name, tag) {
+  const svg = document.getElementById("lx-svg");
+  const cap = document.getElementById("lx-capsule");
+  if (!svg || !cap || !name || !map) return;
+  if (!lastAnchor) { // 程序化调用无点击坐标：用地块点位兜底
+    const hit = PTS.find(p => p.n === name);
+    if (hit && hit.lat != null) lastAnchor = L.latLng(hit.lat, hit.lng);
+    else return;
+  }
+  const pt = map.latLngToContainerPoint(lastAnchor);
+  const vw = window.innerWidth, vh = window.innerHeight;
+  svg.setAttribute("width", vw);
+  svg.setAttribute("height", vh);
+  svg.setAttribute("viewBox", `0 0 ${vw} ${vh}`);
+  const RING = RM_MOTION ? "" :
+    `<circle class="lx-ring" cx="${pt.x}" cy="${pt.y}" r="6"/>` +
+    `<circle class="lx-ring" cx="${pt.x}" cy="${pt.y}" r="6"/>` +
+    `<circle class="lx-ring" cx="${pt.x}" cy="${pt.y}" r="6"/>`;
+  svg.innerHTML = `<circle class="lx-dot" cx="${pt.x}" cy="${pt.y}" r="4"/>` + RING;
+
+  const tCo = I18N[currentLang] || I18N.zh;
+  const lvlText = levelLabel(tag);
+  // 数值：町丁用该町丁千人率，区市用全区千人率；无人口地块显示 —
+  let capRate = null;
+  if (tag === "ward") {
+    const w0 = MUNI.find(x => x.ward === name);
+    if (w0) capRate = rateOf(w0);
+  } else {
+    const hit0 = POLY.features.find(x => x.properties && x.properties.name === name);
+    if (hit0) capRate = chomeRateOf(hit0.properties);
+  }
+  const capRateText = capRate != null ? capRate.toFixed(1) : "—";
+  cap.dataset.lvlKey = tag;
+  cap.dataset.placeName = name;
+  cap.innerHTML = `<span class="lx-lvl">${lvlText}</span>` +
+    `<span class="lx-name">${name}</span>` +
+    `<span class="lx-num"><span class="lx-val">${capRateText}</span>` +
+    `<span class="lx-unit">${tCo.unitRate}</span></span>`;
+  cap.setAttribute("role", "status");
+  const sep = currentLang === 'en' ? ': ' : '：';
+  const sp = currentLang === 'en' ? ' ' : '';
+  cap.setAttribute("aria-label", `${tCo.calloutSelected}${sp}${lvlText}${sep}${name}${sep}${capRateText} ${tCo.unitRate}`);
+  cap.style.left = pt.x + "px";
+  cap.style.top = (pt.y - CAPSULE_LIFT) + "px";
+  cap.classList.remove("on");
+  if (RM_MOTION) { cap.classList.add("on"); return; }
+  void cap.offsetWidth;
+  // 三环长脉冲：半径 6 → 108，单圈 2s，错相 0.62s，共 3 圈
+  svg.querySelectorAll(".lx-ring").forEach((c, i) => {
+    c.animate(
+      [{ opacity: 0.85, r: 6 }, { opacity: 0, r: 108 }],
+      { duration: 2000, delay: i * 620, iterations: 3, easing: "cubic-bezier(.2,.7,.3,1)", fill: "forwards" }
+    );
+  });
+  requestAnimationFrame(() => cap.classList.add("on"));
+}
+// 地图视野变化时标注跟随
+function refreshCallout() {
+  const svg = document.getElementById("lx-svg");
+  const cap = document.getElementById("lx-capsule");
+  if (!svg || !cap || !lastAnchor || !map) return;
+  if (!cap.classList.contains("on")) return;
+  const pt = map.latLngToContainerPoint(lastAnchor);
+  svg.querySelectorAll("circle").forEach(c => {
+    c.setAttribute("cx", pt.x); c.setAttribute("cy", pt.y);
+  });
+  cap.style.left = pt.x + "px";
+  cap.style.top = (pt.y - CAPSULE_LIFT) + "px";
+}
+let lastAnchor = null;
+const CAPSULE_LIFT = 84; // 胶囊底部距锚点的像素（避让鼠标：约两倍脉冲半径）
+const RM_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// =====================================================================
+// 8. 核心数据管线
+// =====================================================================
+const CF = { total: "t", nb: "nb", bi: "bi", r: "r", v: "v", o: "o" };
+const CF_R8 = { total: "r8", nb: "r8nb", bi: "r8bi", r: "r8r", v: "r8v", o: "r8o" };
+const MLABEL = { ...(I18N[currentLang] || I18N.zh).metrics };
+
+let map, muniLayer, chomeLayer, labelLayer, parentBoundaryLayer = null;
+let PTS = [], POLY, MUNI_POLY, MUNI;
+let curMetric = "total", curT = "R7", selWard = null;
+let mode = "chome";
+let SCALES = {};
+
+function rateOf(w) {
+  if (!w || w.nodata || !w.pop) return null;
+  const c = curT === "R7" ? w.R7 : w.R8cum;
+  if (!c) return null;
+  const count = curT === "R7" ? c[curMetric] : (c[CF_R8[curMetric]] ?? c[curMetric]);
+  return (count / w.pop) * 1000;
+}
+
+function buildScales() {
+  const cfg = VARIANTS[currentVariant];
+  SCALES = {};
+  for (const m of Object.keys(CF)) {
+    const vals = [];
+    const col = CF[m], colR8 = CF_R8[m];
+    if (MUNI) {
+      for (const w of MUNI) {
+        if (!w.nodata && w.pop) {
+          for (const t of ["R7", "R8cum"]) {
+            const v = w[t]?.[m];
+            if (v != null) vals.push((v / w.pop) * 1000);
+          }
+        }
+      }
+    }
+    if (POLY) {
+      for (const f of POLY.features) {
+        const pr = f.properties;
+        if (pr && pr.pop && pr.pop >= 200) {
+          for (const t of ["R7", "R8cum"]) {
+            const fld = t === "R7" ? col : colR8;
+            const v = pr[fld];
+            if (v != null) vals.push((v / pr.pop) * 1000);
+          }
+        }
+      }
+    }
+    vals.sort((a, b) => a - b);
+    if (!vals.length) continue;
+
+    const q = p => vals[Math.min(vals.length - 1, Math.floor(p * vals.length))];
+    const hi = q(0.99);
+    const nz = vals.filter(v => v > 0);
+    const zero = (1 - nz.length / vals.length) >= 0.35;
+    const L1 = Math.log1p(hi);
+    let breaks = [];
+    if (zero) {
+      const L0 = Math.log1p(nz[0] || 0.01);
+      breaks = [0];
+      for (let k = 1; k < 7; k++) breaks.push(Math.expm1(L0 + (L1 - L0) * k / 7));
+      breaks.push(hi);
+    } else {
+      const L0 = Math.log1p(vals[0]);
+      for (let k = 1; k < 8; k++) breaks.push(Math.expm1(L0 + (L1 - L0) * k / 8));
+      breaks.push(hi);
+    }
+    for (let i = 1; i < breaks.length; i++) {
+      if (breaks[i] <= breaks[i - 1]) breaks[i] = breaks[i - 1] + 1e-6;
+    }
+    const curRamp = (COLOR_RAMPS[currentAccent] || COLOR_RAMPS.amber)[currentVariant];
+    SCALES[m] = {
+      breaks, hi, zero, vals,
+      ramp: [...curRamp]
+    };
+  }
+}
+
+function colorForScale(r, S) {
+  if (r == null || !S) return VARIANTS[currentVariant].nodata;
+  if (r <= 0 && S.zero) return S.ramp[0];
+  const b = S.breaks;
+  for (let i = 0; i < b.length; i++) {
+    if (r <= b[i]) return S.ramp[i];
+  }
+  return S.ramp[8];
+}
+
+function colorForChome(r) {
+  if (r == null) return VARIANTS[currentVariant].nopop;
+  return colorForScale(r, SCALES[curMetric]);
+}
+
+function colorForRate(r) {
+  if (r == null) return VARIANTS[currentVariant].nodata;
+  return colorForScale(r, SCALES[curMetric]);
+}
+
+function chomeRateOf(pr) {
+  if (!pr || !pr.pop || pr.pop < 200) return null;
+  const fld = curT === "R7" ? CF[curMetric] : CF_R8[curMetric];
+  return (pr[fld] / pr.pop) * 1000;
+}
+
+// =====================================================================
+// 9. 态势分布仪更新
+// =====================================================================
+function updateHistogram() {
+  const S = SCALES[curMetric];
+  if (!S || !S.vals.length) return;
+
+  const vals = S.vals;
+  const nBins = 28;
+  const maxV = S.hi * 1.05;
+  const minV = 0;
+  const binWidth = maxV / nBins;
+  const counts = new Array(nBins).fill(0);
+
+  for (const v of vals) {
+    if (v >= maxV) counts[nBins - 1]++;
+    else {
+      const idx = Math.floor((v - minV) / binWidth);
+      counts[Math.max(0, Math.min(nBins - 1, idx))]++;
+    }
+  }
+
+  const maxCount = Math.max(...counts);
+  const svgW = 332, svgH = 22;
+  const barW = svgW / nBins;
+
+  let barsHtml = "";
+  for (let i = 0; i < nBins; i++) {
+    const h = (counts[i] / maxCount) * (svgH - 2);
+    const x = i * barW;
+    const y = svgH - h;
+    barsHtml += `<rect class="hist-bar" x="${x + 0.5}" y="${y}" width="${barW - 1}" height="${h}" rx="1"/>`;
+  }
+  document.getElementById("hist-svg").innerHTML = barsHtml;
+
+  const t = I18N[currentLang] || I18N.zh;
+  document.getElementById("inst-title").textContent = `${MLABEL[curMetric]} · ${t.instTitle}`;
+  const med = S.vals[Math.floor(S.vals.length * 0.5)].toFixed(1);
+  document.getElementById("inst-readout").textContent = `${t.instMedian}: ${med} ${t.unitRate}`;
+}
+
+function moveHistCursor(val, label) {
+  const t = I18N[currentLang] || I18N.zh;
+  const cursor = document.getElementById("hist-cursor");
+  const S = SCALES[curMetric];
+  if (val == null || !S) {
+    cursor.style.opacity = "0";
+    return;
+  }
+  const maxV = S.hi * 1.05;
+  const pct = Math.max(0, Math.min(100, (val / maxV) * 100));
+  cursor.style.left = pct + "%";
+  cursor.style.opacity = "1";
+
+  document.getElementById("inst-readout").textContent = `${label || ''} · ${val.toFixed(1)} ${t.unitRate}`;
+}
+
+function hideHistCursor() {
+  const t = I18N[currentLang] || I18N.zh;
+  document.getElementById("hist-cursor").style.opacity = "0";
+  const S = SCALES[curMetric];
+  if (S && S.vals.length) {
+    const med = S.vals[Math.floor(S.vals.length * 0.5)].toFixed(1);
+    document.getElementById("inst-readout").textContent = `${t.instMedian}: ${med} ${t.unitRate}`;
+  }
+}
+
+function updateLegendBar() {
+  const t = I18N[currentLang] || I18N.zh;
+  const S = SCALES[curMetric];
+  if (!S) return;
+  const barDiv = document.getElementById("legendBarDiv");
+  barDiv.innerHTML = S.ramp.map(c => `<div style="background:${c}"></div>`).join("");
+
+  const b = S.breaks;
+  const tickVals = [b[0], b[1], b[3], b[5], b[7]];
+  const ticksDiv = document.getElementById("legendTicks");
+  ticksDiv.innerHTML = `
+    <span>${tickVals[0] === 0 ? "0" : tickVals[0].toFixed(1)}</span>
+    <span>${tickVals[1].toFixed(1)}</span>
+    <span>${tickVals[2].toFixed(1)}</span>
+    <span>${tickVals[3].toFixed(1)}</span>
+    <span>≥${Math.round(S.hi)} ${t.instMax}</span>
+  `;
+}
+
+// =====================================================================
+// 10. 右侧数据卡：町丁卡 + 区市卡（选中地块时两张卡同时呈现）
+// =====================================================================
+function crimeRowsHtml(o) {
+  const t = I18N[currentLang] || I18N.zh;
+  const cats = [
+    { k: "total", n: t.metrics.total, v: o.total },
+    { k: "nb", n: t.metrics.nb, v: o.nb },
+    { k: "bi", n: t.metrics.bi, v: o.bi },
+    { k: "r", n: t.metrics.r, v: o.r },
+    { k: "v", n: t.metrics.v, v: o.v },
+    { k: "o", n: t.metrics.o, v: o.o }
+  ];
+  const maxV = Math.max(...cats.map(c => c.v || 0), 1);
+  return cats.map(c => {
+    const pct = Math.round(((c.v || 0) / maxV) * 100);
+    const isAct = c.k === curMetric ? "active" : "";
+    return `
+      <div class="crime-row ${isAct}">
+        <span class="crime-label">${c.n}</span>
+        <div class="crime-bar-wrap"><div class="crime-bar-fill" style="width:${pct}%"></div></div>
+        <span class="crime-count">${(c.v ?? 0).toLocaleString()}${t.casesUnit ? ' ' + t.casesUnit : ''}</span>
+      </div>`;
+  }).join("");
+}
+
+// 町丁属性 → 当前期间六罪种件数
+function chomeCounts(p) {
+  return curT === "R7"
+    ? { total: p.t, nb: p.nb, bi: p.bi, r: p.r, v: p.v, o: p.o }
+    : { total: p.r8, nb: p.r8nb, bi: p.r8bi, r: p.r8r, v: p.r8v, o: p.r8o };
+}
+
+// 区市数据 → 当前期间六罪种件数
+function wardCounts(w) {
+  const R = curT === "R7" ? w.R7 : w.R8cum;
+  if (!R) return { total: 0, nb: 0, bi: 0, r: 0, v: 0, o: 0 };
+  return { total: R.total, nb: R.nonbreakin, bi: R.breakin, r: R.rough, v: R.violent, o: R.other };
+}
+
+function chomeCardBodyHtml(f) {
+  const t = I18N[currentLang] || I18N.zh;
+  const p = f.properties;
+  const rate = chomeRateOf(p);
+  const cnt = chomeCounts(p);
+  const S = SCALES[curMetric];
+  let badgeHtml = "";
+  if (rate != null && S) {
+    const vals = S.vals;
+    let rankIdx = 0;
+    while (rankIdx < vals.length && vals[rankIdx] <= rate) rankIdx++;
+    const topPct = +(100 - (rankIdx / vals.length) * 100).toFixed(1);
+    if (topPct <= 5) badgeHtml = `<span class="rank-badge danger">Top ${topPct}% ${t.rankExtreme}</span>`;
+    else if (topPct <= 20) badgeHtml = `<span class="rank-badge danger">Top ${topPct}% ${t.rankHigh}</span>`;
+    else badgeHtml = `<span class="rank-badge neutral">${t.rankNormal}</span>`;
+  }
+  const nogeo = f.geometry ? "" : `<div style="font-size:12.5px;color:var(--text-muted);margin-bottom:6px">${t.noGeoNotice}</div>`;
+  return `
+    <span class="card-level lv-chome">${t.levelChome}</span>
+    <div class="card-head">
+      <div>
+        <h2>${p.name}</h2>
+        <div style="font-size:12.5px;color:var(--text-muted);margin-top:2px">${p.ward || ""} · ${t.popLabel} ${p.pop ? p.pop.toLocaleString() : t.popMissing}</div>
+      </div>
+      ${badgeHtml}
+    </div>
+    ${nogeo}
+    <div class="metric-grid-2col">
+      <div class="mg-col">
+        <div class="mg-val big-val">${rate != null ? rate.toFixed(1) : "—"}</div>
+        <div class="mg-lbl">${t.unitRate} (${curT === 'R7' ? t.times.R7 : t.times.R8})</div>
+      </div>
+      <div class="mg-col">
+        <div class="mg-val">${cnt.total != null ? cnt.total.toLocaleString() : "0"}</div>
+        <div class="mg-lbl">${MLABEL[curMetric]} ${t.reportedCases}</div>
+      </div>
+    </div>
+    <div class="breakdown-section">
+      <div class="section-title">${t.breakdownTitle}</div>
+      ${crimeRowsHtml(cnt)}
+    </div>
+    <div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--line-main);display:flex;justify-content:space-between;align-items:center;">
+      <button onclick="selectWardByName('${p.ward}')" style="background:var(--bg-card-sub);border:1px solid var(--line-main);color:var(--text-main);padding:4px 8px;border-radius:var(--radius-inner);font-size:12px;cursor:pointer;font-weight:350">
+        ${t.backTo} ${p.ward}
+      </button>
+      <span style="font-size:11px;color:var(--text-faint);font-family:var(--font-num)">KEISHICHO</span>
+    </div>`;
+}
+
+function wardCardBodyHtml(name) {
+  const t = I18N[currentLang] || I18N.zh;
+  const w = MUNI.find(x => x.ward === name);
+  if (!w) return "";
+  const rate = rateOf(w);
+  const cnt = wardCounts(w);
+  const chomesInWard = POLY ? POLY.features.filter(f => f.properties && f.properties.ward === name) : [];
+  chomesInWard.sort((a, b) => (chomeRateOf(b.properties) || 0) - (chomeRateOf(a.properties) || 0));
+  const topsHtml = chomesInWard.slice(0, 5).map(f => {
+    const pr = f.properties;
+    const r = chomeRateOf(pr);
+    return `<div class="top-item" onclick="selectChomeByName('${pr.name}', true)"><span class="tname">${pr.name}</span><span class="trate">${r != null ? r.toFixed(1) : "—"} ‰</span></div>`;
+  }).join("");
+  return `
+    <span class="card-level lv-ward">${t.levelWard}</span>
+    <div class="card-head">
+      <div>
+        <h2>${w.ward}</h2>
+        <div style="font-size:12.5px;color:var(--text-muted);margin-top:2px">${w.area || t.areaFallback} · ${t.popLabel} ${w.pop ? w.pop.toLocaleString() : t.popMissing}</div>
+      </div>
+      <span class="rank-badge neutral">${t.wardBenchmark}</span>
+    </div>
+    <div class="metric-grid-2col">
+      <div class="mg-col">
+        <div class="mg-val big-val">${rate != null ? rate.toFixed(1) : "—"}</div>
+        <div class="mg-lbl">${t.wardRate} (${curT === 'R7' ? t.times.R7 : t.times.R8})</div>
+      </div>
+      <div class="mg-col">
+        <div class="mg-val">${cnt.total != null ? cnt.total.toLocaleString() : "0"}</div>
+        <div class="mg-lbl">${t.wardTotalCases}</div>
+      </div>
+    </div>
+    <div class="breakdown-section">
+      <div class="section-title">${t.breakdownTitle}</div>
+      ${crimeRowsHtml(cnt)}
+    </div>
+    <div class="tops-box">
+      <div class="section-title">${t.top5ChomeTitle}</div>
+      ${topsHtml || `<div style="font-size:12px;color:var(--text-muted)">${t.noChomeData}</div>`}
+    </div>`;
+}
+
+function allTokyoTop5Html() {
+  const t = I18N[currentLang] || I18N.zh;
+  const list = MUNI.map(w => {
+    const r = rateOf(w) || 0;
+    const cnt = wardCounts(w);
+    return { ward: w.ward, rate: r, total: cnt.total || 0 };
+  });
+  list.sort((a, b) => b.rate - a.rate);
+  const top5 = list.slice(0, 5);
+  const maxR = top5[0]?.rate || 1;
+  return `
+    <div class="panel-card" id="card-ranking">
+      <div class="card-head" style="margin-bottom:4px">
+        <div style="font-size:13px;font-weight:var(--fw-mid);color:var(--text-main)">${t.top5WardTitle}</div>
+        <span style="font-size:11px;color:var(--text-muted);font-family:var(--font-num)">${t.byRateDesc}</span>
+      </div>
+      <div class="rank-card-list">
+        ${top5.map((item, idx) => {
+          const pct = Math.min(100, Math.round((item.rate / maxR) * 100));
+          return `
+            <div class="rank-card-item" onclick="selectWardByName('${item.ward}')" title="${t.backTo} ${item.ward}">
+              <span class="rci-idx">0${idx + 1}</span>
+              <span class="rci-name">${item.ward}</span>
+              <div class="rci-bar-wrap"><div class="rci-bar-fill" style="width:${pct}%"></div></div>
+              <span class="rci-val">${item.rate.toFixed(1)} ‰</span>
+            </div>`;
+        }).join("")}
+      </div>
+    </div>`;
+}
+
+function metaFooterCardHtml() {
+  const t = I18N[currentLang] || I18N.zh;
+  const faqHtml = (t.faq || []).map(item => `
+      <details class="faq-item">
+        <summary>${item.q}</summary>
+        <div class="faq-a">${item.a}</div>
+      </details>`).join("");
+  return `
+    <div class="panel-card" id="card-meta" style="padding:10px 14px;background:transparent;border:1px dashed var(--line-main);box-shadow:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <span style="font-size:11px;font-weight:var(--fw-mid);color:var(--text-main);letter-spacing:0.5px">${t.metaTitle}</span>
+        <span style="font-size:11px;color:var(--text-faint);font-family:var(--font-num)">NPA / CC BY 4.0</span>
+      </div>
+      <div style="font-size:11px;color:var(--text-muted);line-height:1.4">
+        ${t.metaL1}<br>
+        ${t.metaL2}
+      </div>
+      <div class="faq-block">
+        <div class="faq-head">
+          <span class="faq-title">${t.faqTitle}</span>
+          <span class="faq-sub">${t.faqSub}</span>
+        </div>
+        ${faqHtml}
+      </div>
+      <div class="faq-source">${t.siteBy}</div>
+    </div>`;
+}
+
+function updateHudCapsule(placeName, metricText) {
+  const t = I18N[currentLang] || I18N.zh;
+  const dEl = document.getElementById("hud-dataset");
+  const pEl = document.getElementById("hud-place");
+  const mEl = document.getElementById("hud-metric");
+  if (!dEl || !pEl || !mEl) return;
+  dEl.textContent = curT === "R7" ? t.times.R7 : t.times.R8;
+  if (placeName) pEl.textContent = placeName;
+  if (metricText) mEl.textContent = metricText;
+  else mEl.textContent = MLABEL[curMetric];
+}
+
+function renderChomeCard(f) {
+  window.curSelected = f;
+  const p = f.properties;
+  const rate = chomeRateOf(p);
+
+  if (rate != null) moveHistCursor(rate, p.name);
+  updateHudCapsule(p.name, `${rate != null ? rate.toFixed(1) + ' ‰' : '—'} (${MLABEL[curMetric]})`);
+
+  document.getElementById("card").innerHTML =
+    `<div class="panel-card">${chomeCardBodyHtml(f)}</div>` +
+    `<div class="panel-card">${wardCardBodyHtml(p.ward)}</div>` +
+    allTokyoTop5Html() +
+    metaFooterCardHtml();
+}
+
+function renderWardCard(name) {
+  window.curSelected = name;
+  const w = MUNI.find(x => x.ward === name);
+  if (!w) return;
+  const rate = rateOf(w);
+  if (rate != null) moveHistCursor(rate, name);
+  updateHudCapsule(name, `${rate != null ? rate.toFixed(1) + ' ‰' : '—'} (${MLABEL[curMetric]})`);
+
+  document.getElementById("card").innerHTML =
+    `<div class="panel-card">${wardCardBodyHtml(name)}</div>` +
+    allTokyoTop5Html() +
+    metaFooterCardHtml();
+}
+
+// =====================================================================
+// 11. 地图初始化与 23 区全局聚焦 (东京都右侧正中央居中)
+// =====================================================================
+// 东京 23 区外接矩形范围 (东侧核心区)
+const TOKYO_23_BOUNDS = [[35.53, 139.56], [35.83, 139.92]];
+
+function fitTokyo23() {
+  const t = I18N[currentLang] || I18N.zh;
+  const vw = window.innerWidth;
+  const hh = document.getElementById("main-header").getBoundingClientRect().height || 54;
+  // 桌面：给顶栏与右侧卡片留出 padding；手机：卡片在底部，左右只留 8px
+  const pad = vw > 900
+    ? { paddingTopLeft: [64, hh + 16], paddingBottomRight: [(document.getElementById("card").offsetWidth || 310) + 28, 24] }
+    : { paddingTopLeft: [8, hh + 8], paddingBottomRight: [8, Math.round(window.innerHeight * 0.42)] };
+  map.fitBounds(TOKYO_23_BOUNDS, { ...pad, animate: false });
+  updateHudCapsule(t.hudWholeTokyo, `62 ${t.levelWard} · ${MLABEL[curMetric]}`);
+}
+
+// 环的面积加权几何质心 (避免顶点密度不均导致偏移)
+function ringCentroid(ring) {
+  let area = 0, cx = 0, cy = 0;
+  for (let i = 0; i < ring.length - 1; i++) {
+    const x0 = ring[i][0], y0 = ring[i][1];
+    const x1 = ring[i + 1][0], y1 = ring[i + 1][1];
+    const a = x0 * y1 - x1 * y0;
+    area += a; cx += (x0 + x1) * a; cy += (y0 + y1) * a;
+  }
+  area *= 0.5;
+  if (Math.abs(area) < 1e-12) return null;
+  return [cy / (6 * area), cx / (6 * area)]; // [lat, lng]
+}
+
+// 取最大外环质心 (岛屿/飞地不会把字标拉偏)
+function polyLabelPos(geom) {
+  if (!geom) return null;
+  let rings = [];
+  if (geom.type === "Polygon") rings = geom.coordinates;
+  else if (geom.type === "MultiPolygon") rings = geom.coordinates.map(p => p[0]);
+  let best = null, bestArea = 0;
+  for (const ring of rings) {
+    if (!ring || ring.length < 4) continue;
+    let a = 0;
+    for (let i = 0; i < ring.length - 1; i++) {
+      a += ring[i][0] * ring[i + 1][1] - ring[i + 1][0] * ring[i][1];
+    }
+    a = Math.abs(a / 2);
+    if (a > bestArea) { bestArea = a; best = ring; }
+  }
+  return best ? ringCentroid(best) : null;
+}
+
+// 注记由 MUNI_POLY 动态计算质心生成，覆盖全部 23 区 + 多摩 26 市 + 町村
+
+function initMap() {
+  const cfg = VARIANTS[currentVariant];
+  map = L.map("map", {
+    zoomControl: false,
+    preferCanvas: true,
+    zoomSnap: 0.25,
+    zoomDelta: 0.5
+  }).setView([35.685, 139.75], 11);
+  // 挂载国土地理院纯净白图（日本官方权威开放数据，纯净海岸线与水系轮廓，零微观杂字）
+  baseTileLayer = L.tileLayer("https://cyberjapandata.gsi.go.jp/xyz/blank/{z}/{x}/{y}.png", {
+    maxZoom: 18,
+    attribution: "© 国土地理院"
+  }).addTo(map);
+
+  // 紧凑型公制比例尺 (紧贴左下角分布仪上方)
+  L.control.scale({ imperial: false, position: "bottomleft" }).addTo(map);
+
+  muniLayer = L.geoJSON(MUNI_POLY, {
+    style: f => {
+      const cfg = VARIANTS[currentVariant];
+      const w = MUNI.find(x => x.ward === f.properties.ward_ja);
+      const r = rateOf(w);
+      const isSel = selWard === f.properties.ward_ja;
+      return {
+        color: isSel ? cfg.selLine : cfg.lineColor,
+        weight: isSel ? 2 : 1,
+        fillColor: colorForRate(r),
+        fillOpacity: isSel ? 0.95 : 0.85
+      };
+    },
+    onEachFeature: (f, layer) => {
+      layer.on("mouseover", () => {
+        const w = MUNI.find(x => x.ward === f.properties.ward_ja);
+        const r = rateOf(w);
+        if (r != null) moveHistCursor(r, f.properties.ward_ja);
+      });
+      layer.on("mouseout", () => {
+        if (!window.curSelected) hideHistCursor();
+      });
+      layer.on("click", (e) => {
+        selWard = f.properties.ward_ja;
+        renderWardCard(selWard);
+        muniLayer.setStyle(muniLayer.options.style);
+        lastAnchor = e.latlng;
+        showToast(f.properties.ward_ja, "ward");
+      });
+    }
+  });
+
+  chomeLayer = L.geoJSON(POLY, {
+    style: f => {
+      const cfg = VARIANTS[currentVariant];
+      const r = chomeRateOf(f.properties);
+      const isSel = window.curSelected && window.curSelected.properties && window.curSelected.properties.name === f.properties.name;
+      const inSelWard = window.curSelected && window.curSelected.properties && window.curSelected.properties.ward === f.properties.ward;
+      const hasSel = !!(window.curSelected && window.curSelected.properties);
+      const opacity = isSel ? 1 : (hasSel ? (inSelWard ? 0.92 : 0.68) : 0.88);
+      return {
+        color: isSel ? cfg.selLine : (currentVariant === "tactical" ? "rgba(255,244,232,0.12)" : "rgba(24,22,20,0.12)"),
+        weight: isSel ? 2.5 : 0.6,
+        fillColor: colorForChome(r),
+        fillOpacity: opacity
+      };
+    },
+    onEachFeature: (f, layer) => {
+      layer.on("mouseover", () => {
+        const r = chomeRateOf(f.properties);
+        if (r != null) moveHistCursor(r, f.properties.name);
+      });
+      layer.on("mouseout", () => {
+        if (!window.curSelected) hideHistCursor();
+      });
+      layer.on("click", (e) => {
+        renderChomeCard(f);
+        chomeLayer.setStyle(chomeLayer.options.style);
+        highlightParentBoundary(f.properties.ward);
+        lastAnchor = e.latlng;
+        showToast(f.properties.name, "chome");
+      });
+    }
+  });
+
+  // 渲染自带柔和地标注记层：动态覆盖全部区/市/町/村 (免外部瓦片，随主题自适应)
+  labelLayer = L.layerGroup();
+  for (const f of MUNI_POLY.features) {
+    const nm = f.properties.ward_ja;
+    if (!nm || nm === "所属未定地") continue;
+    const pos = polyLabelPos(f.geometry);
+    if (!pos) continue;
+    const icon = L.divIcon({
+      className: "map-ward-label",
+      html: `<span>${nm}</span>`,
+      iconSize: [80, 20],
+      iconAnchor: [40, 10]
+    });
+    L.marker(pos, { icon, interactive: false }).addTo(labelLayer);
+  }
+  labelLayer.addTo(map);
+
+  applyMode();
+  fitTokyo23(); // 首次聚焦东京 23 区全局正中
+}
+
+// 高亮选中地块所属的整个区/市外轮廓
+function highlightParentBoundary(wardName) {
+  if (parentBoundaryLayer) { map.removeLayer(parentBoundaryLayer); parentBoundaryLayer = null; }
+  if (!wardName) return;
+  const feat = MUNI_POLY.features.find(f => f.properties.ward_ja === wardName);
+  if (!feat) return;
+  const stroke = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || (currentVariant === "tactical" ? "#d0801a" : "#9f3c2c");
+  parentBoundaryLayer = L.geoJSON(feat, {
+    style: {
+      color: stroke, weight: 3, fill: true, fillColor: stroke,
+      fillOpacity: 0.08, opacity: 0.98, lineJoin: "round",
+      className: "sel-parent-glow"
+    },
+    interactive: false
+  }).addTo(map);
+}
+
+// 左侧竖向缩放拖动条：拖动/点击定位，橙色填充，双向同步地图缩放
+const ZMIN = 9, ZMAX = 18;
+let zsDragging = false;
+function initZoomSlider() {
+  const track = document.getElementById("zsTrack");
+  const fill = document.getElementById("zsFill");
+  const thumb = document.getElementById("zsThumb");
+  const clamp = v => Math.max(0, Math.min(1, v));
+  const frac = () => clamp((map.getZoom() - ZMIN) / (ZMAX - ZMIN));
+
+  const render = () => {
+    const f = frac();
+    fill.style.height = (f * 100) + "%";
+    thumb.style.bottom = (f * 100) + "%";
+  };
+  const fromY = clientY => {
+    const r = track.getBoundingClientRect();
+    return clamp(1 - (clientY - r.top) / r.height);
+  };
+  const applyFrac = f => map.setZoom(ZMIN + f * (ZMAX - ZMIN), { animate: false });
+
+  track.addEventListener("pointerdown", e => {
+    e.preventDefault(); e.stopPropagation();
+    track.setPointerCapture(e.pointerId);
+    zsDragging = true;
+    applyFrac(fromY(e.clientY)); render();
+  });
+  track.addEventListener("pointermove", e => {
+    if (!zsDragging) return;
+    e.preventDefault();
+    applyFrac(fromY(e.clientY)); render();
+  });
+  const stop = e => {
+    zsDragging = false;
+    try { track.releasePointerCapture(e.pointerId); } catch (_) {}
+  };
+  track.addEventListener("pointerup", stop);
+  track.addEventListener("pointercancel", stop);
+
+  document.getElementById("zsPlus").addEventListener("click", () => map.zoomIn());
+  document.getElementById("zsMinus").addEventListener("click", () => map.zoomOut());
+
+  map.on("zoom zoomend", render);
+  window.__renderZoomSlider = render;
+  render();
+}
+
+function applyMode() {
+  if (mode === "muni") {
+    if (map.hasLayer(chomeLayer)) map.removeLayer(chomeLayer);
+    if (!map.hasLayer(muniLayer)) map.addLayer(muniLayer);
+  } else {
+    if (map.hasLayer(muniLayer)) map.removeLayer(muniLayer);
+    if (!map.hasLayer(chomeLayer)) map.addLayer(chomeLayer);
+  }
+}
+
+function selectChomeByName(name, shouldFly = false, silent = false) {
+  const f = POLY.features.find(x => x.properties && x.properties.name === name);
+  if (!f) return;
+  mode = "chome";
+  document.querySelectorAll("[data-mode]").forEach(b => {
+    b.classList.toggle("on", b.dataset.mode === "chome");
+  });
+  applyMode();
+  renderChomeCard(f);
+  chomeLayer.setStyle(chomeLayer.options.style);
+  highlightParentBoundary(f.properties.ward);
+  if (!silent && !shouldFly) showToast(name, "chome");
+
+  // 初始载入：把选中点直接放到整个视口正中央
+  if (name === "新宿区歌舞伎町2丁目" && silent && !shouldFly) {
+    const pt0 = PTS.find(p => p.n === name);
+    if (pt0 && pt0.lat) map.setView([pt0.lat, pt0.lng], map.getZoom(), { animate: false });
+  }
+
+  // 仅在明确搜索或点击时飞入（窄屏禁用：视口太小，飞入即丢失上下文）
+  if (shouldFly && window.innerWidth > 900) {
+    const pt = PTS.find(p => p.n === name);
+    if (pt && pt.lat) {
+      map.setView([pt.lat, pt.lng], 14, { animate: true });
+      map.once("moveend", () => { lastAnchor = L.latLng(pt.lat, pt.lng); showToast(name, "chome"); });
+    } else if (f.geometry) {
+      map.fitBounds(L.geoJSON(f).getBounds(), { padding: [50, 50] });
+    }
+  }
+}
+
+function selectWardByName(name) {
+  mode = "muni";
+  selWard = name;
+  if (parentBoundaryLayer) { map.removeLayer(parentBoundaryLayer); parentBoundaryLayer = null; }
+  document.querySelectorAll("[data-mode]").forEach(b => {
+    b.classList.toggle("on", b.dataset.mode === "muni");
+  });
+  applyMode();
+  renderWardCard(name);
+  muniLayer.setStyle(muniLayer.options.style);
+  const feat = MUNI_POLY.features.find(f => f.properties.ward_ja === name);
+  if (feat) {
+    const g = L.geoJSON(feat);
+    lastAnchor = g.getBounds().getCenter();
+  } else lastAnchor = map.getCenter();
+  showToast(name, "ward");
+}
+
+// =====================================================================
+// 12. 启动与事件绑定
+// =====================================================================
+Promise.all([
+  fetch("./data/points.json").then(r => r.json()),
+  fetch("./data/muni_poly.json").then(r => r.json()),
+  fetch("./data/chome_poly.json").then(r => r.json()),
+  fetch("./data/muni.json").then(r => r.json())
+]).then(([pts, mpoly, poly, muni]) => {
+  PTS = pts; MUNI_POLY = mpoly; POLY = poly; MUNI = muni;
+  window.PTS = pts; window.MUNI_POLY = mpoly; window.POLY = poly; window.MUNI = muni;
+
+  buildScales();
+  updateLegendBar();
+  updateHistogram();
+  initMap();
+  window.map = map;
+  initZoomSlider();
+  map.on("move zoom", refreshCallout);
+
+  // 初始仅在详情卡展示代表性区域，不缩放破坏 23 区宏观视野（不弹气泡）
+  selectChomeByName("新宿区歌舞伎町2丁目", false, true);
+  applyThemeVariant(currentVariant);
+  setLanguage(currentLang);
+  applyAccentPalette(currentAccent);
+
+  // 数据装配完毕，首屏雷达加载器平滑淡出
+  const ldr = document.getElementById("app-loader");
+  if (ldr) {
+    ldr.classList.add("fade-out");
+    setTimeout(() => ldr.remove(), 400);
+  }
+});
+
+document.getElementById("metric").addEventListener("change", e => {
+  curMetric = e.target.value;
+  buildScales();
+  updateLegendBar();
+  updateHistogram();
+  if (mode === "muni") muniLayer.setStyle(muniLayer.options.style);
+  else chomeLayer.setStyle(chomeLayer.options.style);
+  if (window.curSelected) {
+    if (mode === "chome") renderChomeCard(window.curSelected);
+    else renderWardCard(window.curSelected);
+  }
+});
+
+document.querySelectorAll("[data-t]").forEach(b => {
+  b.addEventListener("click", () => {
+    document.querySelectorAll("[data-t]").forEach(x => x.classList.remove("on"));
+    b.classList.add("on");
+    curT = b.dataset.t;
+    buildScales();
+    updateLegendBar();
+    updateHistogram();
+    if (mode === "muni") muniLayer.setStyle(muniLayer.options.style);
+    else chomeLayer.setStyle(chomeLayer.options.style);
+  });
+});
+
+document.querySelectorAll("[data-mode]").forEach(b => {
+  b.addEventListener("click", () => {
+    document.querySelectorAll("[data-mode]").forEach(x => x.classList.remove("on"));
+    b.classList.add("on");
+    mode = b.dataset.mode;
+    if (mode === "muni" && parentBoundaryLayer) {
+      map.removeLayer(parentBoundaryLayer); parentBoundaryLayer = null;
+    }
+    applyMode();
+  });
+});
+
+const qInput = document.getElementById("q");
+const drop = document.getElementById("drop");
+
+qInput.addEventListener("input", () => {
+  const q = qInput.value.trim().toLowerCase();
+  if (!q) { drop.style.display = "none"; return; }
+  const hits = PTS.filter(p => p.n.toLowerCase().includes(q)).slice(0, 10);
+  if (!hits.length) { drop.style.display = "none"; return; }
+
+  const rect = qInput.getBoundingClientRect();
+  drop.style.left = rect.left + "px";
+  drop.style.top = (rect.bottom + 4) + "px";
+  drop.style.width = rect.width + "px";
+  drop.style.display = "block";
+
+  drop.innerHTML = hits.map(h => `<div data-n="${h.n}">${h.n}</div>`).join("");
+  drop.querySelectorAll("div").forEach(d => {
+    d.addEventListener("click", () => {
+      selectChomeByName(d.dataset.n, true); // 搜索点选才飞入
+      drop.style.display = "none";
+      qInput.value = d.dataset.n;
+    });
+  });
+});
+
+document.addEventListener("click", e => {
+  if (!drop.contains(e.target) && e.target !== qInput) {
+    drop.style.display = "none";
+  }
+});
+</script>
+</body>
+</html>

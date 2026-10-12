@@ -1,0 +1,23 @@
+{
+  "name": "japan-3d-earthquake",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "日本 3D 震源可视化 — free-orbit three.js · USGS 历史公开数据（非预报）",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "fetch-data": "node scripts/fetch-data.mjs",
+    "fetch-data:full": "node scripts/fetch-data.mjs --full",
+    "fetch-data:since": "node scripts/fetch-data.mjs",
+    "fetch-outline": "node scripts/fetch-japan-outline.mjs"
+  },
+  "devDependencies": {
+    "vite": "^8.1.1"
+  },
+  "dependencies": {
+    "gsap": "^3.15.0",
+    "three": "^0.185.1"
+  }
+}

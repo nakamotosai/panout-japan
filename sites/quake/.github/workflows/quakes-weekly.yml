@@ -1,0 +1,78 @@
+# 全球震源瓦片 · 每周增量（预留）
+# 仓库上线 GitHub 后：Actions 启用即可；也可手动 Run workflow。
+#
+# 流程：
+#   1. checkout
+#   2. 读 manifest.coverageEnd 作为 --since
+#   3. npm run fetch-data -- --since=…
+#   4. commit public/data/quakes/** （若有变更）
+#
+# 全量重建：workflow_dispatch 选 full，或本地 npm run fetch-data
+
+name: quakes-weekly
+
+on:
+  schedule:
+    # 每周一 03:17 UTC ≈ 日本时间中午前后
+    - cron: '17 3 * * 1'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'full = 全量重建 / since = 自 coverageEnd 增量'
+        required: true
+        default: 'since'
+        type: choice
+        options:
+          - since
+          - full
+
+permissions:
+  contents: write
+
+jobs:
+  update-quakes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Resolve fetch mode
+        id: mode
+        run: |
+          MODE="${{ github.event.inputs.mode || 'since' }}"
+          if [ "$MODE" = "full" ]; then
+            echo "args=--full" >> "$GITHUB_OUTPUT"
+            echo "label=full" >> "$GITHUB_OUTPUT"
+          else
+            END=""
+            if [ -f public/data/quakes/manifest.json ]; then
+              END=$(node -e "const m=require('./public/data/quakes/manifest.json'); process.stdout.write(m.coverageEnd||'')")
+            fi
+            if [ -z "$END" ]; then
+              # 无 manifest 时退回近 14 天
+              END=$(date -u -d '14 days ago' +%F 2>/dev/null || date -u -v-14d +%F)
+            fi
+            echo "args=--since=$END" >> "$GITHUB_OUTPUT"
+            echo "label=since-$END" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Fetch USGS → tiles
+        run: node scripts/fetch-data.mjs ${{ steps.mode.outputs.args }}
+
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data/quakes public/data/quakes.json
+          if git diff --staged --quiet; then
+            echo "No quake data changes"
+            exit 0
+          fi
+          git commit -m "data: quakes weekly update (${{ steps.mode.outputs.label }})"
+          git push

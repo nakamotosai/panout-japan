@@ -1,0 +1,12 @@
+# 东京都犯罪率地图 / Tokyo Crime Rates Map
+# https://crime.saaaai.com/
+
+User-agent: *
+Allow: /
+# 开发对照台不进索引
+Disallow: /design-lab/
+
+# AI 爬虫（GPTBot / ClaudeBot / PerplexityBot / OAI-SearchBot 等）随 User-agent: *
+# 默认放行 —— 本项目欢迎被 AI 搜索引用。如需收紧，在此显式 Disallow。
+
+Sitemap: https://crime.saaaai.com/sitemap.xml

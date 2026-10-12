@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>选中标注对照台 · 0现状 1脉冲 2信息条 3光晕环 4就地标签</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/misans@5.0.0/lib/Normal/MiSansVF.min.css">
+<style>
+:root{
+  --accent:#d0801a; --accent-soft:rgba(208,128,26,.16);
+  --bg-page:#141210; --bg-map:#0d0c0b;
+  --bg-card:rgba(27,25,23,.62); --bg-card-sub:rgba(53,47,42,.42);
+  --bg-hover:rgba(255,244,232,.08);
+  --text-main:#f5f0e8; --text-muted:#a89d8d; --text-faint:#6f675b;
+  --line-main:rgba(255,244,232,.1);
+  --shadow-card:0 12px 32px rgba(0,0,0,.55),0 0 0 1px rgba(255,244,232,.08);
+  --card-glass:blur(26px) saturate(1.5);
+  --font-sans:"MiSans VF",MiSans,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--bg-page);color:var(--text-main);font-family:var(--font-sans);-webkit-font-smoothing:antialiased}
+#map{position:fixed;inset:0;z-index:0;background:var(--bg-map)}
+.leaflet-tile-pane{filter:invert(100%) hue-rotate(180deg) brightness(70%) contrast(120%);opacity:.45}
+.map-ward-label{background:transparent!important;border:none!important;text-align:center;pointer-events:none;white-space:nowrap}
+.map-ward-label span{display:inline-block;font-size:12.5px;font-weight:350;letter-spacing:.5px;color:#a89d8d;opacity:.85;text-shadow:0 0 4px #0d0c0b,0 0 3px #0d0c0b,0 1px 2px #0d0c0b;font-family:var(--font-sans)}
+.sel-parent-glow path{filter:drop-shadow(0 0 8px rgba(208,128,26,.75))}
+
+/* ---- V0 现状：肘形引导线＋左侧大气泡（生产原样复刻） ---- */
+#callout{position:fixed;left:0;top:0;z-index:1500;pointer-events:none}
+#callout svg{display:block;overflow:visible}
+#callout .co-line{fill:none;stroke:var(--accent);stroke-width:1.5}
+#callout .co-dot{fill:var(--accent)}
+#callout .co-tag{position:absolute;display:flex;align-items:center;gap:6px;background:var(--bg-card);-webkit-backdrop-filter:var(--card-glass);backdrop-filter:var(--card-glass);border:1px solid var(--line-main);border-radius:4px;box-shadow:var(--shadow-card);padding:6px 14px;font-size:20px;font-weight:250;line-height:1.25;color:var(--text-main);font-family:var(--font-sans);white-space:nowrap;opacity:0;transform:translateY(-50%) scale(.96)}
+#callout .co-tag.on{opacity:1;transform:translateY(-50%) scale(1)}
+#callout .co-tag .co-level{font-size:12.5px;font-weight:350;color:var(--accent);font-family:var(--font-sans);flex-shrink:0}
+
+/* ---- 共享 SVG 层（V1/V2/V3） ---- */
+#lx-svg{position:fixed;inset:0;z-index:1500;pointer-events:none}
+.lx-ring{fill:none;stroke:var(--accent);stroke-width:2}
+.lx-dot{fill:var(--accent)}
+.lx-gl{transform-box:fill-box;transform-origin:center}
+.lx-rc{fill:none;stroke:var(--accent);stroke-width:1.5;stroke-dasharray:3 5;opacity:.9}
+.lx-rt{fill:var(--text-main);font-size:11px;letter-spacing:1px;font-family:var(--font-sans)}
+
+/* ---- V1 脉冲＋悬浮胶囊 ---- */
+#lx-capsule{position:fixed;left:0;top:0;z-index:1501;pointer-events:none;display:flex;gap:9px;align-items:center;background:rgba(18,16,14,.94);border:1px solid var(--line-main);border-radius:6px;padding:7px 15px;font-size:16px;font-weight:330;letter-spacing:.2px;color:var(--text-main);white-space:nowrap;opacity:0;transform:translate(-50%,-100%) translateY(5px);box-shadow:0 6px 22px rgba(0,0,0,.6),0 0 0 1px rgba(255,244,232,.04)}
+#lx-capsule.on{opacity:1;transform:translate(-50%,-100%) translateY(0);transition:opacity .2s ease,transform .2s ease}
+#lx-capsule .lx-lvl{font-size:12.5px;color:var(--accent);font-weight:700;letter-spacing:.5px}
+
+/* ---- V2 底部信息条＋右侧迷你卡 ---- */
+#lx-strip{position:fixed;left:50%;bottom:76px;transform:translateX(-50%) translateY(8px);z-index:1501;background:var(--bg-card);-webkit-backdrop-filter:var(--card-glass);backdrop-filter:var(--card-glass);border:1px solid var(--line-main);border-radius:6px;padding:7px 16px;font-size:13px;color:var(--text-main);opacity:0;transition:opacity .2s ease,transform .2s ease;white-space:nowrap}
+#lx-strip.on{opacity:1;transform:translateX(-50%) translateY(0)}
+#lx-strip b{color:var(--accent)}
+#lx-side{display:none;position:fixed;right:20px;top:76px;width:280px;z-index:1501;background:var(--bg-card);-webkit-backdrop-filter:var(--card-glass);backdrop-filter:var(--card-glass);border:1px solid var(--line-main);border-radius:8px;padding:0 16px 14px;box-shadow:var(--shadow-card)}
+#lx-side.on{display:block}
+#lx-side .lx-flash{height:3px;background:var(--accent);border-radius:0 0 2px 2px;margin:0 -16px 10px;opacity:0}
+#lx-side.on .lx-flash{opacity:1;transition:opacity .2s ease}
+#lx-side .lv{display:inline-block;font-size:11px;letter-spacing:1px;padding:1px 5px;border-radius:4px;margin-bottom:5px;background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent-soft)}
+#lx-side h3{margin:0 0 4px;font-size:20px;font-weight:250;line-height:1.25}
+#lx-side .sub{font-size:12.5px;color:var(--text-muted);margin-bottom:8px}
+#lx-side .big{font-size:34px;font-weight:180;line-height:1;font-variant-numeric:tabular-nums}
+#lx-side .unit{font-size:12.5px;color:var(--text-muted)}
+
+/* ---- V3 参数面板＋FPS ---- */
+#lx-params{display:none;position:fixed;left:16px;bottom:76px;z-index:1502;background:var(--bg-card);-webkit-backdrop-filter:var(--card-glass);backdrop-filter:var(--card-glass);border:1px solid var(--line-main);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--text-main)}
+#lx-params.on{display:block}
+#lx-params .t{font-weight:700;margin-bottom:4px}
+#lx-params label{display:flex;gap:8px;align-items:center;margin:4px 0;color:var(--text-muted)}
+#lx-fps{font-variant-numeric:tabular-nums;color:var(--accent)}
+
+/* ---- V4 就地小标签 ---- */
+#lx-tag{position:fixed;left:0;top:0;z-index:1501;pointer-events:none;font-size:12px;color:var(--text-main);background:rgba(20,18,16,.78);border:1px solid var(--line-main);border-radius:4px;padding:2px 8px;white-space:nowrap;opacity:0;transform:translate(-50%,-50%);transition:opacity .2s ease}
+#lx-tag.on{opacity:1}
+
+/* ---- 底部切换条 ---- */
+#labbar{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:3000;display:flex;align-items:center;gap:6px;background:rgba(10,10,10,.85);border:1px solid rgba(255,255,255,.16);border-radius:10px;padding:8px 10px;color:#fff;font-size:12px;backdrop-filter:blur(10px);max-width:96vw;flex-wrap:wrap;justify-content:center}
+#labbar button{border:1px solid rgba(255,255,255,.2);background:transparent;color:#fff;border-radius:7px;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit}
+#labbar button.on{background:#fff;color:#000;border-color:#fff;font-weight:700}
+#labdesc{opacity:.75;max-width:360px}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<svg id="lx-svg"></svg>
+<div id="callout">
+  <svg id="co-svg"><path id="co-line" class="co-line" d=""/><circle id="co-dot" class="co-dot" r="3" cx="-10" cy="-10"/></svg>
+  <div id="co-tag" class="co-tag"></div>
+</div>
+<div id="lx-capsule"></div>
+<div id="lx-strip"></div>
+<aside id="lx-side"></aside>
+<div id="lx-tag"></div>
+<div id="lx-params">
+  <div class="t">V3 参数 · <span id="lx-fps">— FPS</span></div>
+  <label>光晕强度 <input id="lx-p-glow" type="range" min="20" max="100" value="55"></label>
+  <label>环半径 <input id="lx-p-radius" type="range" min="40" max="110" value="64"></label>
+</div>
+<div id="labbar" role="group" aria-label="标注方案切换">
+  <button type="button" data-v="0">0现状</button>
+  <button type="button" data-v="1">1脉冲胶囊</button>
+  <button type="button" data-v="2">2信息条</button>
+  <button type="button" data-v="3">3光晕数据环</button>
+  <button type="button" data-v="4">4就地标签</button>
+  <span id="labdesc"></span>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ============ 数据管线（生产复刻：amber tactical 单主题） ============
+const CF = { total: "t", nb: "nb", bi: "bi", r: "r", v: "v", o: "o" };
+const CF_R8 = { total: "r8", nb: "r8nb", bi: "r8bi", r: "r8r", v: "r8v", o: "r8o" };
+const RAMP = ["#141210","#1f1a16","#2c251e","#3e342a","#57412f","#77542f","#9c6830","#bb7a24","#d0801a"];
+const NODATA = "#201c19", NOPOP = "#161312";
+const LINECOLOR = "rgba(255,244,232,0.08)", SELLINE = "#f5f0e8";
+const ACCENT = "#d0801a";
+const TOKYO_23_BOUNDS = [[35.53, 139.56], [35.83, 139.92]];
+let map, chomeLayer, labelLayer, parentBoundaryLayer = null;
+let PTS = [], POLY, MUNI_POLY, MUNI;
+let curMetric = "total", curT = "R7", SCALES = {};
+let lastAnchor = null;
+const RM = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function rateOf(w) {
+  if (!w || w.nodata || !w.pop) return null;
+  const c = curT === "R7" ? w.R7 : w.R8cum;
+  if (!c) return null;
+  const count = curT === "R7" ? c[curMetric] : (c[CF_R8[curMetric]] ?? c[curMetric]);
+  return (count / w.pop) * 1000;
+}
+function buildScales() {
+  SCALES = {};
+  for (const m of Object.keys(CF)) {
+    const vals = [];
+    const col = CF[m], colR8 = CF_R8[m];
+    if (MUNI) for (const w of MUNI) {
+      if (!w.nodata && w.pop) for (const t of ["R7", "R8cum"]) {
+        const v = w[t]?.[m];
+        if (v != null) vals.push((v / w.pop) * 1000);
+      }
+    }
+    if (POLY) for (const f of POLY.features) {
+      const pr = f.properties;
+      if (pr && pr.pop && pr.pop >= 200) for (const t of ["R7", "R8cum"]) {
+        const fld = t === "R7" ? col : colR8;
+        const v = pr[fld];
+        if (v != null) vals.push((v / pr.pop) * 1000);
+      }
+    }
+    vals.sort((a, b) => a - b);
+    if (!vals.length) continue;
+    const q = p => vals[Math.min(vals.length - 1, Math.floor(p * vals.length))];
+    const hi = q(0.99);
+    const nz = vals.filter(v => v > 0);
+    const zero = (1 - nz.length / vals.length) >= 0.35;
+    const L1 = Math.log1p(hi);
+    let breaks = [];
+    if (zero) {
+      const L0 = Math.log1p(nz[0] || 0.01);
+      breaks = [0];
+      for (let k = 1; k < 7; k++) breaks.push(Math.expm1(L0 + (L1 - L0) * k / 7));
+      breaks.push(hi);
+    } else {
+      const L0 = Math.log1p(vals[0]);
+      for (let k = 1; k < 8; k++) breaks.push(Math.expm1(L0 + (L1 - L0) * k / 8));
+      breaks.push(hi);
+    }
+    for (let i = 1; i < breaks.length; i++) {
+      if (breaks[i] <= breaks[i - 1]) breaks[i] = breaks[i - 1] + 1e-6;
+    }
+    SCALES[m] = { breaks, hi, zero, vals, ramp: [...RAMP] };
+  }
+}
+function colorForScale(r, S) {
+  if (r == null || !S) return NODATA;
+  if (r <= 0 && S.zero) return S.ramp[0];
+  const b = S.breaks;
+  for (let i = 0; i < b.length; i++) { if (r <= b[i]) return S.ramp[i]; }
+  return S.ramp[8];
+}
+function colorForChome(r) {
+  if (r == null) return NOPOP;
+  return colorForScale(r, SCALES[curMetric]);
+}
+function chomeRateOf(pr) {
+  if (!pr || !pr.pop || pr.pop < 200) return null;
+  const fld = curT === "R7" ? CF[curMetric] : CF_R8[curMetric];
+  return (pr[fld] / pr.pop) * 1000;
+}
+function chomeCounts(p) {
+  return curT === "R7"
+    ? { total: p.t, nb: p.nb, bi: p.bi, r: p.r, v: p.v, o: p.o }
+    : { total: p.r8, nb: p.r8nb, bi: p.r8bi, r: p.r8r, v: p.r8v, o: p.r8o };
+}
+function ringCentroid(ring) {
+  let area = 0, cx = 0, cy = 0;
+  for (let i = 0; i < ring.length - 1; i++) {
+    const x0 = ring[i][0], y0 = ring[i][1];
+    const x1 = ring[i + 1][0], y1 = ring[i + 1][1];
+    const a = x0 * y1 - x1 * y0;
+    area += a; cx += (x0 + x1) * a; cy += (y0 + y1) * a;
+  }
+  area *= 0.5;
+  if (Math.abs(area) < 1e-12) return null;
+  return [cy / (6 * area), cx / (6 * area)];
+}
+function polyLabelPos(geom) {
+  if (!geom) return null;
+  let rings = [];
+  if (geom.type === "Polygon") rings = geom.coordinates;
+  else if (geom.type === "MultiPolygon") rings = geom.coordinates.map(p => p[0]);
+  let best = null, bestArea = 0;
+  for (const ring of rings) {
+    if (!ring || ring.length < 4) continue;
+    let a = 0;
+    for (let i = 0; i < ring.length - 1; i++) a += ring[i][0] * ring[i + 1][1] - ring[i + 1][0] * ring[i][1];
+    a = Math.abs(a / 2);
+    if (a > bestArea) { bestArea = a; best = ring; }
+  }
+  return best ? ringCentroid(best) : null;
+}
+function highlightParentBoundary(wardName) {
+  if (parentBoundaryLayer) { map.removeLayer(parentBoundaryLayer); parentBoundaryLayer = null; }
+  if (!wardName) return;
+  const feat = MUNI_POLY.features.find(f => f.properties.ward_ja === wardName);
+  if (!feat) return;
+  parentBoundaryLayer = L.geoJSON(feat, {
+    style: { color: ACCENT, weight: 3, fill: true, fillColor: ACCENT, fillOpacity: 0.08, opacity: 0.98, lineJoin: "round", className: "sel-parent-glow" },
+    interactive: false
+  }).addTo(map);
+}
+
+// ============ 对照台状态 ============
+const DEFAULT_CHOME = "新宿区歌舞伎町2丁目";
+const DESC = [
+  "0现状对照：肘形引导线＋左侧20px大气泡（当前生产版，原样复刻为对比基线）",
+  "1脉冲锚点＋悬浮胶囊：三环长脉冲(r6→108/2s×3)＋16px胶囊上浮34px，遮挡最小",
+  "2底部信息条：地图零气泡，信息进右侧迷你卡＋底部条联动",
+  "3径向光晕＋数据环：弹簧光晕＋环形数据刻字，可调参＋FPS",
+  "4就地标签：无引导线无气泡，描边高亮＋12px质心小标签（推荐）"
+];
+const LAB = { variant: 0, selected: null, v1ll: null, v4ll: null, v3: null };
+function sizeSvg(svg) {
+  svg.setAttribute("width", window.innerWidth);
+  svg.setAttribute("height", window.innerHeight);
+  svg.setAttribute("viewBox", `0 0 ${window.innerWidth} ${window.innerHeight}`);
+}
+function hideAll() {
+  const svg = document.getElementById("lx-svg");
+  svg.innerHTML = "";
+  for (const id of ["lx-capsule", "lx-strip"]) document.getElementById(id).classList.remove("on");
+  document.getElementById("lx-side").classList.remove("on");
+  document.getElementById("lx-side").style.display = "none";
+  document.getElementById("lx-tag").classList.remove("on");
+  document.getElementById("lx-params").classList.remove("on");
+  fpsStop();
+  const co = document.getElementById("co-tag");
+  co.classList.remove("on");
+  document.getElementById("co-line").setAttribute("d", "");
+  try { const l = document.getElementById("co-line"); if (l._grow) l._grow.cancel(); } catch (_) {}
+  try { const t = document.getElementById("co-tag"); if (t._follow) t._follow.cancel(); } catch (_) {}
+}
+
+// ============ V0 现状（生产复刻） ============
+function showCallout(name, tag) {
+  const wrap = document.getElementById("callout");
+  const svg = document.getElementById("co-svg");
+  const line = document.getElementById("co-line");
+  const dot = document.getElementById("co-dot");
+  const label = document.getElementById("co-tag");
+  if (!wrap || !name || !map) return;
+  if (!lastAnchor) {
+    const hit = PTS.find(p => p.n === name);
+    if (hit && hit.lat != null) lastAnchor = L.latLng(hit.lat, hit.lng);
+    else return;
+  }
+  const pt = map.latLngToContainerPoint(lastAnchor);
+  const vw = window.innerWidth;
+  const jogX = -72, endX = -150;
+  const x0 = pt.x, y0 = pt.y, x1 = x0 + jogX, y1 = y0 - 56, x2 = x0 + endX, y2 = y1;
+  const d = `M ${x0} ${y0} L ${x1} ${y1} L ${x2} ${y2}`;
+  svg.setAttribute("width", vw);
+  svg.setAttribute("height", window.innerHeight);
+  svg.setAttribute("viewBox", `0 0 ${vw} ${window.innerHeight}`);
+  line.setAttribute("d", d);
+  const len = line.getTotalLength();
+  line.style.strokeDasharray = len;
+  line.style.strokeDashoffset = len;
+  dot.setAttribute("cx", x0); dot.setAttribute("cy", y0);
+  label.dataset.placeName = name;
+  label.innerHTML = `<span class="co-level">町丁</span><span>${name}</span>`;
+  label.setAttribute("role", "status");
+  label.setAttribute("aria-label", `已选中町丁：${name}`);
+  label.style.left = x2 + "px"; label.style.top = y2 + "px";
+  label.style.transform = "";
+  label.style.opacity = "0";
+  label.classList.remove("on");
+  void label.offsetWidth;
+  if (RM) {
+    line.style.strokeDashoffset = "0";
+    label.style.opacity = "1";
+    label.classList.add("on");
+    return;
+  }
+  if (line._grow) line._grow.cancel();
+  if (label._follow) label._follow.cancel();
+  line._grow = line.animate(
+    [{ strokeDashoffset: len }, { strokeDashoffset: 0 }],
+    { duration: 600, easing: "cubic-bezier(.4,0,.2,1)", fill: "forwards" }
+  );
+  const X_FROM = x0 + "px", X_TO = x2 + "px";
+  label._follow = label.animate(
+    [
+      { left: X_FROM, opacity: 0, transform: "translate(calc(0% - 8px),-50%) scale(.96)" },
+      { left: X_TO, opacity: 1, transform: "translate(calc(-100% - 8px),-50%) scale(1)" }
+    ],
+    { duration: 600, easing: "cubic-bezier(.4,0,.2,1)", fill: "forwards" }
+  );
+  line._grow.finished.then(() => {
+    line.style.strokeDashoffset = "0";
+    label.classList.add("on");
+  }).catch(() => {});
+}
+function refreshCallout() {
+  const wrap = document.getElementById("callout");
+  if (!wrap || !lastAnchor || !map) return;
+  const line = document.getElementById("co-line");
+  const dot = document.getElementById("co-dot");
+  const label = document.getElementById("co-tag");
+  if (!label.classList.contains("on")) return;
+  const d = line.getAttribute("d");
+  if (!d) return;
+  const m = d.match(/M ([\d.-]+) ([\d.-]+) L ([\d.-]+) ([\d.-]+) L ([\d.-]+) ([\d.-]+)/);
+  if (!m) return;
+  const [, ox, oy, jx, jy, ex, ey] = m.map(Number);
+  const pt = map.latLngToContainerPoint(lastAnchor);
+  const dx = pt.x - ox, dy = pt.y - oy;
+  line.setAttribute("d", `M ${pt.x} ${pt.y} L ${jx + dx} ${jy + dy} L ${ex + dx} ${ey + dy}`);
+  dot.setAttribute("cx", pt.x); dot.setAttribute("cy", pt.y);
+  if (label._follow) { try { label._follow.finish(); } catch (_) {} label._follow = null; }
+  label.style.left = (ex + dx) + "px"; label.style.top = (ey + dy) + "px";
+}
+
+// ============ V1 脉冲锚点＋悬浮胶囊 ============
+function v1_show(name, ll) {
+  const pt = map.latLngToContainerPoint(ll);
+  LAB.v1ll = ll;
+  const svg = document.getElementById("lx-svg");
+  sizeSvg(svg);
+  svg.innerHTML = `<circle class="lx-dot" cx="${pt.x}" cy="${pt.y}" r="4"/>` +
+    `<circle class="lx-ring" cx="${pt.x}" cy="${pt.y}" r="6"/>` +
+    `<circle class="lx-ring" cx="${pt.x}" cy="${pt.y}" r="6"/>` +
+    `<circle class="lx-ring" cx="${pt.x}" cy="${pt.y}" r="6"/>`;
+  const cap = document.getElementById("lx-capsule");
+  cap.innerHTML = `<span class="lx-lvl">町丁</span><span>${name}</span>`;
+  cap.setAttribute("role", "status");
+  cap.setAttribute("aria-label", `已选中町丁：${name}`);
+  cap.style.left = pt.x + "px";
+  cap.style.top = (pt.y - 34) + "px";
+  cap.classList.remove("on");
+  if (RM) { cap.classList.add("on"); cap.style.opacity = "1"; return; }
+  void cap.offsetWidth;
+  const rings = svg.querySelectorAll(".lx-ring");
+  rings.forEach((c, i) => {
+    c.animate(
+      [{ opacity: 0.85, r: 6 }, { opacity: 0, r: 108 }],
+      { duration: 2000, delay: i * 620, iterations: 3, easing: "cubic-bezier(.2,.7,.3,1)", fill: "forwards" }
+    );
+  });
+  requestAnimationFrame(() => cap.classList.add("on"));
+}
+function v1_refresh() {
+  if (!LAB.v1ll || !map) return;
+  const pt = map.latLngToContainerPoint(LAB.v1ll);
+  const cap = document.getElementById("lx-capsule");
+  cap.style.left = pt.x + "px";
+  cap.style.top = (pt.y - 34) + "px";
+}
+
+// ============ V2 底部信息条＋右侧迷你卡 ============
+function v2_show(f, rate) {
+  const p = f.properties;
+  const cnt = chomeCounts(p);
+  const svg = document.getElementById("lx-svg");
+  sizeSvg(svg);
+  const ll = LAB.v1ll;
+  const pt = map.latLngToContainerPoint(ll);
+  svg.innerHTML = `<circle class="lx-dot" cx="${pt.x}" cy="${pt.y}" r="4"/>` +
+    `<circle class="lx-ring" cx="${pt.x}" cy="${pt.y}" r="5"/>`;
+  if (!RM) {
+    const ring = svg.querySelector(".lx-ring");
+    ring.animate([{ opacity: 0.9, r: 5 }, { opacity: 0, r: 30 }],
+      { duration: 500, easing: "cubic-bezier(.2,.7,.3,1)", fill: "forwards" });
+  }
+  const strip = document.getElementById("lx-strip");
+  strip.innerHTML = `<b>${p.name}</b> · ${rate != null ? rate.toFixed(1) + " ‰" : "—"} · 详情见右上迷你卡`;
+  strip.classList.remove("on");
+  void strip.offsetWidth;
+  strip.classList.add("on");
+  const side = document.getElementById("lx-side");
+  side.innerHTML = `<div class="lx-flash"></div>` +
+    `<span class="lv">町丁</span><h3>${p.name}</h3>` +
+    `<div class="sub">${p.ward || ""} · 常住人口 ${p.pop ? p.pop.toLocaleString() : "暂无"}</div>` +
+    `<div class="big">${rate != null ? rate.toFixed(1) : "—"}</div>` +
+    `<div class="unit">件 / 千人 · 认知 ${cnt.total != null ? cnt.total.toLocaleString() : 0} 件</div>`;
+  side.style.display = "block";
+  void side.offsetWidth;
+  side.classList.add("on");
+}
+
+// ============ V3 径向光晕＋数据环 ============
+const V3P = { glow: 55, radius: 64 };
+function circlePath(cx, cy, r) {
+  return `M ${cx - r} ${cy} a ${r} ${r} 0 1 1 ${2 * r} 0 a ${r} ${r} 0 1 1 ${-2 * r} 0`;
+}
+function v3_build(name, rateText, ll, animate) {
+  const pt = map.latLngToContainerPoint(ll);
+  const R = V3P.radius, g = V3P.glow / 100;
+  const svg = document.getElementById("lx-svg");
+  sizeSvg(svg);
+  const txt = `${name} · ${rateText}`;
+  svg.innerHTML = `<defs>` +
+    `<radialGradient id="lx-glowg" cx="50%" cy="50%" r="50%">` +
+    `<stop offset="0%" stop-color="${ACCENT}" stop-opacity="${(0.55 * g).toFixed(3)}"/>` +
+    `<stop offset="60%" stop-color="${ACCENT}" stop-opacity="${(0.22 * g).toFixed(3)}"/>` +
+    `<stop offset="100%" stop-color="${ACCENT}" stop-opacity="0"/></radialGradient>` +
+    `<path id="lx-ringp" d="${circlePath(pt.x, pt.y, R)}" fill="none"/></defs>` +
+    `<circle class="lx-gl" cx="${pt.x}" cy="${pt.y}" r="${R}" fill="url(#lx-glowg)"/>` +
+    `<circle class="lx-rc" cx="${pt.x}" cy="${pt.y}" r="${R}"/>` +
+    `<circle class="lx-dot" cx="${pt.x}" cy="${pt.y}" r="3"/>` +
+    `<text class="lx-rt"><textPath href="#lx-ringp">${txt}</textPath></text>`;
+  const showText = map.getZoom() >= 11;
+  svg.querySelector(".lx-rt").style.display = showText ? "" : "none";
+  if (RM || !animate) return;
+  const gl = svg.querySelector(".lx-gl");
+  gl.animate(
+    [{ transform: "scale(.3)", opacity: 0.2 }, { transform: "scale(1.12)", opacity: g, offset: 0.7 }, { transform: "scale(1)", opacity: g * 0.85 }],
+    { duration: 700, easing: "cubic-bezier(.2,1.4,.3,1)", fill: "forwards" }
+  );
+  const rc = svg.querySelector(".lx-rc");
+  rc.animate([{ opacity: 0 }, { opacity: 0.9 }], { duration: 450, easing: "ease-out", fill: "forwards" });
+  const rt = svg.querySelector(".lx-rt");
+  rt.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 400, delay: 250, easing: "ease-out", fill: "forwards" });
+}
+function v3_show(name, rate, ll) {
+  LAB.v3 = { name, rate, ll };
+  document.getElementById("lx-params").classList.add("on");
+  v3_build(name, rate != null ? rate.toFixed(1) + "‰" : "—", ll, true);
+  fpsStart();
+}
+function v3_place() {
+  if (!LAB.v3) return;
+  const { name, rate, ll } = LAB.v3;
+  v3_build(name, rate != null ? rate.toFixed(1) + "‰" : "—", ll, false);
+}
+let fpsRAF = null;
+function fpsStart() {
+  fpsStop();
+  const el = document.getElementById("lx-fps");
+  let frames = 0, t0 = performance.now();
+  const tick = t => {
+    frames++;
+    if (t - t0 >= 500) {
+      el.textContent = Math.round(frames * 1000 / (t - t0)) + " FPS";
+      frames = 0; t0 = t;
+    }
+    fpsRAF = requestAnimationFrame(tick);
+  };
+  fpsRAF = requestAnimationFrame(tick);
+}
+function fpsStop() { if (fpsRAF) cancelAnimationFrame(fpsRAF); fpsRAF = null; }
+
+// ============ V4 就地小标签 ============
+function v4_show(f) {
+  const pos = polyLabelPos(f.geometry);
+  if (!pos) return;
+  const ll = L.latLng(pos[0], pos[1]);
+  LAB.v4ll = ll;
+  const pt = map.latLngToContainerPoint(ll);
+  const tag = document.getElementById("lx-tag");
+  tag.textContent = f.properties.name;
+  tag.setAttribute("role", "status");
+  tag.setAttribute("aria-label", `已选中町丁：${f.properties.name}`);
+  tag.style.left = pt.x + "px";
+  tag.style.top = pt.y + "px";
+  tag.classList.remove("on");
+  void tag.offsetWidth;
+  const show = map.getZoom() >= 11;
+  if (show) tag.classList.add("on");
+}
+function v4_refresh() {
+  if (!LAB.v4ll || !map) return;
+  const pt = map.latLngToContainerPoint(LAB.v4ll);
+  const tag = document.getElementById("lx-tag");
+  tag.style.left = pt.x + "px";
+  tag.style.top = pt.y + "px";
+  tag.classList.toggle("on", map.getZoom() >= 11);
+}
+
+// ============ 选择与切换 ============
+function renderVariant(name) {
+  const f = POLY.features.find(x => x.properties && x.properties.name === name);
+  if (!f) return;
+  const rate = chomeRateOf(f.properties);
+  if (LAB.variant === 0) showCallout(name, "chome");
+  else if (LAB.variant === 1) v1_show(name, LAB.v1ll);
+  else if (LAB.variant === 2) v2_show(f, rate);
+  else if (LAB.variant === 3) v3_show(name, rate, LAB.v1ll);
+  else v4_show(f);
+}
+LAB.select = function (name) {
+  const f = POLY.features.find(x => x.properties && x.properties.name === name);
+  if (!f) return false;
+  LAB.selected = name;
+  const hit = PTS.find(q => q.n === name);
+  const ll = hit && hit.lat != null ? L.latLng(hit.lat, hit.lng) : map.getCenter();
+  lastAnchor = ll;
+  LAB.v1ll = ll;
+  chomeLayer.setStyle(chomeLayer.options.style);
+  highlightParentBoundary(f.properties.ward);
+  hideAll();
+  renderVariant(name);
+  return true;
+};
+function setVariant(n) {
+  LAB.variant = n;
+  document.querySelectorAll("#labbar button[data-v]").forEach(b =>
+    b.classList.toggle("on", Number(b.dataset.v) === n));
+  document.getElementById("labdesc").textContent = DESC[n];
+  try { history.replaceState(null, "", "?v=" + n); } catch (_) {}
+  hideAll();
+  LAB.select(LAB.selected || DEFAULT_CHOME);
+}
+window.__lab = {
+  setVariant, select: n => LAB.select(n),
+  variant: () => LAB.variant, selected: () => LAB.selected
+};
+document.querySelectorAll("#labbar button[data-v]").forEach(b =>
+  b.addEventListener("click", () => setVariant(Number(b.dataset.v))));
+window.addEventListener("keydown", e => {
+  if (/^[0-4]$/.test(e.key)) setVariant(Number(e.key));
+});
+document.getElementById("lx-p-glow").addEventListener("input", e => {
+  V3P.glow = Number(e.target.value);
+  if (LAB.variant === 3) v3_place();
+});
+document.getElementById("lx-p-radius").addEventListener("input", e => {
+  V3P.radius = Number(e.target.value);
+  if (LAB.variant === 3) v3_place();
+});
+
+// ============ 地图初始化 ============
+function initMap() {
+  map = L.map("map", { zoomControl: true, preferCanvas: true, zoomSnap: 0.25, zoomDelta: 0.5 });
+  L.tileLayer("https://cyberjapandata.gsi.go.jp/xyz/blank/{z}/{x}/{y}.png", {
+    maxZoom: 18, attribution: "© 国土地理院"
+  }).addTo(map);
+  chomeLayer = L.geoJSON(POLY, {
+    style: f => {
+      const r = chomeRateOf(f.properties);
+      const isSel = LAB.selected === f.properties.name;
+      return {
+        color: isSel ? SELLINE : "rgba(255,244,232,0.12)",
+        weight: isSel ? 2.5 : 0.6,
+        fillColor: colorForChome(r),
+        fillOpacity: isSel ? 1 : 0.88
+      };
+    },
+    onEachFeature: (f, layer) => {
+      layer.on("click", e => { LAB.select(f.properties.name); });
+    }
+  }).addTo(map);
+  labelLayer = L.layerGroup();
+  for (const f of MUNI_POLY.features) {
+    const nm = f.properties.ward_ja;
+    if (!nm || nm === "所属未定地") continue;
+    const pos = polyLabelPos(f.geometry);
+    if (!pos) continue;
+    const icon = L.divIcon({ className: "map-ward-label", html: `<span>${nm}</span>`, iconSize: [80, 20], iconAnchor: [40, 10] });
+    L.marker(pos, { icon, interactive: false }).addTo(labelLayer);
+  }
+  labelLayer.addTo(map);
+  map.fitBounds(TOKYO_23_BOUNDS);
+  map.on("move zoom", () => {
+    if (LAB.variant === 0) refreshCallout();
+    else if (LAB.variant === 1) v1_refresh();
+    else if (LAB.variant === 4) v4_refresh();
+  });
+  map.on("moveend", () => { if (LAB.variant === 3) v3_place(); });
+  map.on("zoomend", () => {
+    if (LAB.variant === 3) v3_place();
+    if (LAB.variant === 4) v4_refresh();
+  });
+}
+Promise.all([
+  fetch("../data/points.json").then(r => r.json()),
+  fetch("../data/muni_poly.json").then(r => r.json()),
+  fetch("../data/chome_poly.json").then(r => r.json()),
+  fetch("../data/muni.json").then(r => r.json())
+]).then(([pts, mpoly, poly, muni]) => {
+  PTS = pts; MUNI_POLY = mpoly; POLY = poly; MUNI = muni;
+  window.PTS = pts; window.POLY = poly;
+  buildScales();
+  initMap();
+  window.map = map;
+  const q = new URLSearchParams(location.search).get("v");
+  const v = q != null && /^[0-4]$/.test(q) ? Number(q) : 0;
+  setVariant(v);
+});
+</script>
+</body>
+</html>
