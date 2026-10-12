@@ -16,13 +16,8 @@
 
 | | |
 |---|---|
-| **已完成** | 立项命名拍板（产品 Pan Out Japan / 域 japan.ouuut.com / 仓个人顶上）；GitHub 建仓 `nakamotosai/panout-japan`（public）；本地生产根 `F:/projects/panout-japan` git init + origin；十真相源骨架落地 |
-| **唯一 next** | M0：聚合门面跑通 —— `japan.ouuut.com` 首页四板块（地震/犯罪率/支持率/新闻预告）+ 三站跳转，外链先指现有三站，老站保持在线做回滚锚 |
-
-## 验证方式
-
-```bash
-cd F:/projects/panout-japan
+| **已完成** | 合仓：三站源码迁入 `sites/`（quake/crime/cabinet，瘦身 369M→66M）；四页 tactical 深色统一（token 冻 `docs/THEME-TOKENS.md`）；cabinet 补三语；门面 `site/` 新建（三语+SEO 件）；`f896044` 双推同 SHA |
+| **唯一 next** | M0 上线：`japan.ouuut.com` 建 CF Pages 项目 + 綁域 + GSC/Bing 验证 + 冒烟（A1–A7）；老站保持在线 |
 git log --oneline -5
 git remote -v
 ```
