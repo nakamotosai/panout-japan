@@ -1,5 +1,7 @@
 # SPEC · M0 聚合门面（当前 milestone）
 
+> discovery 收敛（2026-10-12，见 `DISCOVERY.md`）：形态 A 纯外链门面 → M1 子域家族（C）；**子路径迁入（B）否决**。
+
 ## 目标
 
 `japan.ouuut.com` 首版上线：一个静态聚合门面，四板块（地震 / 犯罪率 / 内阁支持率 / 新闻预告）+ 三站跳转。用户打开能一眼看到"日本本土信息在这"，点进去到各老站。
@@ -7,9 +9,12 @@
 ## 范围
 
 - 首页：品牌头（Pan Out Japan + pan out 一句话解释）+ 四板块卡 + 页脚（© + 联系 + 数据来源）。
-- 三语 `ja / zh-CN / en`，结构严格同步。
+- IA：地震主视觉 + 三小卡（Hero 右嵌地震静态缩略，下接三行索引；M2 新闻长在之下）。
+- 三语 `ja / zh-CN / en`，结构严格同步（复 ouuut-v2 content.json 单真源做法）。
 - 三跳转外链现有老站：`https://3d.saaaai.com/` / `https://crime.saaaai.com/` / `https://japan.saaaai.com/`。
-- 新闻板块首版只放预告（"News Pan 开发中"），不做聚合。
+- 新闻板块首版只放预告（"News Pan 开发中"三语占位，零 JS 取数、零同机依赖）。
+- 视觉：纸壳+暗室（门面严守 ouuut 纸质零线条，子站不动）。
+- SEO 白纸起：robots/sitemap/hreflang/OG/JSON-LD + GSC/Bing 当天验证；AI 爬虫政策先统一。
 
 ## 非目标
 
