@@ -1,0 +1,7 @@
+{
+  "project": "panout-japan",
+  "updated": "2026-10-12",
+  "source_of_truth": "用户 2026-10-12 拍板：产品 Pan Out Japan / 域 japan.ouuut.com；设计跟 ouuut 品牌走（ouuut-v2 的 Tokyo Expedition Magazine Editorial），开工前先读 ouuut-v2/design-lock.json",
+  "style": "Tokyo Expedition Magazine Editorial / ouuut 家族纸质编辑风（开工时从 ouuut-v2 取 token 快照冻结）",
+  "note": "M0 开工时把色板/字体/字号快照进本锁；后续设计改动先读锁再动手，用户拍板新值当轮更新锁"
+}
