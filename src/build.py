@@ -546,7 +546,7 @@ COPY = {
     "author.personal": ("メインサイト", "主站", "Main site"),
     "author.contact": ("連絡先", "联系作者", "Contact"),
     "author.links": ("作者・関連リンク", "作者与联系链接", "Author and contact links"),
-    "ui.theme.sage": ("Sage", "浅色", "Sage"),
+    "ui.theme.light": ("Light", "浅色", "Light"),
     "ui.theme.dark": ("Dark", "深色", "Dark"),
     "home.c.lede": (
         "数字の意味は、数え方で変わる。出典と集計の前提を、各章と合わせて示す。",
@@ -964,7 +964,7 @@ def head(title, desc, path, jsonld=None, extra_head="", body_class=""):
 <meta property="og:url" content="{u}">
 <meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary">
-<meta name="theme-color" content="#E9EDE3">
+<meta name="theme-color" content="#F5F3ED">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="/assets/fonts/outfit-800.woff2?v=__FONT_VER__" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/app.css?v=__CSS_VER__">
@@ -980,8 +980,8 @@ def head(title, desc, path, jsonld=None, extra_head="", body_class=""):
 
 
 THEME_DOTS = """<div class="theme-switcher" role="group" aria-label="Theme">
-<button class="theme-dot" type="button" data-theme-set="sage" aria-pressed="true" aria-label="Sage" title="Sage" style="--td-bg:#E9EDE3;--td-accent:#2F6B4F"><span class="td-dot"><span class="td-core"></span></span></button>
-<button class="theme-dot" type="button" data-theme-set="dark" aria-pressed="false" aria-label="Dark" title="Dark" style="--td-bg:#0E0E0C;--td-accent:#FF6A3D"><span class="td-dot"><span class="td-core"></span></span></button>
+<button class="theme-dot" type="button" data-theme-set="sage" aria-pressed="true" aria-label="Light" title="Light" style="--td-bg:#F5F3ED;--td-accent:var(--accent)"><span class="td-dot"><span class="td-core"></span></span></button>
+<button class="theme-dot" type="button" data-theme-set="dark" aria-pressed="false" aria-label="Dark" title="Dark" style="--td-bg:#0E0E0C;--td-accent:var(--accent)"><span class="td-dot"><span class="td-core"></span></span></button>
 </div>"""
 
 LANG_NAV = """<div class="lang-nav" role="group" aria-label="Language">
@@ -1112,7 +1112,7 @@ def build_home_preview():
 <p class="hp-claim" data-t="{claim}">{ja(claim)}</p>
 <div class="hp-entry-foot"><span class="hp-source" data-t="{source_key}">{ja(source_key)}</span>{foot}</div>
 </div>"""
-        entries.append(f'<a class="hp-entry" href="{href}">\n{card}\n</a>')
+        entries.append(f'<a class="hp-entry" data-chapter="{key}" href="{href}">\n{card}\n</a>')
 
     source_items = []
     for key in ("weather", "quake", "crime", "cabinet", "housing", "population"):

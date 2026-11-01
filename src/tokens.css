@@ -1,16 +1,42 @@
 /* japan.ouuut.com · tokens — single source of truth.
    Family: ouuut Tokyo Expedition Magazine Editorial. Two themes: sage / dark.
-   Zero structural lines: hierarchy comes from surface blocks, whitespace and type. */
+   Zero structural lines: hierarchy comes from surface blocks, whitespace and type.
+
+   Colour logic (2026-11-02): the two themes change ONLY the neutral ramp —
+   paper vs charcoal, ink, muted, surface. The accent set is one palette shared
+   by both themes: six chapter colours plus a primary, all inside one luminance
+   band (Y ≈ 0.20) so every colour holds on #F5F3ED and on #0E0E0C. Small accent
+   type uses a one-step same-hue variant (--accent-ink) to reach AA; the marks
+   themselves are identical in both themes. */
 
 :root {
-  /* ---- surfaces / ink (sage is the default so no-theme renders correctly) ---- */
-  --bg: #E9EDE3;
-  --ink: #17211A;
-  --muted: #56635A;
-  --accent: #2F6B4F;
-  --accent-ink: var(--accent);
-  --accent-soft: rgba(47, 107, 79, .08);
-  --surface: rgba(23, 33, 26, .045);
+  /* ---- neutrals: light paper is the default so no-theme renders correctly ---- */
+  --bg: #F5F3ED;
+  --ink: #1A1A16;
+  --muted: #5B5A53;
+  --surface: rgba(26, 26, 22, .045);
+
+  /* accent text step: same hue, one lightness step for small type */
+  --accent-ink-mix: 85%;
+  --accent-ink-target: #14140F;
+  --accent-soft-mix: 10%;
+
+  /* ---- palette A · 和色六景 (default) ---- */
+  --c-weather: #0C8B7A;    /* 青磁 */
+  --c-quake: #A77109;      /* 山吹 */
+  --c-crime: #CD5545;      /* 朱 */
+  --c-cabinet: #3F7DCA;    /* 藍 */
+  --c-housing: #678618;    /* 苔 */
+  --c-population: #A165AE; /* 紫 */
+
+  /* base = the palette's primary; the aliases exist so chapter apps that set
+     their own --accent on a subtree can point back at it without a cycle. */
+  --accent-base: var(--c-crime);
+  --accent: var(--accent-base);
+  --accent-ink-base: color-mix(in oklab, var(--accent-base) var(--accent-ink-mix), var(--accent-ink-target));
+  --accent-ink: var(--accent-ink-base);
+  --accent-soft-base: color-mix(in srgb, var(--accent-base) var(--accent-soft-mix), transparent);
+  --accent-soft: var(--accent-soft-base);
 
   /* ---- type families ---- */
   --serif: 'Instrument Serif', 'Serif Fallback', 'Noto Serif SC', 'Noto Serif JP', Georgia, 'Times New Roman', serif;
@@ -65,25 +91,50 @@
   }
 }
 
-html[data-theme="sage"] {
-  --bg: #E9EDE3;
-  --ink: #17211A;
-  --muted: #56635A;
-  --accent: #2F6B4F;
-  --accent-ink: var(--accent);
-  --accent-soft: rgba(47, 107, 79, .08);
-  --surface: rgba(23, 33, 26, .045);
-}
-
 html[data-theme="dark"] {
   color-scheme: dark;
   --bg: #0E0E0C;
   --ink: #EDEBE4;
-  --muted: #A09E96;
-  --accent: #FF6A3D;
-  --accent-ink: #F2653A;
-  --accent-soft: rgba(255, 106, 61, .12);
+  --muted: #A3A199;
   --surface: rgba(237, 235, 228, .055);
+  --accent-ink-mix: 86%;
+  --accent-ink-target: #FFFDF5;
+  --accent-soft-mix: 14%;
+}
+
+/* ---- palettes: the accent set, shared by both themes ---- */
+
+/* B · 矿物大地 — muted earth, one step quieter than A */
+html[data-palette="b"] {
+  --c-weather: #378697;    /* 青灰 */
+  --c-quake: #A07244;      /* 黄土 */
+  --c-crime: #A96B66;      /* 赭 */
+  --c-cabinet: #8873A2;    /* 紫灰 */
+  --c-housing: #53885E;    /* 松 */
+  --c-population: #867C42; /* 橄榄 */
+  --accent-base: var(--c-crime);
+}
+
+/* C · 双色印刷 — two inks, alternating across the six chapters */
+html[data-palette="c"] {
+  --c-weather: #3F7DCA;    /* 藍 */
+  --c-quake: #CF5343;      /* 朱 */
+  --c-crime: #3F7DCA;
+  --c-cabinet: #CF5343;
+  --c-housing: #3F7DCA;
+  --c-population: #CF5343;
+  --accent-base: var(--c-quake);
+}
+
+/* D · 三色分类 — one colour per domain: nature / society / people */
+html[data-palette="d"] {
+  --c-weather: #688527;    /* 苔 · nature */
+  --c-quake: #688527;
+  --c-crime: #CB5848;      /* 朱 · society */
+  --c-cabinet: #CB5848;
+  --c-housing: #427DC7;    /* 藍 · people */
+  --c-population: #427DC7;
+  --accent-base: var(--c-crime);
 }
 
 /* Metric-compatible serif fallback. Instrument Serif is 72% the width of Georgia

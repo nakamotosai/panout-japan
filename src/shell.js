@@ -142,16 +142,16 @@
     if (THEMES.indexOf(t) < 0) t = 'sage';
     doc.dataset.theme = t;
     var meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute('content', t === 'dark' ? '#0E0E0C' : '#E9EDE3');
+    if (meta) meta.setAttribute('content', t === 'dark' ? '#0E0E0C' : '#F5F3ED');
     var dots = document.querySelectorAll('[data-theme-set]');
     for (var i = 0; i < dots.length; i++) {
       dots[i].setAttribute('aria-pressed', String(dots[i].dataset.themeSet === t));
     }
-    var sage = tr('ui.theme.sage') || 'Sage';
+    var light = tr('ui.theme.light') || 'Light';
     var dark = tr('ui.theme.dark') || 'Dark';
     if (dots.length) {
       for (var k = 0; k < dots.length; k++) {
-        var label = dots[k].dataset.themeSet === 'dark' ? dark : sage;
+        var label = dots[k].dataset.themeSet === 'dark' ? dark : light;
         dots[k].setAttribute('aria-label', label);
         dots[k].setAttribute('title', label);
       }

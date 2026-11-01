@@ -81,7 +81,7 @@ html.lang-switching [data-t] {
   transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), filter 0.45s ease, transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 a { color: inherit; text-decoration: none; }
-a:hover { color: var(--accent); }
+a:hover { color: var(--accent-ink); }
 img, svg { display: block; max-width: 100%; }
 button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
 button:disabled { cursor: progress; }
@@ -244,48 +244,50 @@ body.chapter-app { height: 100dvh; overflow: hidden; }
 }
 /* 地震视口 Sage 浅色模式全套配色覆盖与底部渐变遮罩移除 */
 html[data-theme="sage"] #v-quake-viewport {
-  --bg0: #E9EDE3 !important;
-  --bg0-h: #DEE3D7 !important;
-  --bg1: #D8DEC0 !important;
-  --fg: #141a15 !important;
-  --fg1: #2F6B4F !important;
-  --gray: #6b776c !important;
-  --accent: #2F6B4F !important;
-  --accent-soft: rgba(47, 107, 79, 0.16) !important;
-  --bg-page: #E9EDE3 !important;
-  --bg-map: #E9EDE3 !important;
-  --text-main: #141a15 !important;
-  --text-muted: #56635A !important;
-  --text-faint: #7d8a80 !important;
-  --line-main: rgba(20, 26, 21, 0.14) !important;
-  --panel-bg: #E9EDE3 !important;
-  --panel-bg-soft: #E9EDE3 !important;
+  --accent: var(--accent-base) !important;
+  --accent-ink: var(--accent-ink-base) !important;
+  --accent-soft: var(--accent-soft-base) !important;
+  --bg0: var(--bg) !important;
+  --bg0-h: #ECE9E1 !important;
+  --bg1: #E2DED4 !important;
+  --fg: var(--ink) !important;
+  --fg1: var(--accent) !important;
+  --gray: var(--muted) !important;
+  --bg-page: var(--bg) !important;
+  --bg-map: var(--bg) !important;
+  --text-main: var(--ink) !important;
+  --text-muted: var(--muted) !important;
+  --text-faint: #7A786F !important;
+  --line-main: rgba(26, 26, 22, 0.14) !important;
+  --panel-bg: var(--bg) !important;
+  --panel-bg-soft: var(--bg) !important;
   --panel-shadow: rgba(0, 0, 0, 0.08) !important;
   --bottom-grad: transparent !important;
-  --eq-coast: #1A251C !important;
+  --eq-coast: var(--ink) !important;
 }
 
 /* 地震视口深色模式：此前完全没写映射，地球底色停在 vendor 的棕黑 #12100d */
 html[data-theme="dark"] #v-quake-viewport {
-  --bg0: #0E0E0C !important;
+  --accent: var(--accent-base) !important;
+  --accent-ink: var(--accent-ink-base) !important;
+  --accent-soft: var(--accent-soft-base) !important;
+  --bg0: var(--bg) !important;
   --bg0-h: #171714 !important;
   --bg1: #1c1b18 !important;
-  --fg: #EDEBE4 !important;
-  --fg1: #FF6A3D !important;
-  --gray: #A09E96 !important;
-  --accent: #FF6A3D !important;
-  --accent-soft: rgba(255, 106, 61, 0.12) !important;
-  --bg-page: #0E0E0C !important;
-  --bg-map: #0E0E0C !important;
-  --text-main: #EDEBE4 !important;
-  --text-muted: #A09E96 !important;
+  --fg: var(--ink) !important;
+  --fg1: var(--accent) !important;
+  --gray: var(--muted) !important;
+  --bg-page: var(--bg) !important;
+  --bg-map: var(--bg) !important;
+  --text-main: var(--ink) !important;
+  --text-muted: var(--muted) !important;
   --text-faint: #6f6d66 !important;
   --line-main: rgba(237, 235, 228, 0.12) !important;
-  --panel-bg: #0E0E0C !important;
-  --panel-bg-soft: #0E0E0C !important;
+  --panel-bg: var(--bg) !important;
+  --panel-bg-soft: var(--bg) !important;
   --panel-shadow: none !important;
   --bottom-grad: transparent !important;
-  --eq-coast: #EDEBE4 !important;
+  --eq-coast: var(--ink) !important;
 }
 
 /* PWA 安装按钮文案是中文「安装」，与日文界面不符，且 Chromium 专属；隐藏 */
@@ -557,7 +559,7 @@ html[lang="en"] .wm-phrase-en { visibility: visible; }
   transition: color 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .chapters a:hover { color: var(--ink); transform: translateY(-1px); }
-.chapters a[aria-current="page"] { color: var(--accent); }
+.chapters a[aria-current="page"] { color: var(--accent-ink); }
 .chapters a[aria-current="page"]::after {
   content: "";
   position: absolute;
@@ -690,7 +692,7 @@ html:has(body.menu-open) { overflow: visible; }
 body.menu-open { overflow: hidden; }
 .mobile-nav-links { display: flex; flex-direction: column; gap: 20px; }
 .mobile-nav-links a { font-family: var(--serif); font-size: 32px; color: var(--ink); }
-.mobile-nav-links a[aria-current="page"] { color: var(--accent); }
+.mobile-nav-links a[aria-current="page"] { color: var(--accent-ink); }
 html[lang="ja"] .mobile-nav-links a { font-family: var(--ja-sans); font-weight: 300; }
 html[lang="zh"] .mobile-nav-links a { font-family: var(--zh-sans); font-weight: 300; }
 .mobile-foot { display: flex; flex-direction: column; gap: 18px; padding-top: 24px; }
@@ -1146,7 +1148,7 @@ html[lang="ja"] .chapter-head .lede, html[lang="zh"] .chapter-head .lede { font-
 .data-table td.date { font-family: var(--mono); white-space: nowrap; padding-right: 18px; color: var(--ink); }
 .data-table th.num, .data-table td.num { text-align: right; padding-right: 0; padding-left: 12px; }
 .data-table th.idx, .data-table td.idx { width: 42px; padding-left: 0; padding-right: 12px; text-align: left; color: var(--muted); }
-.data-table a:hover { color: var(--accent); }
+.data-table a:hover { color: var(--accent-ink); }
 
 .figure { margin-block: clamp(28px, 4vh, 44px); }
 .figure svg { width: 100%; height: auto; }
@@ -1172,7 +1174,7 @@ html[lang="ja"] .chapter-head .lede, html[lang="zh"] .chapter-head .lede { font-
   text-transform: uppercase;
 }
 .pager a { display: inline-flex; align-items: center; min-height: 44px; color: var(--muted); }
-.pager a:hover { color: var(--accent); }
+.pager a:hover { color: var(--accent-ink); }
 .pager .spacer { flex: 1; }
 
 /* ---------------- method ---------------- */
@@ -1293,8 +1295,6 @@ html body #crm-root[data-crm-variant="editorial"] {
   --text-faint: var(--muted);
   --line-main: transparent;
   --line-strong: var(--ink);
-  --accent: #2F6B4F;
-  --accent-soft: rgba(47, 107, 79, .08);
   --shadow-card: none;
 }
 html body #crm-root[data-crm-variant="tactical"] {
@@ -1308,8 +1308,6 @@ html body #crm-root[data-crm-variant="tactical"] {
   --text-faint: var(--muted);
   --line-main: transparent;
   --line-strong: var(--ink);
-  --accent: #FF6A3D;
-  --accent-soft: rgba(255, 106, 61, .12);
   --shadow-card: none;
 }
 html body #crm-root { --font-sans: var(--ja-sans); --font-num: var(--mono); --title-font: var(--ja-sans); --radius-ui: 2px; --radius-inner: 2px; --radius-card: 4px; }
@@ -1522,7 +1520,7 @@ html[data-theme="dark"] .cab-panel .back-btn {
   color: #edebe4 !important;
 }
 html[data-theme="sage"] .cab-panel .panel-card {
-  background: #E9EDE3 !important;
+  background: var(--bg) !important;
   border: 0 !important;
   box-shadow: none !important;
 }
@@ -1630,5 +1628,5 @@ button, input, select, .cab-zoom button, .eq-sq, .seg button, .card-badge {
 }
 /* 对比度（WCAG AA）：quake 页脚 3.95:1、模式条选中态 4.27:1 提到 ≥4.5 */
 #v-quake-viewport .eq-footer { color: var(--muted) !important; }
-#v-quake-viewport .eq-mode-btn.is-active { color: #245741 !important; background: rgba(47, 107, 79, .2) !important; }
-html[data-theme="dark"] #v-quake-viewport .eq-mode-btn.is-active { color: #FF8A63 !important; background: rgba(255, 106, 61, .22) !important; }
+#v-quake-viewport .eq-mode-btn.is-active { color: var(--accent-ink) !important; background: color-mix(in srgb, var(--accent) 20%, transparent) !important; }
+html[data-theme="dark"] #v-quake-viewport .eq-mode-btn.is-active { color: var(--accent-ink) !important; background: color-mix(in srgb, var(--accent) 22%, transparent) !important; }
