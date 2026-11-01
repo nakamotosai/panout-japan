@@ -275,13 +275,14 @@ def housing_svg(wards, muni_poly, w=1000, h=760, deals=None, towns=None):
         rec = by_ward.get(name) or {}
         unit = rec.get("unit") or 0
         t = (math.log10(unit) - lo) / span if unit else 0.0
-        opacity = 0.05 + 0.44 * max(0.0, min(1.0, t))
+        opacity = 0.10 + 0.55 * max(0.0, min(1.0, t))
         g = make_valid(shape(f["geometry"]))
         d = S.rings_path(g, proj, 0.0004)
         if d:
-            heat.append(f'<path d="{d}" fill="var(--accent)" fill-opacity="{opacity:.3f}" '
-                        f'stroke="var(--accent)" stroke-width="0.8" stroke-opacity="0.30"/>')
-    out.append('<g class="hp-heat">' + "".join(heat) + "</g>")
+            heat.append(f'<g class="hp-heat" style="--i:{len(heat)}">'
+                        f'<path d="{d}" fill="var(--accent)" fill-opacity="{opacity:.3f}" '
+                        f'stroke="var(--accent)" stroke-width="0.8" stroke-opacity="0.30"/></g>')
+    out.append("".join(heat))
 
     labels = [
         ("千代田", 139.7536, 35.6938, 10, -6, "start"),
@@ -407,6 +408,7 @@ def population_svg(doc, w=1000, h=760):
                f'2020→2025</text>')
     out.append(f'<text x="{gx}" y="78" class="note ink">91.2% の市町村が減少</text>')
 
+    rows_cells = defaultdict(list)
     for m in munis:
         x = gx + m["gx"] * cell
         y = gy + m["gy"] * cell
@@ -421,18 +423,12 @@ def population_svg(doc, w=1000, h=760):
             fill = "var(--ink)"
             k = min(3, int(min(1.0, -r / cap) * 4))
             op = [0.08, 0.14, 0.20, 0.28][k]
-        out.append(f'<rect x="{x:.2f}" y="{y:.2f}" width="{max(1.0, cell - 2):.2f}" '
-                   f'height="{max(1.0, cell - 2):.2f}" rx="1.4" fill="{fill}" '
-                   f'opacity="{op:.2f}"/>')
-
-    out.append(f'<defs><linearGradient id="hp-scan-g" x1="0" y1="0" x2="0" y2="1">'
-               f'<stop offset="0" stop-color="var(--accent)" stop-opacity="0"/>'
-               f'<stop offset=".5" stop-color="var(--accent)" stop-opacity=".26"/>'
-               f'<stop offset="1" stop-color="var(--accent)" stop-opacity="0"/>'
-               f'</linearGradient></defs>'
-               f'<g class="hp-scan" style="--d:{rows * cell + 240:.0f}">'
-               f'<rect x="{gx:.1f}" y="{gy - 240:.1f}" width="{cols * cell:.1f}" '
-               f'height="240" fill="url(#hp-scan-g)"/></g>')
+        rows_cells[m["gy"]].append(
+            f'<rect x="{x:.2f}" y="{y:.2f}" width="{max(1.0, cell - 2):.2f}" '
+            f'height="{max(1.0, cell - 2):.2f}" rx="1.4" fill="{fill}" '
+            f'opacity="{op:.2f}"/>')
+    for row in sorted(rows_cells):
+        out.append(f'<g class="hp-row" style="--i:{row}">' + "".join(rows_cells[row]) + "</g>")
 
     # Two reading stations: the one growing prefecture and the steepest decline.
     for code, label, dx, dy, anchor in (
