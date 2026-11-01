@@ -359,6 +359,25 @@
     for (var k = 0; k < els.length; k++) io.observe(els[k]);
   }
 
+  // Home plates: each card's plate is revealed once, when it first enters view.
+  function setupPlates() {
+    var plates = document.querySelectorAll('.hp-entry');
+    if (!plates.length) return;
+    if (!('IntersectionObserver' in window)) {
+      for (var i = 0; i < plates.length; i++) plates[i].classList.add('is-in');
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      for (var j = 0; j < entries.length; j++) {
+        if (entries[j].isIntersecting) {
+          entries[j].target.classList.add('is-in');
+          io.unobserve(entries[j].target);
+        }
+      }
+    }, { threshold: 0.25 });
+    for (var k = 0; k < plates.length; k++) io.observe(plates[k]);
+  }
+
   function init() {
     doc.classList.add('js');
     bootTheme();
@@ -368,6 +387,7 @@
     setupMenu();
     setupReveal();
     setupStages();
+    setupPlates();
 
     var langs = document.querySelectorAll('[data-lang]');
     for (var i = 0; i < langs.length; i++) {

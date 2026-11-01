@@ -49,7 +49,8 @@ def quake_svg(quakes, outline, years, w=1000, h=760):
             f"M{x:.1f} {y:.1f}h{ww:.1f}v{hh:.1f}h{-ww:.1f}z"
             for x, y, ww, hh in buckets[level]
         )
-        out.append(f'<path d="{d}" fill="var(--accent)" opacity="{opacity:.2f}"/>')
+        out.append(f'<g class="hp-q" style="--i:{level}"><path d="{d}" fill="var(--accent)" '
+                   f'opacity="{opacity:.2f}"/></g>')
 
     out.append(f'<path d="{coast}" fill="none" stroke="var(--ink)" stroke-width="1.4" '
                f'opacity="0.95" stroke-linejoin="round"/>')
@@ -124,17 +125,19 @@ def crime_svg(points, muni_poly, ward_rate, w=1000, h=760):
         if not pts:
             continue
         d = "".join(f"M{x:.1f} {y:.1f}h0" for x, y in pts)
-        out.append(f'<path d="{d}" stroke="var(--accent)" stroke-width="{widths[level]}" '
-                   f'stroke-linecap="round" opacity="{opacities[level]}"/>')
+        out.append(f'<g class="hp-dot" style="--i:{level}"><path d="{d}" stroke="var(--accent)" '
+                   f'stroke-width="{widths[level]}" stroke-linecap="round" '
+                   f'opacity="{opacities[level]}"/></g>')
 
     # The lens is the chapter's promise: a municipality is not the end scale.
     lx, ly = proj.xy(139.735, 35.690)
-    out.append(f'<circle cx="{lx:.1f}" cy="{ly:.1f}" r="88" fill="none" '
-               f'stroke="var(--accent)" stroke-width="2" opacity="0.9"/>')
-    out.append(f'<circle cx="{lx:.1f}" cy="{ly:.1f}" r="2.6" fill="var(--accent)"/>')
+    lens = [f'<circle cx="{lx:.1f}" cy="{ly:.1f}" r="88" fill="none" '
+            f'stroke="var(--accent)" stroke-width="2" opacity="0.9"/>',
+            f'<circle cx="{lx:.1f}" cy="{ly:.1f}" r="2.6" fill="var(--accent)"/>']
     for dx, dy in ((0, -96), (0, 96), (-96, 0), (96, 0)):
-        out.append(f'<rect x="{lx + dx - 0.7:.1f}" y="{ly + dy - 6:.1f}" width="1.4" '
-                   f'height="12" fill="var(--accent)" opacity="0.9"/>')
+        lens.append(f'<rect x="{lx + dx - 0.7:.1f}" y="{ly + dy - 6:.1f}" width="1.4" '
+                    f'height="12" fill="var(--accent)" opacity="0.9"/>')
+    out.append('<g class="hp-lens">' + "".join(lens) + "</g>")
     out.append(f'<text x="{lx:.1f}" y="{ly - 104:.1f}" text-anchor="middle" '
                f'class="note halo ink">23区 / {chome_n:,}町丁</text>')
 
@@ -232,6 +235,9 @@ def cabinet_svg(months, month_mean, cabinet_data, w=1000, h=760):
         out.append(f'<circle cx="{last_x:.1f}" cy="{last_y:.1f}" r="5" fill="var(--accent)"/>')
         out.append(f'<text x="{last_x - 10:.1f}" y="{last_y - 14:.1f}" text-anchor="end" '
                    f'class="note accent">{month_mean[months[-1]]:.1f}%</text>')
+        out.append(f'<g class="hp-play" style="--d:{x1 - x0:.1f}">'
+                   f'<line x1="{x0}" y1="{top}" x2="{x0}" y2="{bottom}" '
+                   f'stroke="var(--accent)" stroke-width="2.4" opacity="0.5"/></g>')
 
     # Year labels are placed by month index, not eyeballed.
     for year in ("1998", "2005", "2012", "2019", "2026"):
@@ -263,6 +269,7 @@ def housing_svg(wards, muni_poly, w=1000, h=760, deals=None, towns=None):
     lo, hi = math.log10(min(units)), math.log10(max(units))
     span = (hi - lo) or 1.0
 
+    heat = []
     for f in features:
         name = f["properties"]["ward_ja"]
         rec = by_ward.get(name) or {}
@@ -272,8 +279,9 @@ def housing_svg(wards, muni_poly, w=1000, h=760, deals=None, towns=None):
         g = make_valid(shape(f["geometry"]))
         d = S.rings_path(g, proj, 0.0004)
         if d:
-            out.append(f'<path d="{d}" fill="var(--accent)" fill-opacity="{opacity:.3f}" '
-                       f'stroke="var(--accent)" stroke-width="0.8" stroke-opacity="0.30"/>')
+            heat.append(f'<path d="{d}" fill="var(--accent)" fill-opacity="{opacity:.3f}" '
+                        f'stroke="var(--accent)" stroke-width="0.8" stroke-opacity="0.30"/>')
+    out.append('<g class="hp-heat">' + "".join(heat) + "</g>")
 
     labels = [
         ("千代田", 139.7536, 35.6938, 10, -6, "start"),
@@ -315,14 +323,17 @@ def weather_svg(outline, w=1000, h=760, bbox=(121.0, 23.0, 151.0, 48.0)):
     coast = "".join(S.path(seg, proj) for seg in segs)
 
     out = []
-    # Pressure field: four isobars, one hue, shape only.
+    # Pressure field: four isobars, one hue, shape only. The group drifts, so
+    # the card keeps moving after the entrance.
+    iso = []
     for i in range(4):
         y = 122 + i * 146
         amp = 42 - i * 6
         d = (f"M-24 {y + 12:.1f}C{w * .20:.0f} {y - amp:.1f} {w * .36:.0f} {y + amp:.1f} "
              f"{w * .54:.0f} {y:.1f}S{w * .80:.0f} {y - amp * .7:.1f} {w + 24:.0f} {y + 10:.1f}")
-        out.append(f'<path d="{d}" fill="none" stroke="var(--accent)" stroke-width="3.2" '
+        iso.append(f'<path d="{d}" fill="none" stroke="var(--accent)" stroke-width="3.2" '
                    f'opacity="{0.30 - 0.05 * i:.3f}"/>')
+    out.append('<g class="hp-iso">' + "".join(iso) + "</g>")
 
     out.append(f'<path d="{coast}" fill="none" stroke="var(--ink)" stroke-width="1.4" '
                f'opacity="0.95" stroke-linejoin="round"/>')
@@ -413,6 +424,15 @@ def population_svg(doc, w=1000, h=760):
         out.append(f'<rect x="{x:.2f}" y="{y:.2f}" width="{max(1.0, cell - 2):.2f}" '
                    f'height="{max(1.0, cell - 2):.2f}" rx="1.4" fill="{fill}" '
                    f'opacity="{op:.2f}"/>')
+
+    out.append(f'<defs><linearGradient id="hp-scan-g" x1="0" y1="0" x2="0" y2="1">'
+               f'<stop offset="0" stop-color="var(--accent)" stop-opacity="0"/>'
+               f'<stop offset=".5" stop-color="var(--accent)" stop-opacity=".26"/>'
+               f'<stop offset="1" stop-color="var(--accent)" stop-opacity="0"/>'
+               f'</linearGradient></defs>'
+               f'<g class="hp-scan" style="--d:{rows * cell + 240:.0f}">'
+               f'<rect x="{gx:.1f}" y="{gy - 240:.1f}" width="{cols * cell:.1f}" '
+               f'height="240" fill="url(#hp-scan-g)"/></g>')
 
     # Two reading stations: the one growing prefecture and the steepest decline.
     for code, label, dx, dy, anchor in (

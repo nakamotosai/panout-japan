@@ -1106,7 +1106,7 @@ def build_home_preview():
         count_html = (f'<b data-t="card.population.count">{ja("card.population.count")}</b>'
                       if key == "population" else f"<b>{count}</b>")
         card = f"""<div class="hp-entry-head"><span class="hp-num">{num}</span><span class="hp-verb" data-t="{verb}">{ja(verb)}</span><span class="hp-topic" data-t="{topic}">{ja(topic)}</span></div>
-<div class="hp-entry-visual" aria-hidden="true">{svg}</div>
+<div class="hp-entry-visual" aria-hidden="true"><div class="hp-plate">{svg}</div></div>
 <div class="hp-entry-body">
 <p class="hp-count">{count_html}<small data-t="{unit}">{ja(unit)}</small></p>
 <p class="hp-claim" data-t="{claim}">{ja(claim)}</p>
@@ -1123,7 +1123,7 @@ def build_home_preview():
         )
 
     body = f"""<main id="main" class="hp">
-<section class="wrap hp-band" aria-label="Chapters">
+<section class="wrap hp-band hp-live" aria-label="Chapters">
 {''.join(entries)}
 </section>
 <section class="wrap hp-provenance" aria-labelledby="method-title">
