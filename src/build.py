@@ -96,11 +96,11 @@ PAGE_META = {
     },
     "cabinet": {
         "ja": (f"内閣 — 331か月の支持率 | {BRAND}",
-               "1998年から2026年までの内閣支持率644調査。月次平均331か月、14内閣。"),
+               "1998年から2026年までの内閣支持率646調査。月次平均331か月、14内閣。"),
         "zh": (f"内阁 — 331 个月的支持率 | {BRAND}",
-               "1998 年至 2026 年的 644 次内阁支持率调查，月度均值 331 个月、14 届内阁。"),
+               "1998 年至 2026 年的 646 次内阁支持率调查，月度均值 331 个月、14 届内阁。"),
         "en": (f"Cabinet — 331 months of approval | {BRAND}",
-               "644 approval polls from 1998 to 2026: 331 monthly means across 14 cabinets."),
+               "646 approval polls from 1998 to 2026: 331 monthly means across 14 cabinets."),
     },
     "housing": {
         "ja": (f"住宅 — 町名の価格 | {BRAND}",
@@ -849,9 +849,9 @@ COPY = {
               "警视厅《区市町村町丁别、罪种别及手口别认知件数》令和7年（2025）全年及令和8年月度累计。人口取自住民基本台帐（令和8年1月1日）。东京都内5,234个町丁、62个区市町村。",
               "Tokyo Metropolitan Police, incidents by neighbourhood and offence type, full-year 2025 plus 2026 monthly cumulative. Population from the Basic Resident Register (1 Jan 2026). 5,234 neighbourhoods, 62 wards."),
     "m.b.h": ("内閣", "内阁", "Cabinet"),
-    "m.b.p": ("NHK放送文化研究所の月例政治意識調査（2000–2017）、NHK選挙WEB（2018–2026）、日経・朝日・時事・読売・JNN・共同の各社世論調査。644点、331か月、14内閣。",
-              "NHK放送文化研究所月度政治意识调查（2000–2017）、NHK选举WEB（2018–2026），以及日经、朝日、时事、读卖、JNN、共同各社舆论调查。644点、331个月、14届内阁。",
-              "NHK Broadcasting Culture Research Institute monthly surveys (2000–2017), NHK election web (2018–2026), plus Nikkei, Asahi, Jiji, Yomiuri, JNN and Kyodo polls. 644 polls, 331 months, 14 cabinets."),
+    "m.b.p": ("NHK放送文化研究所の月例政治意識調査（2000–2017）、NHK選挙WEB（2018–2026）、日経・朝日・時事・読売・JNN・共同の各社世論調査。646点、331か月、14内閣。",
+              "NHK放送文化研究所月度政治意识调查（2000–2017）、NHK选举WEB（2018–2026），以及日经、朝日、时事、读卖、JNN、共同各社舆论调查。646点、331个月、14届内阁。",
+              "NHK Broadcasting Culture Research Institute monthly surveys (2000–2017), NHK election web (2018–2026), plus Nikkei, Asahi, Jiji, Yomiuri, JNN and Kyodo polls. 646 polls, 331 months, 14 cabinets."),
     "m.cal.h": ("口径", "口径", "Definitions"),
     "m.cal.q": ("エネルギーは log₁₀E = 1.5M + 4.8（ジュール）。年の合計は単純和。",
                 "能量按 log₁₀E = 1.5M + 4.8（焦耳）。年度合计为简单相加。",
@@ -1842,7 +1842,7 @@ def write_meta(font_meta):
 - [天気](/weather/): 気象庁の予報、47都道府県。今日・明日と7日間、気温と降水確率。
 - [地震](/quake/): 2000–{Q_END_DOT}、M4以上の震源{n(Q_N)}点。年別・月別・エネルギー。
 - [犯罪](/crime/): 2025年、東京都内5,234町丁、62区市町村。人口あたりの率。
-- [内閣](/cabinet/): 1998–2026、644調査、331か月、14内閣。
+- [内閣](/cabinet/): 1998–2026、646調査、331か月、14内閣。
 - [住宅](/housing/): 直近4四半期 2025Q2–2026Q1（2025年4月–2026年3月）、東京、中古マンション成約26,416件を町名（1,237町）ごとに平均した㎡単価の地図。
 - [人口](/population/): 2025年国勢調査、{POP['meta']['n']:,}市町村。91.2%が減少、73.4%が減少市町村に住む。2050年は社人研推計で{POP_N['pop2050']:,}人。CSV: /data/population.csv
 
