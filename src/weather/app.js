@@ -52,8 +52,25 @@
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
   function region(r) { return lang === 'zh' ? (r.nameZh || r.nameJa || r.name) : lang === 'en' ? (r.nameEn || r.name) : (r.nameJa || r.name); }
   function area(r) { return (state.day === 0 ? (r.areaName || r.sourceAreaName || r.office) : (r.weekSourceWeatherAreaName || r.areaName || '')) + ' / ' + (state.day === 0 ? (r.todaySourceAreaName || '') : (r.weekSourceAreaName || '')); }
-  // JMA weekly data starts tomorrow; day 0 is the report date, so shift by one.
-  function weekEntry(r, day) { return day > 0 ? r.week[day - 1] : null; }
+  // JMA weekly axis drifts with the issue time: the 17:00 product covers "tomorrow + 6",
+  // but the 06:10 daily refresh still holds the previous day's 17:00 copy, so week[0] is
+  // today. Align by date (not by offset) and both axes land correctly.
+  function addDays(iso, n) {
+    var p = String(iso || '').split('-');
+    if (p.length !== 3) return null;
+    return new Date(Date.UTC(+p[0], +p[1] - 1, +p[2]) + n * 86400000).toISOString().slice(0, 10);
+  }
+  function weekEntry(r, day) {
+    if (day <= 0 || !r.week) return null;
+    var base = r.reportDatetime ? String(r.reportDatetime).slice(0, 10) : null;
+    var target = base ? addDays(base, day) : null;
+    if (target) {
+      for (var i = 0; i < r.week.length; i++) {
+        if (r.week[i] && r.week[i].date === target) return r.week[i];
+      }
+    }
+    return r.week[day - 1] || null;
+  }
   function weatherCode(r, day) { if (day === 0) return r.weatherCodeOfficial || r.weatherCode || ''; if (day === 1 && r.tomorrowCodeOfficial) return r.tomorrowCodeOfficial; var w = weekEntry(r, day); var d = w && (w.codeOfficial || w.code); return d == null ? (r.weatherCode || '') : d; }
   function kind(code) { if (['clear','cloud','rain','snow','thunder'].indexOf(code) >= 0) return code; var n = parseInt(String(code || '0'), 10); if (!n) return 'cloud'; if (n === 350 || n === 450) return 'thunder'; if (n >= 400) return 'snow'; if (n >= 300) return 'rain'; if (n >= 200) return 'cloud'; return 'clear'; }
   function svgGlyph(code) {
