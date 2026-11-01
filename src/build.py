@@ -584,40 +584,51 @@ COPY = {
     "cover.scale.crime": ("東京 · 62区市町村", "东京 · 62区市町村", "Tokyo · 62 wards"),
     "cover.scale.cabinet": ("内閣 · 14", "内阁 · 14", "Cabinets · 14"),
     "cover.scale.housing": ("住宅 · 23区", "住宅 · 23区", "Housing · 23 wards"),
-    "card.quake.unit": ("M4+ 震源 / 27年", "M4+ 震源 / 27年", "M4+ events / 27 yrs"),
+    "card.quake.unit": ("M4+ 震源", "M4+ 震源", "M4+ events"),
     "card.quake.title": ("引いて見る", "拉远看", "Pull back"),
-    "card.quake.claim": (f"2011年は回数で{PCT_2011_N}%、エネルギーで{PCT_2011_E}%。",
-                         f"2011年按次数占{PCT_2011_N}%，按能量占{PCT_2011_E}%。",
-                         f"In 2011: {PCT_2011_N}% of events, {PCT_2011_E}% of energy."),
-    "card.crime.unit": ("町丁 / 1年（都内）", "町丁 / 1年（都内）", "Neighbourhoods / 1 yr (Tokyo)"),
+    "card.quake.claim": (f"2011年に{PCT_2011_E}%のエネルギー。",
+                         f"2011 年占了 {PCT_2011_E}% 的能量。",
+                         f"2011: {PCT_2011_E}% of the energy."),
+    "card.crime.unit": ("町丁", "町丁", "Neighbourhoods"),
     "card.crime.title": ("寄って見る", "凑近看", "Zoom in"),
-    "card.crime.claim": ("都内5,234町丁。中央値4.4‰、最大1,332‰。",
-                         "都内5,234个町丁。中位数4.4‰，最高1,332‰。",
-                         "5,234 neighbourhoods citywide. Median 4.4‰, max 1,332‰."),
-    "card.cabinet.unit": ("ヶ月 / 28年", "个月 / 28年", "Months / 28 yrs"),
+    "card.crime.claim": ("中央値4.4‰。",
+                         "中位数 4.4‰。",
+                         "Median 4.4‰."),
+    "card.cabinet.unit": ("ヶ月", "个月", "Months"),
     "card.cabinet.title": ("通して見る", "拉长看", "Stretch out"),
-    "card.cabinet.claim": ("14内閣、331か月。最大の月変動は+20.5。",
-                           "14届内阁、331个月。最大单月变动+20.5。",
-                           "14 cabinets, 331 months. Largest monthly swing +20.5."),
-    "card.housing.unit": ("中古マンション / 2025Q2–2026Q1", "二手公寓 / 2025Q2–2026Q1", "Used flats / 2025Q2–2026Q1"),
+    "card.cabinet.claim": ("最大の月変動は+20.5。",
+                           "最大单月 +20.5。",
+                           "Largest swing +20.5."),
+    "card.housing.unit": ("中古マンション", "二手公寓", "Used flats"),
     "card.housing.title": ("並べて見る", "比着看", "Compare"),
-    "card.housing.claim": (f"直近4四半期の成約で町名ごとの平均m2単価を塗る。{HOUSE_TOWNS:,}町・{HOUSE_N:,}件。",
-                           f"用最近四个季度成交,按町名平均m2单价上色。{HOUSE_TOWNS:,} 个町、{HOUSE_N:,} 笔。",
-                           f"Latest four quarters of closed prices, mean per m2 by town: {HOUSE_TOWNS:,} towns, {HOUSE_N:,} deals."),
+    "card.housing.claim": ("町名ごとのm2単価。",
+                           "按町算每平米均价。",
+                           "Mean price per m² by town."),
     "card.weather.title": ("仰いで見る", "抬头看", "Look up"),
     "card.weather.topic": ("天気", "天气", "Weather"),
-    "card.weather.unit": ("都道府県 / 予報", "都道府县 / 预报", "Prefectures / forecast"),
-    "card.weather.claim": ("47都道府県の今日の空と7日間を、一枚に。",
-                           "47 个都道府县今天与未来七天的天气，收进一张图。",
-                           "Today and the next seven days for all 47 prefectures, on one map."),
+    "card.weather.unit": ("都道府県", "都道府县", "Prefectures"),
+    "card.weather.claim": ("七日間を、一枚に。",
+                           "七天，一张地图。",
+                           "Seven days, one map."),
     "card.population.title": ("数えて見る", "数着看", "Count"),
     "card.population.topic": ("人口", "人口", "Population"),
-    "card.population.unit": ("人 / 1,719市町村", "人 / 1,719市町村", "People / 1,719 municipalities"),
+    "card.population.unit": ("人", "人", "People"),
     "card.population.claim": (
-        f"2025年国勢調査。増えた市町村は8.8%だけ。65歳以上{POP_N['age65Share']}%、2050年は{jp_compact(POP_N['pop2050'])}人。",
-        f"2025年国势调查。只有8.8%的市町村人口增加。65岁以上{POP_N['age65Share']}%，2050年降至{zh_compact(POP_N['pop2050'])}人。",
-        f"2025 census. Only 8.8% of municipalities grew. {POP_N['age65Share']}% are 65+; {POP_N['pop2050'] / 1e6:.1f} million by 2050.",
+        "増えたのは8.8%だけ。",
+        "只有 8.8% 在增长。",
+        "Only 8.8% are growing.",
     ),
+    "card.population.count": ("1億2297万", "1亿2297万", f"{POP_N['pop'] / 1e6:.1f} million"),
+    "card.weather.source": ("気象庁 · 予報", "气象厅 · 预报", "JMA · forecast"),
+    "card.quake.source": (f"USGS ComCat · 2000—{Q_END_DOT}", f"USGS ComCat · 2000—{Q_END_DOT}",
+                          f"USGS ComCat · 2000—{Q_END_DOT}"),
+    "card.crime.source": ("警視庁 · 2025", "警视厅 · 2025", "Tokyo police · 2025"),
+    "card.cabinet.source": ("NHK / Nikkei / Kyodo · 1998—2026", "NHK / 日经 / 共同 · 1998—2026",
+                            "NHK / Nikkei / Kyodo · 1998—2026"),
+    "card.housing.source": ("国土交通省 · 2025Q2—2026Q1", "国土交通省 · 2025Q2—2026Q1",
+                            "MLIT · 2025Q2—2026Q1"),
+    "card.population.source": ("総務省統計局 · 2025 / 社人研 · 2050", "总务省统计局 · 2025 / 社人研 · 2050",
+                               "Statistics Bureau · 2025 / IPSS · 2050"),
 
     "q.eyebrow": ("02 / 引いて見る", "02 / 拉远看", "02 / Pull back"),
     "q.h1": (f"地震 — <em>{n(Q_N)}</em>の震源", f"地震 — <em>{n(Q_N)}</em>个震源", f"Earthquakes — <em>{n(Q_N)}</em> hypocentres"),
@@ -1070,34 +1081,36 @@ def build_home_preview():
     # key, num, href, verb, topic, count, unit, claim, source, plate
     rows = [
         ("weather", "01", "/weather/", "card.weather.title", "card.weather.topic", "47",
-         "card.weather.unit", "card.weather.claim", "気象庁 · 予報",
+         "card.weather.unit", "card.weather.claim", "card.weather.source",
          HP.weather_svg(OUTLINE)),
         ("quake", "02", "/quake/", "card.quake.title", "nav.quake", n(Q_N),
-         "card.quake.unit", "card.quake.claim", f"USGS ComCat · 2000—{Q_END_DOT}",
+         "card.quake.unit", "card.quake.claim", "card.quake.source",
          HP.quake_svg(Q, OUTLINE, YEARS)),
         ("crime", "03", "/crime/", "card.crime.title", "nav.crime", "5,234",
-         "card.crime.unit", "card.crime.claim", "警視庁 · 2025",
+         "card.crime.unit", "card.crime.claim", "card.crime.source",
          HP.crime_svg(POINTS, MUNI_POLY, WARD_RATE)),
         ("cabinet", "04", "/cabinet/", "card.cabinet.title", "nav.cabinet", "331",
-         "card.cabinet.unit", "card.cabinet.claim", "NHK / Nikkei / Kyodo · 1998—2026",
+         "card.cabinet.unit", "card.cabinet.claim", "card.cabinet.source",
          HP.cabinet_svg(ALL_MONTHS, MONTH_MEAN, CAB)),
         ("housing", "05", "/housing/", "card.housing.title", "nav.housing", f"{HOUSE['totals']['trades']:,}",
-         "card.housing.unit", "card.housing.claim", "国土交通省 · 2025Q2—2026Q1",
+         "card.housing.unit", "card.housing.claim", "card.housing.source",
          HP.housing_svg(HOUSE_WARDS, MUNI_POLY, deals=HOUSE_N, towns=HOUSE_TOWNS)),
         ("population", "06", "/population/", "card.population.title", "card.population.topic",
-         jp_compact(POP_N["pop"]), "card.population.unit", "card.population.claim",
-         "総務省統計局 · 2025 / 社人研 · 2050", HP.population_svg(POP)),
+         "", "card.population.unit", "card.population.claim",
+         "card.population.source", HP.population_svg(POP)),
     ]
 
     entries = []
-    for key, num, href, verb, topic, count, unit, claim, source, svg in rows:
+    for key, num, href, verb, topic, count, unit, claim, source_key, svg in rows:
         foot = f'<span class="hp-enter"><span data-t="prod.open">{ja("prod.open")}</span> ↗</span>'
+        count_html = (f'<b data-t="card.population.count">{ja("card.population.count")}</b>'
+                      if key == "population" else f"<b>{count}</b>")
         card = f"""<div class="hp-entry-head"><span class="hp-num">{num}</span><span class="hp-verb" data-t="{verb}">{ja(verb)}</span><span class="hp-topic" data-t="{topic}">{ja(topic)}</span></div>
 <div class="hp-entry-visual" aria-hidden="true">{svg}</div>
 <div class="hp-entry-body">
-<p class="hp-count"><b>{count}</b><small data-t="{unit}">{ja(unit)}</small></p>
+<p class="hp-count">{count_html}<small data-t="{unit}">{ja(unit)}</small></p>
 <p class="hp-claim" data-t="{claim}">{ja(claim)}</p>
-<div class="hp-entry-foot"><span class="hp-source">{source}</span>{foot}</div>
+<div class="hp-entry-foot"><span class="hp-source" data-t="{source_key}">{ja(source_key)}</span>{foot}</div>
 </div>"""
         entries.append(f'<a class="hp-entry" href="{href}">\n{card}\n</a>')
 

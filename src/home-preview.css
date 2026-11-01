@@ -1,5 +1,7 @@
 /* Home preview · six scales, three across. No selector state, no extra click. */
 
+:root { --hp-card: color-mix(in oklab, var(--bg) 94.5%, var(--ink)); }
+
 .hp { padding-bottom: 0; }
 
 /* One continuous band of six chapters, three across. */
@@ -14,18 +16,39 @@
   .hp-band { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
+/* The plate is the card's field; the text sits on a scrimmed shelf. */
 .hp-entry {
-  display: grid;
-  grid-template-rows: auto auto minmax(0, 1fr);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   border-radius: var(--radius);
   background: var(--surface);
-  gap: clamp(6px, .8vw, 8px);
+  gap: 14px;
   min-width: 0;
-  padding: clamp(10px, 1.1vw, 14px);
+  min-height: 318px;
+  padding: 16px;
   color: var(--ink);
   transition: background-color var(--dur-fast) ease,
               color var(--dur-fast) ease,
               transform var(--dur-fast) ease;
+}
+.hp-entry::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to bottom,
+      color-mix(in oklab, var(--hp-card) 40%, transparent) 0%,
+      transparent 24%),
+    linear-gradient(to top,
+      color-mix(in oklab, var(--hp-card) 90%, transparent) 0%,
+      color-mix(in oklab, var(--hp-card) 58%, transparent) 30%,
+      color-mix(in oklab, var(--hp-card) 16%, transparent) 68%,
+      transparent 100%);
 }
 .hp-entry:hover {
   background: var(--accent-soft);
@@ -40,6 +63,9 @@
 .hp-entry:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; }
 
 .hp-entry-head {
+  position: relative;
+  z-index: 1;
+  align-self: stretch;
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
@@ -75,19 +101,35 @@ html[lang="ja"] .hp-topic, html[lang="zh"] .hp-topic {
 html[lang="zh"] .hp-topic { font-family: var(--zh-sans); }
 
 .hp-entry-visual {
-  aspect-ratio: 1000 / 332;
-  min-height: 0;
-  margin-block: 2px;
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  margin: 0;
   overflow: hidden;
+  opacity: .5;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 55%, rgba(0, 0, 0, .7) 80%, rgba(0, 0, 0, .4) 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 55%, rgba(0, 0, 0, .7) 80%, rgba(0, 0, 0, .4) 100%);
 }
-.hp-entry-visual svg { width: 100%; height: 100%; }
+.hp-entry-visual svg {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: auto;
+  height: 100%;
+  transform: translate(-50%, -50%);
+}
+.hp-entry-visual svg text { display: none; }
+.hp-entry:hover .hp-entry-visual { opacity: .62; }
 
 .hp-entry-body {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   min-width: 0;
-  align-self: end;
+  align-self: stretch;
 }
 .hp-count {
   display: flex;
@@ -361,22 +403,7 @@ html[lang="zh"] .hp-provenance-intro > h2 { font-family: var(--zh-sans) !importa
   .hp-provenance-lede { max-width: 46ch; }
   .hp-sources-list { grid-template-columns: 1fr; }
   .hp-band { grid-template-columns: 1fr; }
-  .hp-entry {
-    grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr);
-    grid-template-rows: auto 1fr;
-    grid-template-areas: "head visual" "body visual";
-    gap: 8px 20px;
-    padding: 20px;
-  }
-  .hp-entry-head { grid-area: head; }
-  .hp-entry-visual {
-    grid-area: visual;
-    aspect-ratio: auto;
-    height: 100%;
-    min-height: 188px;
-    margin: 0;
-  }
-  .hp-entry-body { grid-area: body; align-self: end; }
+  .hp-entry { min-height: 260px; padding: 18px; }
 }
 
 @media (max-width: 640px) {
@@ -396,18 +423,8 @@ html[lang="zh"] .hp-provenance-intro > h2 { font-family: var(--zh-sans) !importa
   .hp-foot { padding-block: 40px 32px; }
   .hp-foot .foot-in { align-items: flex-start; flex-direction: column; gap: 24px; }
   .hp-foot .foot-bottom { justify-content: flex-start; text-align: left; }
-  .hp-entry {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto;
-    grid-template-areas: "head" "visual" "body";
-    gap: 10px;
-    padding: 16px;
-  }
-  .hp-entry-visual {
-    aspect-ratio: 1000 / 680;
-    height: auto;
-    min-height: 0;
-  }
+  .hp-entry { min-height: 300px; padding: 16px; }
+  .hp-entry-visual svg { height: 130%; }
   .hp-count b { font-size: 46px; }
   .hp-claim { font-size: 13px; min-height: 0; }
   .hp-entry-foot { gap: 8px; }
