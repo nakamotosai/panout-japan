@@ -61,7 +61,7 @@ main#main {
 
 /* 全局主题与颜色平滑流转 (0.65s 柔和缓动，肉眼可见的舒适渐变) */
 html, body, .masthead, .stage, .cab-host, #crm-root, .panel-card, .hp-band, .hp-entry,
-.theme-dot, .lang-nav, .cab-pill, .seg button {
+.theme-toggle, .lang-nav, .cab-pill, .seg button {
   transition: background-color 0.65s cubic-bezier(0.16, 1, 0.3, 1),
               color 0.65s cubic-bezier(0.16, 1, 0.3, 1),
               border-color 0.65s cubic-bezier(0.16, 1, 0.3, 1),
@@ -579,42 +579,30 @@ html[lang="en"] .wm-phrase-en { visibility: visible; }
   gap: clamp(10px, 1.6vw, 20px);
 }
 
-/* Two theme dots: each 44px hit area, 14px visible dot. */
-.theme-switcher { display: flex; align-items: center; margin: -6px 0; }
-.theme-dot {
+/* One theme toggle: a 44px hit area that swaps an outlined sun for a moon.
+   The button stays hidden until shell.js wires it, so it never renders dead. */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 44px;
   height: 44px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
   padding: 0;
+  border: 0;
+  border-radius: 50%;
   background: none;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color var(--dur-fast) var(--ease);
 }
-.theme-dot .td-dot {
-  display: grid;
-  place-items: center;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--td-bg);
-  box-shadow: 0 0 0 1px rgba(128, 128, 128, .55);
-  transition: box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.theme-dot .td-core {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--td-accent);
-  transition: background-color 0.45s ease;
-}
-.theme-dot:hover .td-dot { transform: scale(1.22); }
-.theme-dot:active .td-dot { transform: scale(0.9); transition-duration: 0.12s; }
-.theme-dot[aria-pressed="true"] .td-dot {
-  box-shadow: 0 0 0 1px rgba(128, 128, 128, .55),
-              0 0 0 3px var(--bg),
-              0 0 0 5px var(--accent);
-  transform: scale(1.08);
-}
+.theme-toggle:hover { color: var(--ink); }
+.theme-toggle:active { transform: scale(.94); }
+.theme-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.theme-toggle[hidden] { display: none; }
+.theme-icon { width: 20px; height: 20px; flex: none; }
+.icon-moon { display: none; }
+html[data-theme="dark"] .icon-sun { display: none; }
+html[data-theme="dark"] .icon-moon { display: block; }
 
 .lang-nav {
   display: flex;
@@ -1467,8 +1455,6 @@ html body #crm-root .panel-card { border-radius: 4px !important; }
   .chapters, .masthead .lang-nav { display: none; }
   .burger { display: flex; flex: 0 0 44px; }
   .tools { flex: 0 0 auto; min-width: 0; margin-left: auto; gap: 4px; }
-  .theme-switcher { margin: 0; }
-  .theme-dot { width: 44px; height: 44px; }
   .two-col { grid-template-columns: 1fr; gap: 32px; }
   .prod-row { grid-template-columns: 1fr; gap: 18px; padding: 26px 0; }
   .prod-num { margin-bottom: -6px; }
@@ -1562,7 +1548,7 @@ h1, h2, h3, h4, .title, .card-title, .section-title, .hero-panel h1, .hero-panel
 }
 
 /* 按钮、药丸与时间轴标签：字号拉升至 13px，字重 350 细体 */
-.cab-zoom button, .eq-sq, .seg button, .theme-dot, .lang-nav button {
+.cab-zoom button, .eq-sq, .seg button, .theme-toggle, .lang-nav button {
   font-family: var(--font-sans) !important;
   font-size: 13px !important;
   font-weight: 350 !important;

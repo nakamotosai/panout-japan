@@ -546,8 +546,8 @@ COPY = {
     "author.personal": ("メインサイト", "主站", "Main site"),
     "author.contact": ("連絡先", "联系作者", "Contact"),
     "author.links": ("作者・関連リンク", "作者与联系链接", "Author and contact links"),
-    "ui.theme.light": ("Light", "浅色", "Light"),
-    "ui.theme.dark": ("Dark", "深色", "Dark"),
+    "ui.theme.toDark": ("ダークに切り替え", "切换到深色", "Switch to dark"),
+    "ui.theme.toLight": ("ライトに切り替え", "切换到浅色", "Switch to light"),
     "home.c.lede": (
         "数字の意味は、数え方で変わる。出典と集計の前提を、各章と合わせて示す。",
         "数字的意义取决于怎么数。这里说明出处与统计前提，细则见各章。",
@@ -979,10 +979,12 @@ def head(title, desc, path, jsonld=None, extra_head="", body_class="", chapter="
 """
 
 
-THEME_DOTS = """<div class="theme-switcher" role="group" aria-label="Theme">
-<button class="theme-dot" type="button" data-theme-set="sage" aria-pressed="true" aria-label="Light" title="Light" style="--td-bg:#F5F3ED;--td-accent:var(--accent)"><span class="td-dot"><span class="td-core"></span></span></button>
-<button class="theme-dot" type="button" data-theme-set="dark" aria-pressed="false" aria-label="Dark" title="Dark" style="--td-bg:#0E0E0C;--td-accent:var(--accent)"><span class="td-dot"><span class="td-core"></span></span></button>
-</div>"""
+THEME_DOTS = """<button class="theme-toggle" type="button" data-theme-toggle aria-label="切换配色" title="切换配色" hidden>
+<svg class="theme-icon" viewBox="0 0 16 16" aria-hidden="true">
+<g class="icon-sun" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="8" cy="8" r="3"></circle><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.5 1.5M11.5 11.5 13 13M13 3l-1.5 1.5M4.5 11.5 3 13"></path></g>
+<path class="icon-moon" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" d="M13 9.7A5.5 5.5 0 0 1 6.3 3a5.5 5.5 0 1 0 6.7 6.7Z"></path>
+</svg>
+</button>"""
 
 LANG_NAV = """<div class="lang-nav" role="group" aria-label="Language">
 <button type="button" data-lang="en" aria-pressed="false">EN</button><span class="lang-sep">·</span><button type="button" data-lang="ja" aria-pressed="true">日本語</button><span class="lang-sep">·</span><button type="button" data-lang="zh" aria-pressed="false">中文</button>

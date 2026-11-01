@@ -64,6 +64,7 @@
       updateTextEls(l);
     }
     applyMeta(l);
+    labelTheme(doc.dataset.theme || 'sage');
     syncUrlLang(l);
     try { window.dispatchEvent(new CustomEvent('pj:lang', { detail: l })); } catch (e) {}
     var live = document.querySelector('.stage[data-live="1"] .stage-live');
@@ -143,21 +144,21 @@
     doc.dataset.theme = t;
     var meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute('content', t === 'dark' ? '#0E0E0C' : '#F5F3ED');
-    var dots = document.querySelectorAll('[data-theme-set]');
-    for (var i = 0; i < dots.length; i++) {
-      dots[i].setAttribute('aria-pressed', String(dots[i].dataset.themeSet === t));
-    }
-    var light = tr('ui.theme.light') || 'Light';
-    var dark = tr('ui.theme.dark') || 'Dark';
-    if (dots.length) {
-      for (var k = 0; k < dots.length; k++) {
-        var label = dots[k].dataset.themeSet === 'dark' ? dark : light;
-        dots[k].setAttribute('aria-label', label);
-        dots[k].setAttribute('title', label);
-      }
-    }
+    labelTheme(t);
     try { window.dispatchEvent(new CustomEvent('pj:theme', { detail: t })); } catch (e) {}
     syncVendorTheme(t);
+  }
+
+  // The single toggle's label names the next action (switch to dark / to light).
+  function labelTheme(t) {
+    var toggles = document.querySelectorAll('[data-theme-toggle]');
+    if (!toggles.length) return;
+    var label = (t === 'dark' ? tr('ui.theme.toLight') : tr('ui.theme.toDark')) || tr('ui.theme.toggle') || 'Theme';
+    for (var i = 0; i < toggles.length; i++) {
+      toggles[i].setAttribute('aria-label', label);
+      toggles[i].setAttribute('title', label);
+      toggles[i].setAttribute('aria-pressed', String(t === 'dark'));
+    }
   }
 
   function setTheme(t, save) {
@@ -330,7 +331,7 @@
     btn.addEventListener('click', toggle);
     var links = menu.querySelectorAll('a');
     for (var i = 0; i < links.length; i++) links[i].addEventListener('click', close);
-    menu.querySelectorAll('[data-lang], [data-theme-set]').forEach(function (el) {
+    menu.querySelectorAll('[data-lang], [data-theme-toggle]').forEach(function (el) {
       el.addEventListener('click', close);
     });
     document.addEventListener('keydown', function (e) {
@@ -397,12 +398,14 @@
       });
     }
 
-    var dots = document.querySelectorAll('[data-theme-set]');
-    for (var j = 0; j < dots.length; j++) {
-      dots[j].addEventListener('click', function () {
-        setTheme(this.dataset.themeSet, true);
+    var toggles = document.querySelectorAll('[data-theme-toggle]');
+    for (var j = 0; j < toggles.length; j++) {
+      toggles[j].addEventListener('click', function () {
+        setTheme(doc.dataset.theme === 'dark' ? 'sage' : 'dark', true);
       });
+      toggles[j].hidden = false;
     }
+    labelTheme(doc.dataset.theme || 'sage');
 
   }
 
