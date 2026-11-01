@@ -1812,9 +1812,9 @@ const PM_SURNAME = {
   fukuda: ['福田', '福田', 'Fukuda'],
   aso: ['麻生', '麻生', 'Aso'],
   hatoyama: ['鳩山', '鸠山', 'Hatoyama'],
-  kan: ['菅(直)', '菅(直)', 'Kan'],
+  kan: ['菅', '菅', 'Kan'],
   noda: ['野田', '野田', 'Noda'],
-  suga: ['菅(義)', '菅(义)', 'Suga'],
+  suga: ['菅', '菅', 'Suga'],
   kishida: ['岸田', '岸田', 'Kishida'],
   ishiba: ['石破', '石破', 'Ishiba'],
   takaichi: ['高市', '高市', 'Takaichi']
@@ -1862,63 +1862,90 @@ function refreshWindowLabels(startPct, endStartPct) {
     sr.markLine.lineStyle.opacity = out ? 0 : (clampedNow ? 0.16 : 0.65);
   });
   chart.setOption({ series: lastSeries }, { lazyUpdate: true });
-  // 区间名水印按新的窗口重排(位置/字号都按像素算,不走 markLine 的 endLabel)
-  relayoutWatermarks();
 }
 
 /* ── 区间名水印 / 任期曲线 / 分享卡片 ───────────────────────────── */
 
-// 区间水印字号:由区间实际像素宽度反推,放不下就不印(窄屏与"全期間"自动消失)
-function watermarkFor(text, spanPx, isNarrow) {
-  const txt = String(text || '');
-  const cjk = /[^\x00-\xff]/.test(txt);
-  const unit = cjk ? 1.0 : 0.6;
-  const avail = spanPx * 0.94 - 8;
-  const size = Math.max(0, Math.min(96, Math.floor(avail / Math.max(1, txt.length * unit))));
-  return { text: txt, size: size, show: !isNarrow && size >= 20 };
+// 图上只印姓(最多两字):同姓不同任期(菅直人/菅義偉、安倍一次/二次)
+// 靠右侧档案卡与 tooltip 的全名区分,水印本身不带 (1)(2) 尾巴。
+function surnameOf(cabId) {
+  const sn = PM_SURNAME[cabId];
+  if (sn) return sn[currentLang === 'zh' ? 1 : currentLang === 'en' ? 2 : 0];
+  const p = CAB_PROFILES[cabId] || {};
+  const full = currentLang === 'zh' ? (p.nameZh || cabId)
+    : currentLang === 'en' ? (p.nameEn || cabId) : (p.nameJa || cabId);
+  const base = String(full).replace(/\(.*?\)/g, '').trim();
+  return currentLang === 'en' ? base.split(' ').pop() : base.slice(0, 2);
 }
 
 // 绘图区左右边距:面板占右边 384px,水印与 ECharts 的 grid 必须用同一套数字
 function cabGridL() { return window.innerWidth <= 960 ? 36 : 48; }
 function cabGridR() { return window.innerWidth <= 960 ? 20 : 384; }
 
-// 区间名水印:用 graphic 文本画,位置与字号都在这里算死。
-// 不用 markLine 的 endLabel —— 它贴到绘图区左沿时整条 markLine 会被裁掉,名字跟着消失。
+// 区间名水印:用 graphic 文本画(不用 markLine 的 endLabel —— 它贴到绘图区左沿时
+// 整条 markLine 会被裁掉,名字跟着消失)。
+// 位置不查 convertToPixel,而是直接读坐标轴模型(绘图区矩形 + 当前时间轴范围)线性推算:
+// 每次渲染都能拿到一致值,所以挂在 rendered/finished 上重排时,水印和折线同帧、没有延迟。
+// 字号取「当前可见区间里最窄那条放得下」的一个统一值 —— 所有水印一样大。
 function relayoutWatermarks() {
-  if (!chart || !lastSeries || !rawData) return;
-  const narrow = window.innerWidth <= 960;
-  const left = cabGridL();
-  const right = cabGridR();
-  const W = chart.getWidth() || 0;
-  const items = [];
-  lastSeries.forEach(function (sr) {
-    if (!sr.__wm || !sr.data || !sr.data.length) return;
-    let x0, x1;
-    try {
-      x0 = chart.convertToPixel({ xAxisIndex: 0 }, sr.data[0][0]);
-      x1 = chart.convertToPixel({ xAxisIndex: 0 }, sr.data[sr.data.length - 1][0]);
-    } catch (e) { return; }
-    if (!isFinite(x0) || !isFinite(x1)) return;
-    const vis0 = Math.max(x0, left);
-    const vis1 = Math.min(x1, W - right);
-    const wpx = vis1 - vis0;
-    if (wpx < 24) return;
-    const wm = watermarkFor(sr.__wm, wpx, narrow);
-    if (!wm.show) return;
-    items.push({
+  if (!chart || !rawData || !chart.getModel) return;
+  const model = chart.getModel();
+  if (!model) return;
+  let rect, extent;
+  try {
+    rect = model.getComponent('grid', 0).coordinateSystem.getRect();
+    extent = model.getComponent('xAxis', 0).axis.scale.getExtent();
+  } catch (e) { return; }
+  if (!rect || !rect.width || !extent) return;
+  const span = extent[1] - extent[0];
+  if (!(span > 0)) return;
+  const xOf = function (iso) { return rect.x + ((Date.parse(iso) - extent[0]) / span) * rect.width; };
+  const bands = [];
+  rawData.cabinets.forEach(function (c, idx) {
+    const sp = cabSpans[c.id];
+    if (!sp) return;
+    const v0 = Math.max(xOf(sp.first), rect.x);
+    const v1 = Math.min(xOf(sp.last), rect.x + rect.width);
+    const w = v1 - v0;
+    const text = surnameOf(c.id);
+    const unit = /[^\x00-\xff]/.test(text) ? 1.0 : 0.6;
+    // 连 11px 的一个字都放不下的区间放弃,也不参与字号投票,
+    // 否则窗口边缘一条窄缝会把所有水印的字号一起拖到最小值。
+    if (w < 22 || text.length * unit * 11 + 4 > w) return;
+    bands.push({ x: Math.round(v0 + 10), w: w, text: text, unit: unit, color: cabColors()[idx % cabColors().length] });
+  });
+  // 一条都算不出来通常是渲染中间态:保留上一次的水印,别把它们整批清掉
+  if (!bands.length && lastWmCount) return;
+  let size = 96;
+  bands.forEach(function (b) {
+    const fit = (b.w * 0.94 - 8) / Math.max(1, b.text.length * b.unit);
+    if (fit < size) size = fit;
+  });
+  size = Math.max(11, Math.min(96, Math.floor(size)));
+  const alpha = currentVariant === 'editorial' ? 0.26 : 0.20;
+  const font = '700 ' + size + 'px ' + cssFont('--ja-sans', 'system-ui, sans-serif');
+  const items = bands.map(function (b) {
+    return {
       type: 'text',
-      left: Math.round(vis0 + 10),
-      top: 34,
+      left: b.x,
+      top: rect.y + 6,
       silent: true,
       z: 8,
-      style: {
-        text: wm.text,
-        font: '700 ' + wm.size + 'px ' + cssFont('--ja-sans', 'system-ui, sans-serif'),
-        fill: hexToRgba(sr.__color || '#595959', currentVariant === 'editorial' ? 0.26 : 0.20)
-      }
-    });
+      style: { text: b.text, font: font, fill: hexToRgba(b.color, alpha) }
+    };
   });
-  chart.setOption({ graphic: items }, { replaceMerge: ['graphic'] });
+  const sig = items.map(function (i) { return i.left + '|' + i.style.text + '|' + i.style.font + '|' + i.style.fill; }).join(',');
+  lastWmCount = items.length;
+  if (sig === lastWmSig) return;
+  lastWmSig = sig;
+  // 在 ECharts 自己的渲染/事件回调里直接 setOption 会被它的重入保护丢掉,
+  // 所以推到下一帧再设(一帧 ≈16ms,肉眼与折线同步)。
+  if (wmApplyRaf) cancelAnimationFrame(wmApplyRaf);
+  wmApplyRaf = requestAnimationFrame(function () {
+    wmApplyRaf = 0;
+    if (!chart) return;
+    try { chart.setOption({ graphic: items }, { replaceMerge: ['graphic'] }); } catch (e) {}
+  });
 }
 
 // 任期支持率曲线:内联 SVG,不另起 ECharts 实例
@@ -2186,19 +2213,13 @@ function saveShareCard(cabId, btn) {
     flashShareButton(btn, 'shareDone');
   }, 'image/png');
 }
-// 每像素对应多少个月：用来判断相邻首相挨得太近、标签必然互相压字
-function plotPxPerMonth(winStartISO) {
-  const ds = rawData.polls.map(p => p.date).sort();
-  const t0 = new Date(winStartISO).getTime();
-  const t1 = new Date(ds[ds.length - 1]).getTime();
-  const box = hostEl && hostEl.querySelector('#cab-chart');
-  // 绘图区宽度要扣掉固定右边距(那是右侧面板的地盘),否则每像素月数会被高估
-  const w = Math.max(200, (box ? box.clientWidth : 1000) - cabGridL() - cabGridR());
-  return w / Math.max(1, (t1 - t0) / 86400000 / 30.44);
-}
 
 let zoomingUntil = 0;
 let panelRaf = 0;
+let lastWmSig = '';
+let lastWmCount = 0;
+let wmApplyRaf = 0;
+let cabSpans = {};
 
 function renderChart() {
   if (!window.echarts || !rawData) return;
@@ -2230,19 +2251,19 @@ function renderChart() {
 
   // 每个内阁实际占用的月次区间(数据点落在每月 15 号)。背景条、分隔线、名签都以它为准:
   // 用任期起始日期(可能落在某月 20 号之后)会和折线的换色点错开几像素到几十像素。
-  const cabSpan = {};
+  cabSpans = {};
   Object.keys(buckets).forEach(function (key) {
     const r = buckets[key];
     const d = r.ym + '-15';
-    const cur = cabSpan[r.cab.id];
-    if (!cur) { cabSpan[r.cab.id] = { first: d, last: d }; }
+    const cur = cabSpans[r.cab.id];
+    if (!cur) { cabSpans[r.cab.id] = { first: d, last: d }; }
     else {
       if (d < cur.first) cur.first = d;
       if (d > cur.last) cur.last = d;
     }
   });
   const spanOf = function (c) {
-    const sp = cabSpan[c.id];
+    const sp = cabSpans[c.id];
     return { first: sp ? sp.first : c.start, last: sp ? sp.last : c.end };
   };
 
@@ -2282,32 +2303,12 @@ function renderChart() {
     const pmName = currentLang === 'zh' ? (_prof.nameZh || c.pm)
       : currentLang === 'en' ? (_prof.nameEn || c.pm)
       : (_prof.nameJa || c.pm);
-    // 图上只放姓氏（同一高度、等宽短标签），全名放 tooltip / 右侧面板，避免名签高低不齐
-    const _tagM = String(c.pm).match(/\((.*?)\)/);
-    const _tag = _tagM ? '(' + _tagM[1].replace(/次/, '') + ')' : '';
-    const _full = pmName.replace(/\(.*\)$/, '');
-    const _sn = PM_SURNAME[c.id];
-    const _pmBase = _sn ? _sn[currentLang === 'zh' ? 1 : currentLang === 'en' ? 2 : 0]
-      : (currentLang === 'en' ? _full.split(' ').pop() : _full);
     const _span = spanOf(c);
     // 窗口左沿判定:任期起点落在窗口外、或该内阁第一个数据点已经贴着/越过窗口左沿
     // (窗口起点是按月数估的,可能刚好落在第一个数据点之后),两种都按"贴左沿"处理:
-    // 名字钉在左沿、竖线只留淡影 —— 否则 markLine 整条落在绘图区外会被裁掉,水印一起消失。
+    // 名字钉在左沿、竖线只留淡影 —— 否则 markLine 整条落在绘图区外会被裁掉。
     const clampedEff = clamped || (new Date(_span.first) < new Date(winStartISO));
-    const _visFirst = clampedEff ? winStartISO : _span.first;
-    const labelX = _visFirst;
-    // 区间名:字号按区间宽度反推,做成"大水印"印在区间左上角
-    const _pPM = plotPxPerMonth(winStartISO);
-    // 宽度按「实际有数据、且在当前窗口里可见的月份跨度」算:
-    // 任期终点是名义值(高市标到 2030),跨窗口左沿的只算露出来的那截,
-    // 否则水印会按整段任期放大,压出画布盖到邻居身上。
-    const _visMonths = Math.max(0, (new Date(_span.last) - new Date(_visFirst)) / 86400000 / 30.44);
-    const _spanPx = _visMonths * _pPM;
-    // 任期不到 4 个月的宽度就别带 (1)/(2) 尾巴,否则一定压到邻居
-    const _crowded = _spanPx < 44;
-    const pmShort = _crowded ? _pmBase : _pmBase + _tag;
-    const wm = watermarkFor(pmShort, _spanPx, isNarrow);
-    const wmShow = wm.show && !outOfWindow;
+    const labelX = clampedEff ? winStartISO : _span.first;
     const points = [];
     Object.keys(buckets).sort().forEach(key => {
       const rec = buckets[key];
@@ -2321,8 +2322,6 @@ function renderChart() {
       const focused = focusCabinet === c.id;
       series.push({
         __cabId: c.id,
-        __color: color,
-        __wm: wmShow ? wm.text : '',
         name: pmName,
         type: 'line',
         data: points,
@@ -2477,10 +2476,11 @@ function renderChart() {
       textStyle: { color: T.tooltipText, fontSize: 13, fontFamily: cssFont('--font-sans', 'system-ui, sans-serif') },
       formatter: function(params) {
         if (!params || params.length === 0) return '';
-        const d = new Date(params[0].axisValue);
-        const cab = pmByDate(params[0].axisValue);
+        // 水印 custom series 也会进 axis tooltip:这里明确取折线系列
+        const p = params.find(function (x) { return x.seriesType === 'line'; }) || params[0];
+        const d = new Date(p.axisValue);
+        const cab = pmByDate(p.axisValue);
         const ymStr = fmtMonth(lang, d.getFullYear(), d.getMonth() + 1);
-        const p = params[0];
         const avg = p.data ? p.data[1] : null;
         const n = p.data ? p.data[2] : 0;
         const sources = p.data ? (p.data[3] || []) : [];
@@ -2573,9 +2573,18 @@ function renderChart() {
     series: series
   };
 
+  // notMerge 会把 graphic 一起清掉:先作废水印签名闸,后面那次 relayout 才会重新画上
+  lastWmSig = '';
   chart.setOption(option, true);
   lastSeries = series;
   try { refreshWindowLabels(zoomStart, 100); } catch (err) {}
+  // 水印跟着每一次渲染重排:缩放/平移/resize 时和折线同帧更新,不依赖 240ms 的松手重排。
+  // relayoutWatermarks 自带签名闸(位置没变就不重设),挂这里不会自喂成死循环。
+  try { relayoutWatermarks(); } catch (err) {}
+  chart.off('rendered', relayoutWatermarks);
+  chart.on('rendered', relayoutWatermarks);
+  chart.off('finished', relayoutWatermarks);
+  chart.on('finished', relayoutWatermarks);
 
   // 拖动底部滑块时：面板重建会让每一帧都重排，先压住，松手后再恢复
   chart.off('datazoom');
@@ -2585,14 +2594,14 @@ function renderChart() {
     zoomStart = dz.start;
     zoomingUntil = Date.now() + 260;
     if (labelTimer) clearTimeout(labelTimer);
-    // 松手后再刷：拖动过程中每帧重排名签反而卡
+    // 松手后再刷:拖动过程中每帧重排名签反而卡
     labelTimer = setTimeout(() => {
       labelTimer = 0;
       try { refreshWindowLabels(dz.start, dz.end); } catch (err) {}
     }, 240);
   });
 
-  // 鼠标交互：更新右侧深度面板
+  // 鼠标交互:更新右侧深度面板
   chart.off('updateAxisPointer');
   chart.on('updateAxisPointer', (event) => {
     if (Date.now() < zoomingUntil) return;      // 拖动中不重建面板
@@ -2768,6 +2777,8 @@ function unmountCabinet() {
   if (typeof window !== 'undefined' && window.removeEventListener) window.removeEventListener('resize', onCabResize);
   if (ro) { try { ro.disconnect(); } catch (e) {} ro = null; }
   if (resizeRaf) { cancelAnimationFrame(resizeRaf); resizeRaf = null; }
+  lastWmSig = '';
+  lastWmCount = 0;
   isInitialAnimating = false;
   if (chart) { try { chart.dispose(); } catch (e) {} chart = null; }
   if (hostEl) {
