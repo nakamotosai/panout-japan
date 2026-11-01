@@ -1303,8 +1303,7 @@ def build_crime():
 
 def build_cabinet():
     series = [(ym[2:], v) for ym, v in sorted(MONTH_MEAN.items())]
-    head_extra = """<link rel="preload" href="/app/cabinet/vendor/echarts.min.js" as="script">
-<link rel="preload" href="/app/cabinet/data.json" as="fetch" crossorigin>
+    head_extra = """<link rel="preload" href="/app/cabinet/data.json" as="fetch" crossorigin>
 <link rel="modulepreload" href="/app/cabinet/view.js">"""
     body = f"""<main id="main" class="chapter-app-page">
 <h1 class="sr-only"{tattr('b.h1')}>{ja('b.h1')}</h1>

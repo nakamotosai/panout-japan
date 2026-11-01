@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>内閣支持率 —— 折线图三个方案</title>
+<link rel="stylesheet" href="lab.css">
+</head>
+<body>
+<nav class="lab-nav">
+  <span class="lab-brand">内閣支持率 · 图表方案实验室</span>
+  <button data-v="a" class="on"><i>A</i>一层画完</button>
+  <button data-v="b"><i>B</i>政权书脊</button>
+  <button data-v="c"><i>C</i>自绘引擎</button>
+  <button data-v="d"><i>D</i>书脊+引擎</button>
+  <span class="lab-hint">按 1 / 2 / 3 / 4 切换</span>
+</nav>
+
+<main>
+  <section id="s-a" class="lab-sec on">
+    <header class="lab-head">
+      <div class="lab-kicker">方案 A</div>
+      <h1>一层画完<span>阴影、分界、区间名全部由同一个自定义系列在同一帧里画出</span></h1>
+      <p>把现在这三层东西(阴影 <code>markArea</code> / 分界 <code>markLine</code> / 名字 <code>graphic</code>)合成一层:
+        共用同一次坐标变换、同一张画布,所以永远不会错位、不会晚一帧。名字字号分成固定档位,
+        <b>只有缩放停手后才换档</b> —— 拖动过程中绝不跳号;名字放不下时渐隐,不缩字号也不越界。</p>
+    </header>
+    <div class="stage" id="stage-a"></div>
+    <ul class="lab-notes">
+      <li>怎么玩:拖底部滑条 / 滚轮平移 / Shift+滚轮缩放</li>
+      <li>拖动中注意:字号一动不动,停下约 0.2 秒才可能换一档</li>
+      <li>分界虚线永远贴在它那个区间真实的第一个数据点上</li>
+      <li>代价:全期間(14 任挤一条轴)字号会压到 11px —— 这是「区间内印字 + 字号统一 + 名字齐全」三者的物理上限,想要大字就得看 B / C</li>
+    </ul>
+  </section>
+
+  <section id="s-b" class="lab-sec">
+    <header class="lab-head">
+      <div class="lab-kicker">方案 B</div>
+      <h1>政权书脊<span>顶部政权色带当书脊,姓永远印得下、字号永远 13px</span></h1>
+      <p>把「区间名」搬出绘图区,放进顶部一条政权色带:段宽永远够印两个字,
+        <b>固定字号不可能跳号</b>,分界从书脊一路贯穿到绘图区 —— 书脊、分界、折线是同一套坐标。
+        主图因此可以只留折线,更干净;顶部用明朝体大字显示当前政权,窗口一变就横向切换。</p>
+    </header>
+    <div class="stage" id="stage-b"></div>
+    <ul class="lab-notes">
+      <li>怎么玩:点某个色带段没有绑跳转,拖动仍走底部滑条 / 滚轮</li>
+      <li>拖动中注意:色带里的名字大小、位置都绝对稳定</li>
+      <li>顶部大字 = 当前窗口里占得最多的那一任内阁</li>
+    </ul>
+  </section>
+
+  <section id="s-c" class="lab-sec">
+    <header class="lab-head">
+      <div class="lab-kicker">方案 C</div>
+      <h1>自绘引擎<span>不用图表库,手写 Canvas 渲染器:惯性、橡皮筋、可拖总览条</span></h1>
+      <p>完全自己画:窗口(时间范围)是唯一真相源,阴影、分界、折线、标签都由同一个映射算出。
+        交互按金融图表的做法:拖拽平移带惯性、<b>滚轮左右移动时间轴</b>、Shift+滚轮以光标为锚缩放、滚到头即停(不回弹)、双击复位、
+        底部总览条可以直接拖窗口或拖手柄、十字线磁吸到最近一次调查点、按 <code>f</code> 看帧率。</p>
+    </header>
+    <div class="stage" id="stage-c"></div>
+    <ul class="lab-notes">
+      <li>怎么玩:拖图表平移 · 滚轮左右移动 · Shift+滚轮缩放 · 双击复位 · ←/→ 平移 · 0 复位 · f 帧率</li>
+      <li>手感是重点:松手后会有惯性滑行;滚到两端就是两端,不会弹回来也不会抖</li>
+      <li>底部那条是总览条:拖动窗口、拉两端手柄都能改范围</li>
+    </ul>
+  </section>
+
+  <section id="s-d" class="lab-sec">
+    <header class="lab-head">
+      <div class="lab-kicker">方案 D</div>
+      <h1>书脊 + 引擎<span>B 的信息设计 × C 的自绘引擎,两块合起来</span></h1>
+      <p>顶部政权书脊做成圆角胶囊(姓恒 12.5px、永远放得下,分界只画在绘图区里、不在胶囊之间加线);
+        引擎是 C 那套自己写的 Canvas:拖拽带惯性、<b>滚轮左右移动时间轴</b>、Shift+滚轮以光标为锚缩放、
+        <b>滚到头就停住、不回弹不抖动</b>、双击复位、底部总览条可拖窗口/拉手柄、十字线磁吸最近调查点。
+        书脊段可以直接点 —— 点哪一任,就把那一任的任期铺满视窗。</p>
+    </header>
+    <div class="stage" id="stage-d"></div>
+    <ul class="lab-notes">
+      <li>怎么玩:拖图平移 · 滚轮左右移动 · Shift+滚轮缩放 · 双击复位 · <b>点书脊段跳任期</b> · 总览条拖窗口/拉手柄 · ←/→ · 0 复位 · f 帧率</li>
+      <li>滚到最右/最左就停住:实测终点与数据端点差 0 天,松手后 1.8 秒零漂移</li>
+      <li>已去掉常驻的「当前政权」大字(你点掉的那个);要看具体月份就悬停,十字线会磁吸到最近一次调查点并给读数</li>
+    </ul>
+  </section>
+</main>
+
+<div class="lab-err" id="lab-err" hidden></div>
+
+<script src="/app/cabinet/vendor/echarts.min.js"></script>
+<script src="shared.js"></script>
+<script src="a.js"></script>
+<script src="b.js"></script>
+<script src="c.js"></script>
+<script src="d.js"></script>
+<script>
+(function () {
+  var err = document.getElementById('lab-err');
+  window.addEventListener('error', function (e) {
+    err.hidden = false;
+    err.textContent = 'JS 错误: ' + (e.message || e.error) + ' @ ' + (e.filename || '').split('/').pop() + ':' + e.lineno;
+  });
+  var SCHEMES = { a: window.SCHEME_A, b: window.SCHEME_B, c: window.SCHEME_C, d: window.SCHEME_D };
+  var mounted = {};
+  var active = null;
+  function show(v) {
+    if (!SCHEMES[v]) v = 'a';
+    document.querySelectorAll('.lab-nav button').forEach(function (b) { b.classList.toggle('on', b.dataset.v === v); });
+    document.querySelectorAll('.lab-sec').forEach(function (s) { s.classList.toggle('on', s.id === 's-' + v); });
+    if (mounted[v]) return;
+    LAB.load().then(function () {
+      var stage = document.getElementById('stage-' + v);
+      try { mounted[v] = SCHEMES[v].mount(stage); window.__lab = window.__lab || {}; window.__lab[v] = mounted[v]; }
+      catch (e) { err.hidden = false; err.textContent = '方案 ' + v.toUpperCase() + ' 启动失败: ' + e.message; }
+    }).catch(function (e) {
+      err.hidden = false; err.textContent = '数据加载失败: ' + e.message + '(需从仓库根目录起服务,数据在 /app/cabinet/data.json)';
+    });
+  }
+  document.querySelectorAll('.lab-nav button').forEach(function (b) {
+    b.addEventListener('click', function () { location.hash = b.dataset.v; });
+  });
+  window.addEventListener('hashchange', function () { show((location.hash || '#a').slice(1)); });
+  window.addEventListener('keydown', function (e) {
+    if (/^(1|2|3|4)$/.test(e.key)) location.hash = ['a', 'b', 'c', 'd'][+e.key - 1];
+  });
+  show((location.hash || '#a').slice(1));
+})();
+</script>
+</body>
+</html>

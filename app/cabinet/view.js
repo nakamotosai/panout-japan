@@ -6,12 +6,7 @@
 
 const DATA_CANDIDATES = ["./app/cabinet/data.json","../app/cabinet/data.json"];
 let cabForcedBase = null;
-const ECHARTS_URLS = [
-  "/app/cabinet/vendor/echarts.min.js",
-  "./app/cabinet/vendor/echarts.min.js",
-  "https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js",
-  "https://unpkg.com/echarts@5.5.1/dist/echarts.min.js"
-];
+
 const THEME_MAP = { mono: "editorial", sage: "editorial", dark: "tactical", tactical: "tactical", editorial: "editorial" };
 
 
@@ -45,7 +40,82 @@ const CAB_CSS = `
   height: 100%;
   min-height: 0;
   flex: 1 1 auto;
+  position: relative;
 }
+.cab-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  outline: none;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.cab-canvas:active { cursor: grabbing; }
+.cab-readout {
+  position: absolute;
+  z-index: 6;
+  padding: 9px 11px;
+  border-radius: 6px;
+  border: 1px solid;
+  pointer-events: none;
+  font-family: var(--font-sans, system-ui);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.26);
+}
+.cab-readout .cr-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 5px;
+}
+.cab-readout .cr-head i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex: none;
+  display: block;
+}
+.cab-readout .cr-head b { font-weight: 400; font-size: 14px; }
+.cab-readout .cr-head span {
+  margin-left: auto;
+  font-size: 11px;
+  opacity: 0.62;
+}
+.cab-readout .cr-num {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 26px;
+  font-weight: 200;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.5px;
+}
+.cab-readout .cr-num i { font-style: normal; font-size: 13px; font-weight: 300; }
+.cab-readout .cr-num span { font-size: 11px; font-weight: 350; opacity: 0.62; }
+.cab-readout .cr-src {
+  margin-top: 7px;
+  padding-top: 6px;
+  border-top: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px 12px;
+}
+.cab-readout .cr-src div {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  min-width: 0;
+}
+.cab-readout .cr-src span {
+  font-size: 11px;
+  opacity: 0.62;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cab-readout .cr-src b { font-size: 11.5px; font-weight: 400; font-variant-numeric: tabular-nums; }
 /* 底部标签条：左侧按钮组，右侧对齐 slider */
 .cab-bottom-bar {
   position: absolute;
@@ -1369,7 +1439,7 @@ const I18N = {
     overviewDesc: '1998年から2026年までのNHK放送文化研究所、選挙WEB、各社世論調査を月平均で集計。',
     overviewHint: '首相の区間や折線にマウスを合わせると、詳細な内閣データと経歴が表示されます。',
     unpin: '✕ 全首相の表示に戻す',
-    chartFail: 'グラフライブラリの読み込みに失敗しました。'
+    hint: 'ドラッグで移動 · ホイールで左右移動 · Shift+ホイールで拡大 · ダブルクリックで全期間'
   },
   zh: {
     htmlLang: 'zh-CN',
@@ -1391,7 +1461,7 @@ const I18N = {
     overviewDesc: '1998年至2026年间NHK放送文化研究所、选举WEB及各主要媒体舆论调查月均汇总。',
     overviewHint: '鼠标悬停于首相任期或折线上，可查看该内阁的完整数据指标与执政档案。',
     unpin: '✕ 恢复全景概览',
-    chartFail: '图表库加载失败，请检查网络链路。'
+    hint: '拖拽平移 · 滚轮左右移动 · Shift+滚轮缩放 · 双击看全期间'
   },
   en: {
     htmlLang: 'en',
@@ -1413,14 +1483,13 @@ const I18N = {
     overviewDesc: 'Monthly aggregate of cabinet polls from NHK, Nikkei, Asahi, Yomiuri and Kyodo (1998–2026).',
     overviewHint: 'Hover over any cabinet segment or curve to inspect historical data and editorial profile.',
     unpin: '✕ Reset View',
-    chartFail: 'Failed to load chart library.'
+    hint: 'Drag to pan · Wheel to scroll · Shift+Wheel to zoom · Double-click for all time'
   }
 };
 
 let currentLang = 'ja';
 let currentVariant = 'tactical';
 let rawData = null;
-let chart = null;
 let hostEl = null;
 let panelEl = null;
 let zoomEl = null;
@@ -1455,16 +1524,15 @@ let lastBoxW = 0, lastBoxH = 0;
 function onCabResize() {
   if (resizeRaf) cancelAnimationFrame(resizeRaf);
   resizeRaf = requestAnimationFrame(() => {
-    if (!chart) return;
+    if (!cabEng || !cabEng.data) return;
     if (isInitialAnimating) return;
-    // 尺寸没变就不 resize：更新面板会触发布局，反复 resize 会和 ResizeObserver 互相喂事件
     const box = hostEl ? hostEl.querySelector('#cab-chart') : null;
     if (box) {
       const w = Math.round(box.clientWidth), h = Math.round(box.clientHeight);
       if (w === lastBoxW && h === lastBoxH) return;
       lastBoxW = w; lastBoxH = h;
     }
-    try { chart.resize(); } catch (e) {}
+    cabResize();
   });
 }
 
@@ -1543,6 +1611,7 @@ function renderZoomSeg() {
     b.addEventListener('click', () => {
       activeRange = r.id;
       focusCabinet = null;
+      cabNeedReset = true;
       renderZoomSeg();
       renderPanel(null);
       renderChart();
@@ -1786,9 +1855,6 @@ function renderPanel(targetCabId) {
       e.stopPropagation();
       focusCabinet = null;
       renderPanel(null);
-      if (chart) {
-        chart.dispatchAction({ type: 'downplay' });
-      }
     };
   }
 }
@@ -1820,49 +1886,10 @@ const PM_SURNAME = {
   takaichi: ['高市', '高市', 'Takaichi']
 };
 
-let lastSeries = null, labelTimer = 0;
+
 
 // 拖动滑块换窗口后，顶部名签必须按新窗口重算，否则名字会全部消失
-function refreshWindowLabels(startPct, endStartPct) {
-  if (!chart || !lastSeries || !rawData) return;
-  const ds = rawData.polls.map(p => p.date).sort();
-  const t0 = new Date(ds[0]).getTime();
-  const t1 = new Date(ds[ds.length - 1]).getTime();
-  const pct = Math.max(0, Math.min(100, startPct || 0));
-  const win = new Date(t0 + (t1 - t0) * pct / 100).toISOString().slice(0, 10);
-  const endPct = Math.max(pct, Math.min(100, endStartPct || 100));
-  const winEnd = new Date(t0 + (t1 - t0) * endPct / 100).toISOString().slice(0, 10);
-  lastSeries.forEach((sr) => {
-    const c = rawData.cabinets.find(x => x.id === sr.__cabId);
-    // markLine.data 是「一组两点」的数组：data[0] = [起点, 终点]
-    const pair = sr.markLine && sr.markLine.data && sr.markLine.data[0];
-    if (!c || !pair || pair.length < 2) return;
-    // 窗口右侧之外的任期内阁也一并藏掉，免得 markLine 被裁到图外还留着状态
-    const out = c.end <= win || c.start > winEnd;
-    const clamped = c.start < win && !out;
-    // 数据点落在每月 15 号:分隔线与名签跟着第一条数据点走,才和折线的换色点对齐
-    const firstPt = (sr.data && sr.data.length) ? sr.data[0][0] : c.start;
-    // 第一个数据点贴到/越过绘图区左沿时同样按"贴左沿"处理:窗口起点是估算值,
-    // 数据点可能刚好落在它左边一点点,整条 markLine 会被裁到绘图区外、名字跟着消失。
-    let clampedNow = clamped;
-    try {
-      const pxFirst = chart.convertToPixel({ xAxisIndex: 0 }, firstPt);
-      if (isFinite(pxFirst) && pxFirst <= 3) clampedNow = true;
-    } catch (err) {}
-    const x = clampedNow ? win : firstPt;
-    pair[0].coord = [x, 0];
-    pair[1].coord = [x, 96];
-    const tail = sr.markLine.data[1];
-    if (tail && tail.length > 1) {
-      tail[0].coord = [x, 97];
-      tail[1].coord = [x, 100];
-    }
-    sr.markLine.lineStyle = sr.markLine.lineStyle || {};
-    // 跨窗口左沿的只留一条很淡的影子(完全透明会把整条 markLine 一起吞掉)
-    sr.markLine.lineStyle.opacity = out ? 0 : (clampedNow ? 0.16 : 0.65);
-  });
-  chart.setOption({ series: lastSeries }, { lazyUpdate: true });
-}
+
 
 /* ── 区间名水印 / 任期曲线 / 分享卡片 ───────────────────────────── */
 
@@ -1887,66 +1914,7 @@ function cabGridR() { return window.innerWidth <= 960 ? 20 : 384; }
 // 位置不查 convertToPixel,而是直接读坐标轴模型(绘图区矩形 + 当前时间轴范围)线性推算:
 // 每次渲染都能拿到一致值,所以挂在 rendered/finished 上重排时,水印和折线同帧、没有延迟。
 // 字号取「当前可见区间里最窄那条放得下」的一个统一值 —— 所有水印一样大。
-function relayoutWatermarks() {
-  if (!chart || !rawData || !chart.getModel) return;
-  const model = chart.getModel();
-  if (!model) return;
-  let rect, extent;
-  try {
-    rect = model.getComponent('grid', 0).coordinateSystem.getRect();
-    extent = model.getComponent('xAxis', 0).axis.scale.getExtent();
-  } catch (e) { return; }
-  if (!rect || !rect.width || !extent) return;
-  const span = extent[1] - extent[0];
-  if (!(span > 0)) return;
-  const xOf = function (iso) { return rect.x + ((Date.parse(iso) - extent[0]) / span) * rect.width; };
-  const bands = [];
-  rawData.cabinets.forEach(function (c, idx) {
-    const sp = cabSpans[c.id];
-    if (!sp) return;
-    const v0 = Math.max(xOf(sp.first), rect.x);
-    const v1 = Math.min(xOf(sp.last), rect.x + rect.width);
-    const w = v1 - v0;
-    const text = surnameOf(c.id);
-    const unit = /[^\x00-\xff]/.test(text) ? 1.0 : 0.6;
-    // 连 11px 的一个字都放不下的区间放弃,也不参与字号投票,
-    // 否则窗口边缘一条窄缝会把所有水印的字号一起拖到最小值。
-    if (w < 22 || text.length * unit * 11 + 4 > w) return;
-    bands.push({ x: Math.round(v0 + 10), w: w, text: text, unit: unit, color: cabColors()[idx % cabColors().length] });
-  });
-  // 一条都算不出来通常是渲染中间态:保留上一次的水印,别把它们整批清掉
-  if (!bands.length && lastWmCount) return;
-  let size = 96;
-  bands.forEach(function (b) {
-    const fit = (b.w * 0.94 - 8) / Math.max(1, b.text.length * b.unit);
-    if (fit < size) size = fit;
-  });
-  size = Math.max(11, Math.min(96, Math.floor(size)));
-  const alpha = currentVariant === 'editorial' ? 0.26 : 0.20;
-  const font = '700 ' + size + 'px ' + cssFont('--ja-sans', 'system-ui, sans-serif');
-  const items = bands.map(function (b) {
-    return {
-      type: 'text',
-      left: b.x,
-      top: rect.y + 6,
-      silent: true,
-      z: 8,
-      style: { text: b.text, font: font, fill: hexToRgba(b.color, alpha) }
-    };
-  });
-  const sig = items.map(function (i) { return i.left + '|' + i.style.text + '|' + i.style.font + '|' + i.style.fill; }).join(',');
-  lastWmCount = items.length;
-  if (sig === lastWmSig) return;
-  lastWmSig = sig;
-  // 在 ECharts 自己的渲染/事件回调里直接 setOption 会被它的重入保护丢掉,
-  // 所以推到下一帧再设(一帧 ≈16ms,肉眼与折线同步)。
-  if (wmApplyRaf) cancelAnimationFrame(wmApplyRaf);
-  wmApplyRaf = requestAnimationFrame(function () {
-    wmApplyRaf = 0;
-    if (!chart) return;
-    try { chart.setOption({ graphic: items }, { replaceMerge: ['graphic'] }); } catch (e) {}
-  });
-}
+
 
 // 任期支持率曲线:内联 SVG,不另起 ECharts 实例
 function tenureSparkline(points, color, id) {
@@ -2214,29 +2182,32 @@ function saveShareCard(cabId, btn) {
   }, 'image/png');
 }
 
-let zoomingUntil = 0;
-let panelRaf = 0;
-let lastWmSig = '';
-let lastWmCount = 0;
-let wmApplyRaf = 0;
-let cabSpans = {};
+/* ── 手写 Canvas 引擎:政权书脊 + 惯性时间轴(替代 ECharts) ──────────────
+   窗口(时间范围)是唯一真相源:书脊胶囊、区间底色、折线、读数全由同一个 win→px 映射算出,
+   所以不存在「图层错位 / 名字滞后」;滚到两端即停,不做橡皮筋回弹。 */
 
-function renderChart() {
-  if (!window.echarts || !rawData) return;
-  const t = I18N[currentLang] || I18N.ja;
-  const chartBox = hostEl ? hostEl.querySelector('#cab-chart') : document.getElementById('cab-chart');
-  if (!chartBox) return;
-  if (!chart) chart = echarts.init(chartBox, null, { renderer: 'canvas' });
+let cabEng = null;        // 引擎实例,跨 renderChart 保留窗口状态
+let cabNeedReset = true;  // 下次 renderChart 是否把窗口重置到当前 range
+let cabEscal = {};        // 月度区间(每任内阁的实际数据范围)
 
+const CAB_DAY = 86400000;
+
+function cabIsDark() { return currentVariant !== 'editorial'; }
+function cabMuted() { return cabIsDark() ? '#A09E96' : '#56635A'; }
+function cabHair() { return cabIsDark() ? 'rgba(237,235,228,0.10)' : 'rgba(20,26,21,0.10)'; }
+function cabBandFill() { return cabIsDark() ? 'rgba(255,255,255,0.026)' : 'rgba(0,0,0,0.026)'; }
+function cabPillFill() { return cabIsDark() ? 'rgba(255,255,255,0.055)' : 'rgba(20,26,21,0.045)'; }
+function cabPillInk() { return cabIsDark() ? 'rgba(234,231,223,0.90)' : 'rgba(20,26,21,0.86)'; }
+
+function cabMeasure(text, font) {
+  cabEng.mctx.font = font;
+  return cabEng.mctx.measureText(text).width;
+}
+
+// 数据模型:每任内阁一个区间 + 月度均值点(与旧图表完全同一套口径)
+function cabBuildData() {
   const polls = rawData.polls;
-  const cabinets = rawData.cabinets;
   const C = cabColors();
-  const T = tchart();
-  const isNarrow = window.innerWidth <= 960;
-  const gridL = cabGridL();
-  // 右侧面板 352px + 16px 边距 + 16px 呼吸:早先只留 344,最新一任的折线正好被面板压住
-  const gridR = cabGridR();
-
   const buckets = {};
   polls.forEach(p => {
     if (p.derived) return;
@@ -2248,404 +2219,725 @@ function renderChart() {
     buckets[key].n += 1;
     buckets[key].sources.push({ src: p.source, v: p.value, kind: p.kind || '' });
   });
-
-  // 每个内阁实际占用的月次区间(数据点落在每月 15 号)。背景条、分隔线、名签都以它为准:
-  // 用任期起始日期(可能落在某月 20 号之后)会和折线的换色点错开几像素到几十像素。
-  cabSpans = {};
-  Object.keys(buckets).forEach(function (key) {
+  cabEscal = {};
+  Object.keys(buckets).forEach(key => {
     const r = buckets[key];
     const d = r.ym + '-15';
-    const cur = cabSpans[r.cab.id];
-    if (!cur) { cabSpans[r.cab.id] = { first: d, last: d }; }
-    else {
-      if (d < cur.first) cur.first = d;
-      if (d > cur.last) cur.last = d;
-    }
+    const cur = cabEscal[r.cab.id];
+    if (!cur) cabEscal[r.cab.id] = { first: d, last: d };
+    else { if (d < cur.first) cur.first = d; if (d > cur.last) cur.last = d; }
   });
-  const spanOf = function (c) {
-    const sp = cabSpans[c.id];
-    return { first: sp ? sp.first : c.start, last: sp ? sp.last : c.end };
-  };
-
-  const markAreaData = cabinets.map((c, idx) => {
-    const isEven = idx % 2 === 0;
-    const bg = isEven
-      ? (currentVariant === 'editorial' ? 'rgba(0,0,0,0.026)' : 'rgba(255,255,255,0.026)')
-      : 'transparent';
-    const sp = spanOf(c);
-    return [
-      { xAxis: sp.first, itemStyle: { color: bg } },
-      { xAxis: sp.last }
-    ];
-  });
-
-  // 当前可见窗口的左沿：起点落在窗口外的首相，名字贴到左沿，否则那条线就没有名字。
-  // 必须放在序列循环之前——这里直接从 polls 推算，不依赖后面才声明的 startDate。
-  const winStartISO = (function () {
-    const ds = polls.map(p => p.date).sort();
-    const t0 = new Date(ds[0]).getTime();
-    const t1 = new Date(ds[ds.length - 1]).getTime();
-    const wm = RANGE_WINDOW_MONTHS[activeRange];
-    if (!(wm > 0) || !(t1 > t0)) return ds[0];
-    const pct = Math.max(0, 1 - (wm * 30.44 * 86400000) / (t1 - t0));
-    return new Date(t0 + (t1 - t0) * pct).toISOString().slice(0, 10);
-  })();
-
-  const series = [];
-  cabinets.forEach((c, i) => {
-    // 每一任给独立色：只留一色时 14 段折线在深色底上糊成一片灰线，读不出政权更替。
-    const isActive = focusCabinet ? focusCabinet === c.id : i === cabinets.length - 1;
-    const color = C[i % C.length];
-    // 起点在窗口外时，名字与竖线都贴到窗口左沿（竖线不画，只留名字）
-    const outOfWindow = c.end <= winStartISO;      // 整段都在窗口左侧：不标名字
-    const clamped = c.start < winStartISO && !outOfWindow; // 跨窗口左沿：名字贴左沿
-    const _prof = CAB_PROFILES[c.id] || {};
-    const pmName = currentLang === 'zh' ? (_prof.nameZh || c.pm)
-      : currentLang === 'en' ? (_prof.nameEn || c.pm)
-      : (_prof.nameJa || c.pm);
-    const _span = spanOf(c);
-    // 窗口左沿判定:任期起点落在窗口外、或该内阁第一个数据点已经贴着/越过窗口左沿
-    // (窗口起点是按月数估的,可能刚好落在第一个数据点之后),两种都按"贴左沿"处理:
-    // 名字钉在左沿、竖线只留淡影 —— 否则 markLine 整条落在绘图区外会被裁掉。
-    const clampedEff = clamped || (new Date(_span.first) < new Date(winStartISO));
-    const labelX = clampedEff ? winStartISO : _span.first;
-    const points = [];
+  const cabs = rawData.cabinets.map((c, i) => {
+    const sp = cabEscal[c.id] || { first: c.start, last: c.end };
+    const pts = [];
     Object.keys(buckets).sort().forEach(key => {
-      const rec = buckets[key];
-      if (rec.cab.id !== c.id) return;
-      const d = rec.ym + '-15';
-      const avg = Math.round((rec.sums / rec.n) * 10) / 10;
-      points.push([d, avg, rec.n, rec.sources]);
+      const r = buckets[key];
+      if (r.cab.id !== c.id) return;
+      pts.push({ t: Date.parse(r.ym + '-15T00:00:00Z'), v: Math.round((r.sums / r.n) * 10) / 10, n: r.n, ym: r.ym, sources: r.sources });
     });
-
-    if (points.length > 0) {
-      const focused = focusCabinet === c.id;
-      series.push({
-        __cabId: c.id,
-        name: pmName,
-        type: 'line',
-        data: points,
-        showSymbol: true,
-        symbol: 'circle',
-        symbolSize: focused ? 8 : 5,
-        smooth: 0.15,
-        connectNulls: false,
-        lineStyle: {
-          color: color,
-          width: focused ? 3.5 : (isActive ? 2.6 : 2.0),
-          type: 'solid',
-          opacity: 0.9,
-          shadowBlur: currentVariant === 'tactical' ? (focused ? 10 : 4) : 0,
-          shadowColor: currentVariant === 'tactical' ? hexToRgba(color, 0.45) : 'transparent'
-        },
-        itemStyle: {
-          color: color,
-          borderColor: T.pointBorder,
-          borderWidth: 1.5,
-          opacity: 1
-        },
-        areaStyle: {
-          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            { offset: 0, color: hexToRgba(color, currentVariant === 'editorial' ? 0.20 : 0.24) },
-            { offset: 0.85, color: hexToRgba(color, 0.02) },
-            { offset: 1, color: hexToRgba(color, 0.0) }
-          ]),
-          opacity: focused ? 0.9 : (isActive ? 0.72 : 0.34)
-        },
-        emphasis: { focus: 'none', scale: 1.25 },
-        z: focused ? 6 : 3,
-        markArea: i === 0 ? {
-          silent: true,
-          data: markAreaData
-        } : undefined,
-        markLine: {
-          silent: true,
-          symbol: ['none', 'none'],
-          lineStyle: {
-            color: currentVariant === 'editorial' ? 'rgba(23,33,26,0.18)' : 'rgba(237,235,228,0.16)',
-            type: 'dashed',
-            width: focused ? 2.5 : 1.2,
-            // 贴到窗口左沿的名字不应该凭空多出一条更替竖线,只留一条淡影
-            opacity: clampedEff ? 0.16 : (outOfWindow ? 0 : 0.65)
-          },
-          data: [
-            [
-              { coord: [labelX, 0], symbol: 'none' },
-              { coord: [labelX, 96], symbol: 'none' }
-            ],
-            [
-              { coord: [labelX, 97], symbol: 'none' },
-              { coord: [labelX, 100], symbol: 'none' }
-            ]
-          ]
-        }
-      });
-    }
+    return {
+      id: c.id, sur: surnameOf(c.id), name: pmDisplayName(c.id), color: C[i % C.length], idx: i,
+      e0: Date.parse(sp.first + 'T00:00:00Z'), e1: Date.parse(sp.last + 'T00:00:00Z'),
+      pts: pts, start: c.start, end: c.end,
+      t0: pts.length ? pts[0].t : Date.parse(c.start + 'T00:00:00Z'),
+      t1: pts.length ? pts[pts.length - 1].t : Date.parse(sp.last + 'T00:00:00Z')
+    };
   });
-
-  const allDates = polls.map(p => p.date).sort();
-  const startDate = allDates[0];
-  const endDate = allDates[allDates.length - 1];
-  const bucketDates = Object.values(buckets).map(r => r.ym + '-15').sort();
-  const lastBucket = bucketDates[bucketDates.length - 1];
-  const axisMaxTime = Math.max(new Date(endDate).getTime(), new Date(lastBucket).getTime()) + 18 * 86400000;
-  const axisMaxISO = new Date(axisMaxTime).toISOString().slice(0, 10);
-
-  const wMonths = RANGE_WINDOW_MONTHS[activeRange];
-  let zoomStart = 0;
-  if (wMonths > 0) {
-    const spanMs = new Date(endDate) - new Date(startDate);
-    const winMs = wMonths * 30.44 * 86400000;
-    zoomStart = Math.max(0, Math.round((1 - winMs / spanMs) * 1000) / 10);
-  }
-
-  const focusCab = focusCabinet ? rawData.cabinets.find(c => c.id === focusCabinet) : null;
-  let focusWindow = null;
-  if (focusCab && wMonths > 0) {
-    const winMs = wMonths * 30.44 * 86400000;
-    const tMin = new Date(startDate).getTime();
-    const tMax = new Date(endDate).getTime();
-    const cStart = new Date(focusCab.start).getTime();
-    const cEnd = new Date(focusCab.end).getTime();
-    const center = (cStart + cEnd) / 2;
-    let ws = center - winMs / 2;
-    let we = center + winMs / 2;
-    if (ws < tMin) { ws = tMin; we = tMin + winMs; }
-    if (we > tMax) { we = tMax; ws = tMax - winMs; }
-    focusWindow = { startValue: new Date(ws), endValue: new Date(we) };
-  }
-
-  // 底部长条 slider：左侧留出标签按钮空间 (366px)，右侧留出面板空间 (344px)！
-  const sliderDZ = {
-    type: 'slider', xAxisIndex: 0,
-    show: !isNarrow,
-    left: isNarrow ? 36 : 366,
-    right: gridR,
-    height: 24, bottom: 8,
-    borderRadius: 6,
-    borderColor: T.zoomBorder,
-    backgroundColor: T.zoomFill,
-    fillerColor: T.zoomFill,
-    handleSize: 14,
-    brushSelect: false,
-    dataBackground: { lineStyle: { color: 'rgba(0,0,0,0)' }, areaStyle: { color: 'rgba(0,0,0,0)' } },
-    selectedDataBackground: { lineStyle: { color: 'rgba(0,0,0,0)' }, areaStyle: { color: 'rgba(0,0,0,0)' } },
-    moveHandleSize: 0,
-    handleIcon: 'path://M-8,-9h16a4,4 0 0 1 4,4v10a4,4 0 0 1 -4,4h-16a4,4 0 0 1 -4,-4v-10a4,4 0 0 1 4,-4z',
-    handleStyle: {
-      color: T.zoomHandle, borderColor: 'rgba(0,0,0,0.28)', borderWidth: 1,
-      shadowBlur: 5, shadowColor: 'rgba(0,0,0,0.35)', shadowOffsetY: 1.5
-    },
-    emphasis: { handleStyle: { color: T.zoomHandle, borderColor: T.zoomHandle, shadowBlur: 7 } },
-    textStyle: { color: T.zoomText, fontSize: 10 }
+  const all = [];
+  cabs.forEach(c => c.pts.forEach(p => all.push(p)));
+  all.sort((a, b) => a.t - b.t);
+  const ts = polls.map(p => Date.parse(p.date)).filter(isFinite);
+  const tMin = Math.min.apply(null, ts), tMax = Math.max.apply(null, ts);
+  const lastPt = all.length ? all[all.length - 1].t : tMax;
+  return {
+    cabs: cabs, all: all, latest: all.length ? all[all.length - 1] : null,
+    full: { t0: tMin - 30 * CAB_DAY, t1: Math.max(tMax, lastPt) + 18 * CAB_DAY }
   };
-  if (focusWindow) {
-    sliderDZ.startValue = focusWindow.startValue;
-    sliderDZ.endValue = focusWindow.endValue;
-  } else {
-    sliderDZ.start = zoomStart;
-    sliderDZ.end = 100;
-  }
+}
 
-  const lang = currentLang;
-  const option = {
-    backgroundColor: 'transparent',
-    grid: { left: gridL, right: gridR, top: 28, bottom: 54, borderColor: T.gridBorder },
-    legend: { show: false },
-    tooltip: {
-      trigger: 'axis',
-      backgroundColor: currentVariant === 'editorial' ? 'rgba(250, 252, 246, 0.96)' : 'rgba(20, 20, 18, 0.96)',
-      borderColor: currentVariant === 'editorial' ? 'rgba(20, 26, 21, 0.12)' : 'rgba(237, 235, 228, 0.14)',
-      borderWidth: 1,
-      padding: [12, 16],
-      // 右侧 384px 是档案面板的地盘:悬浮面板压到面板上会两边都看不清。
-      // 这里自己算落点(越过面板左沿就翻到光标左侧),不用 confine —— 它只保证不出浏览器窗口。
-      position: function (point, params, dom, rect, size) {
-        const w = size.contentSize[0], h = size.contentSize[1];
-        const W = size.viewSize[0], H = size.viewSize[1];
-        const limit = W - cabGridR() - 8;
-        let x = point[0] + 16;
-        if (x + w > limit) x = point[0] - 16 - w;
-        if (x < 8) x = 8;
-        let y = point[1] - h - 14;
-        if (y < 8) y = point[1] + 18;
-        if (y + h > H - 8) y = Math.max(8, H - 8 - h);
-        return [x, y];
-      },
-      extraCssText: 'border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,0.12);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);pointer-events:none;',
-      textStyle: { color: T.tooltipText, fontSize: 13, fontFamily: cssFont('--font-sans', 'system-ui, sans-serif') },
-      formatter: function(params) {
-        if (!params || params.length === 0) return '';
-        // 水印 custom series 也会进 axis tooltip:这里明确取折线系列
-        const p = params.find(function (x) { return x.seriesType === 'line'; }) || params[0];
-        const d = new Date(p.axisValue);
-        const cab = pmByDate(p.axisValue);
-        const ymStr = fmtMonth(lang, d.getFullYear(), d.getMonth() + 1);
-        const avg = p.data ? p.data[1] : null;
-        const n = p.data ? p.data[2] : 0;
-        const sources = p.data ? (p.data[3] || []) : [];
-        const cabIdx = cab ? cabinets.findIndex(x => x.id === cab.id) : 0;
-        const col = C[cabIdx % C.length] || '#FF6A3D';
-        const pmName = cab ? cab.pm : '';
-        const fontSans = 'var(--font-sans, system-ui, sans-serif)';
 
-        const dim = currentVariant === 'editorial' ? '#56635A' : '#A09E96';
-        const hair = currentVariant === 'editorial' ? 'rgba(20,26,21,0.10)' : 'rgba(237,235,228,0.12)';
 
-        // 固定宽度 + 两列来源网格:面板不再随来源数量横向无限延伸
-        let html = '<div style="width:330px;max-width:min(330px,74vw);font-family:' + fontSans + ';color:' + T.tooltipText + '">';
-
-        // 顶栏:彩标 + 首相大名 + 发生年月
-        html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:10px">';
-        html += '<div style="display:flex;align-items:center;gap:8px;min-width:0">';
-        html += '<span style="display:inline-block;width:9px;height:9px;border-radius:50%;flex:none;background:' + col + ';box-shadow:0 0 8px ' + hexToRgba(col, 0.6) + '"></span>';
-        html += '<span style="font-weight:300;font-size:15px;letter-spacing:-0.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + pmName + '</span>';
-        html += '</div>';
-        html += '<span style="color:' + dim + ';font-size:11.5px;font-weight:350;white-space:nowrap">' + ymStr + '</span>';
-        html += '</div>';
-
-        // 核心支持率:超大极细数字
-        if (avg !== null) {
-          html += '<div style="display:flex;align-items:baseline;gap:6px;margin:2px 0 8px 0">';
-          html += '<span style="font-size:26px;font-weight:200;line-height:1;color:' + col + ';font-family:' + fontSans + ';letter-spacing:-0.5px">' + avg.toFixed(1) + '<span style="font-size:14px;font-weight:300">%</span></span>';
-          html += '<span style="font-size:11.5px;font-weight:350;color:' + dim + '">' + n + (lang==='en'?' polls':lang==='zh'?' 家平均':'社平均') + '</span>';
-          html += '</div>';
-        }
-
-        // 各社明细:两列网格,信息密度取代横向长条
-        if (sources.length > 0) {
-          html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1px 12px;border-top:1px solid ' + hair + ';padding-top:7px">';
-          sources.forEach(function(s) {
-            html += '<div style="display:flex;align-items:baseline;justify-content:space-between;gap:6px;min-width:0">';
-            html += '<span style="font-size:11.5px;font-weight:350;color:' + dim + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + s.src + '</span>';
-            html += '<span style="font-size:12px;font-weight:400;color:' + col + ';font-variant-numeric:tabular-nums">' + s.v.toFixed(1) + '</span>';
-            html += '</div>';
-          });
-          html += '</div>';
-        }
-        html += '</div>';
-        return html;
-      }
-    },
-    xAxis: {
-      type: 'time', min: startDate, max: axisMaxISO,
-      axisLine: { lineStyle: { color: T.gridBorder } },
-      axisTick: { show: false },
-      splitLine: { show: false },
-      axisLabel: {
-        color: currentVariant === 'editorial' ? '#56635A' : '#A09E96',
-        fontSize: 10.5,
-        formatter: function(val) {
-          const d = new Date(val);
-          return String(d.getFullYear());
-        }
-      }
-    },
-    yAxis: {
-      type: 'value', min: 0, max: 100, interval: 20,
-      name: t.yName,
-      nameTextStyle: { color: currentVariant === 'editorial' ? '#56635A' : '#A09E96', fontSize: 10.5, padding: [0, 0, 4, 0] },
-      axisLine: { show: false },
-      axisTick: { show: false },
-      splitLine: { lineStyle: { color: T.gridBorder, type: 'dashed' } },
-      axisLabel: {
-        color: currentVariant === 'editorial' ? '#56635A' : '#A09E96',
-        fontSize: 10.5,
-        formatter: function(val) { return val + '%'; }
-      }
-    },
-    dataZoom: [
-      sliderDZ,
-      {
-        type: 'inside', xAxisIndex: 0,
-        start: focusWindow ? undefined : zoomStart,
-        end: focusWindow ? undefined : 100,
-        startValue: focusWindow ? focusWindow.startValue : undefined,
-        endValue: focusWindow ? focusWindow.endValue : undefined,
-        zoomOnMouseWheel: 'shift', moveOnMouseWheel: true
-      }
-    ],
-    animation: true,
-    animationDuration: 1100,
-    animationDurationUpdate: 650,
-    animationEasing: 'cubicOut',
-    animationEasingUpdate: 'cubicOut',
-    series: series
+// 引擎实例:canvas + 读数卡 + 提示行,只建一次;窗口状态留在实例上
+function cabEnsure() {
+  const box = hostEl ? hostEl.querySelector('#cab-chart') : document.getElementById('cab-chart');
+  if (!box) return null;
+  if (cabEng && cabEng.box === box && cabEng.cv.parentNode === box) return cabEng;
+  box.innerHTML = '';
+  const cv = document.createElement('canvas');
+  cv.className = 'cab-canvas';
+  cv.tabIndex = 0;
+  box.appendChild(cv);
+  const readout = document.createElement('div');
+  readout.className = 'cab-readout';
+  readout.hidden = true;
+  box.appendChild(readout);
+  const e = {
+    box: box, cv: cv, ctx: cv.getContext('2d'), readout: readout,
+    mctx: document.createElement('canvas').getContext('2d'),
+    W: 0, H: 0, dpr: 1, narrow: window.innerWidth <= 960,
+    plot: { x: 0, y: 0, w: 0, h: 0 }, rib: { x: 0, y: 0, w: 0, h: 30 },
+    mini: { x: 0, y: 0, w: 0, h: 40 }, showMini: false,
+    win: null, full: null, data: null, needs: true, raf: 0, fpsOn: false, fps: 0,
+    dragging: null, inertia: 0, velocity: 0, anim: null, hover: null, hoverKey: '', panelTimer: 0
   };
+  cabEng = e;
+  cv.addEventListener('pointerdown', cabOnDown);
+  cv.addEventListener('pointermove', cabOnMove);
+  cv.addEventListener('pointerup', cabOnUp);
+  cv.addEventListener('pointercancel', cabOnUp);
+  cv.addEventListener('pointerleave', cabOnLeave);
+  cv.addEventListener('wheel', cabOnWheel, { passive: false });
+  cv.addEventListener('dblclick', cabOnDbl);
+  cv.addEventListener('keydown', cabOnKey);
+  e.raf = requestAnimationFrame(cabFrame);
+  return e;
+}
 
-  // notMerge 会把 graphic 一起清掉:先作废水印签名闸,后面那次 relayout 才会重新画上
-  lastWmSig = '';
-  chart.setOption(option, true);
-  lastSeries = series;
-  try { refreshWindowLabels(zoomStart, 100); } catch (err) {}
-  // 水印跟着每一次渲染重排:缩放/平移/resize 时和折线同帧更新,不依赖 240ms 的松手重排。
-  // relayoutWatermarks 自带签名闸(位置没变就不重设),挂这里不会自喂成死循环。
-  try { relayoutWatermarks(); } catch (err) {}
-  chart.off('rendered', relayoutWatermarks);
-  chart.on('rendered', relayoutWatermarks);
-  chart.off('finished', relayoutWatermarks);
-  chart.on('finished', relayoutWatermarks);
+function cabRelease() {
+  if (!cabEng) return;
+  const e = cabEng;
+  if (e.raf) cancelAnimationFrame(e.raf);
+  if (e.panelTimer) clearTimeout(e.panelTimer);
+  try { e.box.innerHTML = ''; } catch (err) {}
+  cabEng = null;
+}
 
-  // 拖动底部滑块时：面板重建会让每一帧都重排，先压住，松手后再恢复
-  chart.off('datazoom');
-  chart.on('datazoom', (e) => {
-    const dz = (e && e.batch && e.batch[0]) || e || {};
-    if (typeof dz.start !== 'number') return;
-    zoomStart = dz.start;
-    zoomingUntil = Date.now() + 260;
-    if (labelTimer) clearTimeout(labelTimer);
-    // 松手后再刷:拖动过程中每帧重排名签反而卡
-    labelTimer = setTimeout(() => {
-      labelTimer = 0;
-      try { refreshWindowLabels(dz.start, dz.end); } catch (err) {}
-    }, 240);
+function cabLayout() {
+  const e = cabEng;
+  const r = e.box.getBoundingClientRect();
+  e.dpr = Math.min(2, window.devicePixelRatio || 1);
+  e.W = Math.max(280, Math.round(r.width));
+  e.H = Math.max(240, Math.round(r.height));
+  e.cv.width = Math.round(e.W * e.dpr);
+  e.cv.height = Math.round(e.H * e.dpr);
+  e.cv.style.width = e.W + 'px';
+  e.cv.style.height = e.H + 'px';
+  e.ctx.setTransform(e.dpr, 0, 0, e.dpr, 0, 0);
+  e.narrow = window.innerWidth <= 960;
+  e.padL = Math.max(36, cabGridL());
+  e.padR = Math.max(20, cabGridR());
+  e.ribH = e.narrow ? 26 : 30;
+  e.ribGap = e.narrow ? 16 : 22;
+  e.rib.x = e.padL; e.rib.y = 14; e.rib.w = Math.max(80, e.W - e.padL - e.padR); e.rib.h = e.ribH;
+  e.plot.x = e.padL; e.plot.w = e.rib.w;
+  e.plot.y = e.rib.y + e.ribH + e.ribGap;
+  e.padB = e.narrow ? 60 : 88;
+  e.plot.h = Math.max(80, e.H - e.plot.y - e.padB);
+  e.mini.h = 40;
+  e.mini.y = e.plot.y + e.plot.h + 36;
+  e.mini.x = e.plot.x + (e.narrow ? 0 : 316);
+  e.mini.w = Math.max(0, e.plot.w - (e.narrow ? 0 : 316));
+  e.showMini = !e.narrow && e.mini.w > 80;
+  e.needs = true;
+}
+
+function cabX(t) { const e = cabEng; return e.plot.x + (t - e.win.t0) / (e.win.t1 - e.win.t0) * e.plot.w; }
+function cabY(v) { const e = cabEng; return e.plot.y + (1 - v / 100) * e.plot.h; }
+function cabT(x) { const e = cabEng; return e.win.t0 + (x - e.plot.x) / e.plot.w * (e.win.t1 - e.win.t0); }
+function cabSpanMs() { const e = cabEng; return e.win.t1 - e.win.t0; }
+
+// 边界硬夹:滚到哪停哪,不做橡皮筋
+function cabClampWin(dt) {
+  const e = cabEng, fullSpan = e.full.t1 - e.full.t0;
+  const s = e.win.t1 - e.win.t0;
+  if (dt) { e.win.t0 += dt; e.win.t1 += dt; }
+  if (s >= fullSpan - 1) { e.win.t0 = e.full.t0; e.win.t1 = e.full.t1; return; }
+  if (e.win.t0 < e.full.t0) { e.win.t1 += e.full.t0 - e.win.t0; e.win.t0 = e.full.t0; }
+  if (e.win.t1 > e.full.t1) { e.win.t0 -= e.win.t1 - e.full.t1; e.win.t1 = e.full.t1; }
+  if (e.win.t0 < e.full.t0) e.win.t0 = e.full.t0;
+  if (e.win.t1 > e.full.t1) e.win.t1 = e.full.t1;
+}
+
+// 窗口一变,旧的悬停像素位就失效了:清掉十字线与读数卡(右侧面板不动,免得滚轮时面板乱跳)
+function cabClearHover() {
+  const e = cabEng;
+  if (!e) return;
+  if (!e.hover && !e.hoverKey) return;
+  e.hover = null;
+  e.hoverKey = '';
+  e.readout.hidden = true;
+  e.needs = true;
+}
+
+function cabZoomAt(px, factor) {
+  const e = cabEng;
+  const fullSpan = e.full.t1 - e.full.t0;
+  const anchor = cabT(px), s = cabSpanMs();
+  const ns = Math.max(92 * CAB_DAY, Math.min(fullSpan, s * factor));
+  const k = ns / s;
+  e.win.t0 = anchor - (anchor - e.win.t0) * k;
+  e.win.t1 = e.win.t0 + ns;
+  cabClampWin(0);
+  cabClearHover();
+  e.needs = true;
+}
+
+function cabAnimateTo(t0, t1) {
+  const e = cabEng;
+  const now = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+  e.anim = { f: [e.win.t0, e.win.t1], g: [t0, t1], t: now, d: 360 };
+  cabClearHover();
+}
+
+function cabRR(x, y, w, h, r) {
+  const ctx = cabEng.ctx;
+  r = Math.max(0, Math.min(r, h / 2, w / 2));
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.arcTo(x + w, y, x + w, y + r, r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+  ctx.lineTo(x + r, y + h);
+  ctx.arcTo(x, y + h, x, y + h - r, r);
+  ctx.lineTo(x, y + r);
+  ctx.arcTo(x, y, x + r, y, r);
+  ctx.closePath();
+}
+
+// 政权书脊:圆角胶囊,姓居中、不加粗;放不下的自动隐去文字(不缩字号、不越界)
+function cabDrawRibbon() {
+  const e = cabEng, ctx = e.ctx;
+  ctx.save();
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  const size = currentLang === 'en' ? (e.narrow ? 10 : 11) : (e.narrow ? 11.5 : 12.5);
+  const font = '400 ' + size + 'px ' + cssFont('--ja-sans', 'system-ui, sans-serif');
+  ctx.font = font;
+  e.data.cabs.forEach(c => {
+    const x0 = Math.max(cabX(c.e0) + 2, e.rib.x), x1 = Math.min(cabX(c.e1) - 2, e.rib.x + e.rib.w);
+    const w = x1 - x0;
+    if (w < 4) return;
+    const r = Math.min(9, w / 2);
+    cabRR(x0, e.rib.y, w, e.rib.h, r);
+    ctx.fillStyle = cabPillFill();
+    ctx.fill();
+    ctx.strokeStyle = hexToRgba(c.color, 0.5);
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    const tw = cabMeasure(c.sur, font);
+    const a = Math.max(0, Math.min(1, (w - (tw + 10)) / 16));
+    if (a <= 0.05) return;
+    ctx.save();
+    cabRR(x0 + 2, e.rib.y, w - 4, e.rib.h, Math.max(0, r - 2));
+    ctx.clip();
+    ctx.globalAlpha = a;
+    ctx.fillStyle = cabPillInk();
+    ctx.fillText(c.sur, x0 + w / 2, e.rib.y + e.rib.h / 2 + 1);
+    ctx.restore();
   });
+  ctx.restore();
+}
 
-  // 鼠标交互:更新右侧深度面板
-  chart.off('updateAxisPointer');
-  chart.on('updateAxisPointer', (event) => {
-    if (Date.now() < zoomingUntil) return;      // 拖动中不重建面板
-    if (!event.axesInfo || !event.axesInfo[0]) return;
-    const val = event.axesInfo[0].value;
-    const cab = pmByDate(val);
-    if (cab && cab.id !== activeHoverCab) {
-      activeHoverCab = cab.id;
-      if (panelRaf) return;
-      panelRaf = requestAnimationFrame(() => {
-        panelRaf = 0;
-        if (activeHoverCab && Date.now() >= zoomingUntil) renderPanel(activeHoverCab);
-      });
-    }
-  });
-
-  chart.getZr().off('globalout');
-  chart.getZr().on('globalout', () => {
-    activeHoverCab = null;
-    try { chart.dispatchAction({ type: 'hideTip' }); } catch (e) {}
-    renderPanel(focusCabinet || null);
-  });
-
-  chart.off('click');
-  chart.on('click', (params) => {
-    if (params.seriesName) {
-      const cab = rawData.cabinets.find(c => c.pm === params.seriesName);
-      if (cab) {
-        focusCabinet = (focusCabinet === cab.id) ? null : cab.id;
-        renderPanel(focusCabinet);
-        renderChart();
-      }
-    }
+// 区间底色:明暗交替(政权切换靠它区分,不再画竖直分割线)
+function cabDrawBands() {
+  const e = cabEng, ctx = e.ctx;
+  const fill = cabBandFill();
+  e.data.cabs.forEach(c => {
+    if (c.idx % 2 !== 0) return;
+    const x0 = Math.max(cabX(c.e0), e.plot.x), x1 = Math.min(cabX(c.e1), e.plot.x + e.plot.w);
+    if (x1 - x0 < 0.6) return;
+    ctx.fillStyle = fill;
+    ctx.fillRect(x0, e.plot.y, x1 - x0, e.plot.h);
   });
 }
 
-async function boot(token) {
-  try {
-    await ensureEcharts();
-  } catch (e) {
-    const t = I18N[currentLang] || I18N.ja;
-    console.error('echarts load failed', e);
-    return null;
+function cabDrawGrid() {
+  const e = cabEng, ctx = e.ctx, T = tchart();
+  const t = I18N[currentLang] || I18N.ja;
+  const font = '11px ' + cssFont('--ja-sans', 'system-ui, sans-serif');
+  ctx.save();
+  ctx.setLineDash([2, 6]);
+  ctx.lineWidth = 1;
+  ctx.font = font;
+  ctx.fillStyle = cabMuted();
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'middle';
+  for (let v = 0; v <= 100; v += 20) {
+    const y = Math.round(cabY(v)) + 0.5;
+    ctx.strokeStyle = T.gridBorder;
+    ctx.beginPath();
+    ctx.moveTo(e.plot.x, y);
+    ctx.lineTo(e.plot.x + e.plot.w, y);
+    ctx.stroke();
+    ctx.fillText(v + '%', e.plot.x - 10, y);
   }
+  ctx.setLineDash([]);
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = cabMuted();
+  ctx.fillText(t.yName || '', e.plot.x, e.plot.y - 7);
+  if (e.hintText && !e.narrow) {
+    ctx.textAlign = 'right';
+    ctx.fillStyle = cabMuted();
+    ctx.globalAlpha = 0.75;
+    ctx.fillText(e.hintText, e.plot.x + e.plot.w, e.plot.y - 7);
+    ctx.globalAlpha = 1;
+  }
+  const y0 = new Date(e.win.t0).getUTCFullYear(), y1 = new Date(e.win.t1).getUTCFullYear();
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  let last = -1e9;
+  for (let yy = y0 - 1; yy <= y1 + 1; yy++) {
+    const tt = Date.UTC(yy, 0, 1), x = cabX(tt);
+    if (x < e.plot.x - 20 || x > e.plot.x + e.plot.w + 20) continue;
+    if (x - last < 58) continue;
+    last = x;
+    ctx.strokeStyle = T.gridBorder;
+    ctx.beginPath();
+    ctx.moveTo(Math.round(x) + 0.5, e.plot.y + e.plot.h);
+    ctx.lineTo(Math.round(x) + 0.5, e.plot.y + e.plot.h + 5);
+    ctx.stroke();
+    ctx.fillStyle = cabMuted();
+    ctx.fillText(String(yy), x, e.plot.y + e.plot.h + 9);
+  }
+  ctx.strokeStyle = T.gridBorder;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(e.plot.x, Math.round(e.plot.y + e.plot.h) + 0.5);
+  ctx.lineTo(e.plot.x + e.plot.w, Math.round(e.plot.y + e.plot.h) + 0.5);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function cabDrawLines() {
+  const e = cabEng, ctx = e.ctx;
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(e.plot.x, e.plot.y, e.plot.w, e.plot.h);
+  ctx.clip();
+  const dots = e.plot.w / Math.max(1, cabSpanMs() / (30.44 * CAB_DAY)) > 6.5;
+  const gradTop = cabIsDark() ? 0.10 : 0.13;
+  e.data.cabs.forEach(c => {
+    const pts = c.pts;
+    if (!pts.length) return;
+    const visible = [];
+    for (let i = 0; i < pts.length; i++) {
+      const x = cabX(pts[i].t);
+      if (x < e.plot.x - 30) continue;
+      if (x > e.plot.x + e.plot.w + 30) break;
+      visible.push({ x: x, y: cabY(pts[i].v) });
+    }
+    if (!visible.length) return;
+    const g = ctx.createLinearGradient(0, e.plot.y, 0, e.plot.y + e.plot.h);
+    g.addColorStop(0, hexToRgba(c.color, gradTop));
+    g.addColorStop(1, hexToRgba(c.color, 0));
+    ctx.beginPath();
+    visible.forEach((p, i) => { if (i) ctx.lineTo(p.x, p.y); else ctx.moveTo(p.x, p.y); });
+    ctx.lineTo(visible[visible.length - 1].x, e.plot.y + e.plot.h);
+    ctx.lineTo(visible[0].x, e.plot.y + e.plot.h);
+    ctx.closePath();
+    ctx.fillStyle = g;
+    ctx.fill();
+    ctx.beginPath();
+    visible.forEach((p, i) => { if (i) ctx.lineTo(p.x, p.y); else ctx.moveTo(p.x, p.y); });
+    ctx.strokeStyle = hexToRgba(c.color, 0.95);
+    ctx.lineWidth = 2;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    ctx.stroke();
+    if (!dots) return;
+    ctx.fillStyle = hexToRgba(c.color, 0.95);
+    visible.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 2.4, 0, 6.2832);
+      ctx.fill();
+    });
+  });
+  ctx.restore();
+}
+
+function cabDrawMini() {
+  const e = cabEng;
+  if (!e.showMini || !e.data) return;
+  const ctx = e.ctx, m = e.mini;
+  const dark = cabIsDark();
+  const s = e.full.t1 - e.full.t0;
+  const mx = t => m.x + (t - e.full.t0) / s * m.w;
+  const my = v => m.y + m.h - (v / 100) * m.h;
+  ctx.save();
+  ctx.fillStyle = dark ? 'rgba(255,255,255,.035)' : 'rgba(20,26,21,.035)';
+  ctx.fillRect(m.x, m.y, m.w, m.h);
+  ctx.beginPath();
+  ctx.rect(m.x, m.y, m.w, m.h);
+  ctx.clip();
+  e.data.cabs.forEach(c => {
+    if (!c.pts.length) return;
+    ctx.beginPath();
+    c.pts.forEach((p, i) => { if (i) ctx.lineTo(mx(p.t), my(p.v)); else ctx.moveTo(mx(p.t), my(p.v)); });
+    ctx.strokeStyle = hexToRgba(c.color, 0.55);
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.lineTo(mx(c.pts[c.pts.length - 1].t), m.y + m.h);
+    ctx.lineTo(mx(c.pts[0].t), m.y + m.h);
+    ctx.closePath();
+    ctx.fillStyle = hexToRgba(c.color, 0.09);
+    ctx.fill();
+  });
+  ctx.restore();
+  const a = mx(e.win.t0), b = mx(e.win.t1);
+  ctx.save();
+  ctx.fillStyle = dark ? 'rgba(255,255,255,.10)' : 'rgba(20,26,21,.08)';
+  ctx.fillRect(a, m.y, Math.max(2, b - a), m.h);
+  ctx.strokeStyle = dark ? 'rgba(255,255,255,.5)' : 'rgba(20,26,21,.45)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(Math.round(a) + 0.5, m.y + 0.5, Math.max(2, Math.round(b - a) - 1), m.h - 1);
+  ctx.fillStyle = dark ? 'rgba(255,255,255,.75)' : 'rgba(20,26,21,.6)';
+  ctx.fillRect(Math.round(a) - 1, m.y + m.h / 2 - 7, 3, 14);
+  ctx.fillRect(Math.round(b) - 2, m.y + m.h / 2 - 7, 3, 14);
+  ctx.restore();
+}
+
+// 悬停:磁吸到最近一次调查点
+function cabHoverLookup(mx) {
+  const e = cabEng;
+  let best = null, bd = Infinity;
+  e.data.cabs.forEach(c => {
+    for (let i = 0; i < c.pts.length; i++) {
+      const p = c.pts[i], d = Math.abs(p.t - cabT(mx));
+      if (d < bd) { bd = d; best = { p: p, c: c }; }
+    }
+  });
+  if (!best) return null;
+  const x = cabX(best.p.t);
+  if (Math.abs(x - mx) > 26) return null;
+  return { x: x, y: cabY(best.p.v), pt: best.p, cab: best.c };
+}
+
+function cabReadoutHtml(h) {
+  const p = h.pt, c = h.cab;
+  const t = I18N[currentLang] || I18N.ja;
+  const d = new Date(p.t);
+  let html = '<div class="cr-head"><i style="background:' + c.color + '"></i><b>' + c.name + '</b><span>' + fmtMonth(currentLang, d.getUTCFullYear(), d.getUTCMonth() + 1) + '</span></div>';
+  html += '<div class="cr-num">' + p.v.toFixed(1) + '<i>%</i><span>' + p.n + (t.polls || '') + '</span></div>';
+  if (p.sources && p.sources.length) {
+    html += '<div class="cr-src">';
+    p.sources.forEach(s => { html += '<div><span>' + s.src + '</span><b>' + s.v.toFixed(1) + '</b></div>'; });
+    html += '</div>';
+  }
+  return html;
+}
+
+function cabDrawCross() {
+  const e = cabEng, ctx = e.ctx;
+  if (!e.hover) { e.readout.hidden = true; return; }
+  const h = e.hover;
+  const dark = cabIsDark();
+  ctx.save();
+  ctx.strokeStyle = dark ? 'rgba(255,255,255,.30)' : 'rgba(20,26,21,.28)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(Math.round(h.x) + 0.5, e.plot.y);
+  ctx.lineTo(Math.round(h.x) + 0.5, e.plot.y + e.plot.h);
+  ctx.stroke();
+  ctx.fillStyle = dark ? '#0E0E0C' : '#E9EDE3';
+  ctx.strokeStyle = hexToRgba(h.cab.color, 1);
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(h.x, h.y, 4.5, 0, 6.2832);
+  ctx.fill();
+  ctx.stroke();
+  ctx.restore();
+  const cardW = 268;
+  let left = h.x + 14;
+  if (left + cardW > e.plot.x + e.plot.w) left = Math.max(e.plot.x + 4, h.x - 14 - cardW);
+  e.readout.hidden = false;
+  e.readout.style.left = Math.round(left) + 'px';
+  e.readout.style.top = Math.round(e.plot.y + 8) + 'px';
+  e.readout.style.width = cardW + 'px';
+  e.readout.innerHTML = cabReadoutHtml(h);
+}
+
+function cabDraw() {
+  const e = cabEng;
+  if (!e || !e.data || !e.win) return;
+  e.needs = false;
+  e.ctx.clearRect(0, 0, e.W, e.H);
+  cabDrawBands();
+  cabDrawGrid();
+  cabDrawLines();
+  cabDrawRibbon();
+  cabDrawMini();
+  cabDrawCross();
+  if (e.fpsOn) {
+    e.ctx.save();
+    e.ctx.font = '11px ui-monospace, monospace';
+    e.ctx.fillStyle = cabMuted();
+    e.ctx.textAlign = 'right';
+    e.ctx.textBaseline = 'top';
+    e.ctx.fillText(e.fps.toFixed(0) + ' fps', e.plot.x + e.plot.w, 2);
+    e.ctx.restore();
+  }
+}
+
+// 当前窗口与预设档位对齐(对上就高亮,手动拖到别的范围就全部熄灭)
+function cabSyncRange() {
+  const e = cabEng;
+  if (!e || !e.win || !e.full) return;
+  const months = cabSpanMs() / (30.44 * CAB_DAY);
+  const fullMonths = (e.full.t1 - e.full.t0) / (30.44 * CAB_DAY);
+  let hit = null;
+  RANGES.forEach(r => {
+    const m = RANGE_WINDOW_MONTHS[r.id];
+    const target = m > 0 ? m : fullMonths;
+    if (Math.abs(months - target) <= Math.max(0.5, target * 0.05)) hit = r.id;
+  });
+  if (hit !== activeRange) {
+    activeRange = hit;
+    renderZoomSeg();
+  }
+}
+
+function cabFrame(ts) {
+  const e = cabEng;
+  if (!e) return;
+  e.raf = requestAnimationFrame(cabFrame);
+  let busy = false;
+  if (e.anim) {
+    const p = Math.min(1, (ts - e.anim.t) / e.anim.d), k = 1 - Math.pow(1 - p, 3);
+    e.win.t0 = e.anim.f[0] + (e.anim.g[0] - e.anim.f[0]) * k;
+    e.win.t1 = e.anim.f[1] + (e.anim.g[1] - e.anim.f[1]) * k;
+    if (p >= 1) { e.anim = null; cabSyncRange(); }
+    busy = true;
+  }
+  if (e.inertia && !e.dragging) {
+    cabClampWin(e.inertia);
+    e.inertia *= 0.93;
+    if (Math.abs(e.inertia) < cabSpanMs() * 0.0004) { e.inertia = 0; cabSyncRange(); }
+    busy = true;
+  }
+  if (e.fpsOn) {
+    if (e.lastTs) {
+      e.acc = (e.acc || 0) + (ts - e.lastTs);
+      e.n = (e.n || 0) + 1;
+      if (e.n >= 20) { e.fps = 1000 / (e.acc / e.n); e.acc = 0; e.n = 0; busy = true; }
+    }
+    e.lastTs = ts;
+  }
+  if (e.needs || busy || e.dragging) cabDraw();
+}
+
+function cabNow() { return (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now(); }
+
+function cabPointer(ev) {
+  const r = cabEng.cv.getBoundingClientRect();
+  return { x: ev.clientX - r.left, y: ev.clientY - r.top };
+}
+
+// 书脊段命中:点哪一任,就把那一任的任期铺满视窗
+function cabRibbonHit(x, y) {
+  const e = cabEng;
+  if (!e || !e.data) return null;
+  if (y < e.rib.y - 4 || y > e.rib.y + e.rib.h + 4) return null;
+  const t = cabT(x);
+  let hit = null;
+  e.data.cabs.forEach(c => { if (t >= c.e0 && t < c.e1) hit = c; });
+  return hit;
+}
+
+// 右侧档案卡:悬停跟手(沿用旧图表的行为),只在切人时重建,且节流 140ms
+function cabPanelSoon(id) {
+  const e = cabEng;
+  if (!e) return;
+  if (e.panelTimer) clearTimeout(e.panelTimer);
+  e.panelTimer = setTimeout(function () {
+    e.panelTimer = 0;
+    if (cabEng === e) renderPanel(id || focusCabinet || null);
+  }, 140);
+}
+
+function cabOnDown(ev) {
+  const e = cabEng;
+  if (!e || !e.win) return;
+  const p = cabPointer(ev);
+  if (e.showMini && p.y >= e.mini.y - 8 && p.y <= e.mini.y + e.mini.h + 8) {
+    const span = e.full.t1 - e.full.t0;
+    const a = e.mini.x + (e.win.t0 - e.full.t0) / span * e.mini.w;
+    const b = e.mini.x + (e.win.t1 - e.full.t0) / span * e.mini.w;
+    e.dragging = {
+      mini: Math.abs(p.x - a) < 9 ? 'l' : Math.abs(p.x - b) < 9 ? 'r' : (p.x > a && p.x < b ? 'm' : 'j'),
+      x0: p.x, w0: [e.win.t0, e.win.t1], lastX: p.x, lastT: cabNow()
+    };
+    e.inertia = 0; e.anim = null; e.velocity = 0;
+    try { e.cv.setPointerCapture(ev.pointerId); } catch (err) {}
+    ev.preventDefault();
+    e.needs = true;
+    return;
+  }
+  const hit = cabRibbonHit(p.x, p.y);
+  if (hit) {
+    const pad = Math.max((hit.e1 - hit.e0) * 0.12, 60 * CAB_DAY);
+    cabAnimateTo(hit.e0 - pad, hit.e1 + pad);
+    focusCabinet = hit.id;
+    activeHoverCab = hit.id;
+    renderPanel(hit.id);
+    ev.preventDefault();
+    return;
+  }
+  e.dragging = { pan: true, x0: p.x, w0: [e.win.t0, e.win.t1], lastX: p.x, lastT: cabNow() };
+  e.inertia = 0; e.anim = null; e.velocity = 0;
+  try { e.cv.setPointerCapture(ev.pointerId); } catch (err) {}
+  ev.preventDefault();
+}
+
+function cabOnMove(ev) {
+  const e = cabEng;
+  if (!e || !e.win) return;
+  const p = cabPointer(ev);
+  const now = cabNow();
+  if (!e.dragging) {
+    const overRib = !!cabRibbonHit(p.x, p.y);
+    e.cv.style.cursor = overRib ? 'pointer' : 'grab';
+    const inside = p.x >= e.plot.x && p.x <= e.plot.x + e.plot.w && p.y >= e.plot.y && p.y <= e.plot.y + e.plot.h;
+    const h = (!overRib && inside) ? cabHoverLookup(p.x) : null;
+    const key = h ? (h.cab.id + '|' + h.pt.t) : '';
+    if (key !== e.hoverKey) {
+      e.hoverKey = key;
+      e.hover = h;
+      e.needs = true;
+      if (h) {
+        if (h.cab.id !== activeHoverCab) { activeHoverCab = h.cab.id; cabPanelSoon(h.cab.id); }
+      } else if (activeHoverCab) {
+        activeHoverCab = null;
+        cabPanelSoon(null);
+      }
+    }
+    return;
+  }
+  const sp = e.dragging.w0[1] - e.dragging.w0[0];
+  if (e.dragging.pan) {
+    const dt = (p.x - e.dragging.x0) / e.plot.w * sp;
+    e.win.t0 = e.dragging.w0[0] - dt;
+    e.win.t1 = e.dragging.w0[1] - dt;
+    cabClampWin(0);
+    e.velocity = -(p.x - e.dragging.lastX) / e.plot.w * sp / Math.max(8, now - e.dragging.lastT) * 16;
+  } else if (e.dragging.mini === 'm') {
+    const span = e.full.t1 - e.full.t0;
+    const sd = (p.x - e.dragging.x0) / e.mini.w * span;
+    e.win.t0 = e.dragging.w0[0] + sd;
+    e.win.t1 = e.dragging.w0[1] + sd;
+    cabClampWin(0);
+    e.velocity = (p.x - e.dragging.lastX) / e.mini.w * span / Math.max(8, now - e.dragging.lastT) * 16;
+  } else if (e.dragging.mini === 'l') {
+    const span = e.full.t1 - e.full.t0;
+    const nl = Math.min(e.full.t0 + (p.x - e.mini.x) / e.mini.w * span, e.win.t1 - 92 * CAB_DAY);
+    e.win.t0 = Math.max(e.full.t0, nl);
+  } else if (e.dragging.mini === 'r') {
+    const span = e.full.t1 - e.full.t0;
+    const nr = Math.max(e.full.t0 + (p.x - e.mini.x) / e.mini.w * span, e.win.t0 + 92 * CAB_DAY);
+    e.win.t1 = Math.min(e.full.t1, nr);
+  } else {
+    const span = e.full.t1 - e.full.t0;
+    const c = e.full.t0 + (p.x - e.mini.x) / e.mini.w * span, half = sp / 2;
+    e.win.t0 = c - half;
+    e.win.t1 = c + half;
+    cabClampWin(0);
+  }
+  e.dragging.lastX = p.x;
+  e.dragging.lastT = now;
+  cabClearHover();
+  e.needs = true;
+}
+
+function cabOnUp() {
+  const e = cabEng;
+  if (!e) return;
+  if (e.dragging && e.dragging.pan) e.inertia = e.velocity * 0.85;
+  e.dragging = null;
+  cabSyncRange();
+}
+
+function cabOnLeave() {
+  const e = cabEng;
+  if (!e) return;
+  e.hover = null;
+  e.hoverKey = '';
+  e.needs = true;
+  if (activeHoverCab) { activeHoverCab = null; cabPanelSoon(null); }
+}
+
+function cabOnWheel(ev) {
+  const e = cabEng;
+  if (!e || !e.win) return;
+  ev.preventDefault();
+  const p = cabPointer(ev);
+  const dx = ev.deltaX || 0, dy = ev.deltaY || 0;
+  if (ev.shiftKey || ev.ctrlKey || ev.metaKey) { cabZoomAt(p.x, Math.exp(dy * 0.0016)); }
+  else {
+    const d = Math.abs(dx) > Math.abs(dy) ? dx : dy;
+    const dt = d / e.plot.w * cabSpanMs();
+    e.win.t0 += dt;
+    e.win.t1 += dt;
+    cabClampWin(0);
+    cabClearHover();
+    e.needs = true;
+  }
+  if (e.rangeTimer) clearTimeout(e.rangeTimer);
+  e.rangeTimer = setTimeout(function () { e.rangeTimer = 0; cabSyncRange(); }, 260);
+}
+
+function cabOnKey(ev) {
+  const e = cabEng;
+  if (!e || !e.win) return;
+  const step = cabSpanMs() * 0.12;
+  if (ev.key === 'ArrowLeft' || ev.key === 'ArrowRight') {
+    const d = ev.key === 'ArrowLeft' ? -step : step;
+    e.win.t0 += d; e.win.t1 += d;
+    cabClampWin(0); cabSyncRange(); e.needs = true;
+    ev.preventDefault();
+  } else if (ev.key === '+' || ev.key === '=' || ev.key === '-' || ev.key === '_') {
+    cabZoomAt(e.plot.x + e.plot.w / 2, ev.key === '+' || ev.key === '=' ? 0.82 : 1.22);
+    ev.preventDefault();
+  } else if (ev.key === '0') {
+    cabAnimateTo(e.full.t0, e.full.t1);
+    ev.preventDefault();
+  } else if (ev.key === 'f') {
+    e.fpsOn = !e.fpsOn;
+    e.needs = true;
+  }
+}
+
+function cabOnDbl() {
+  const e = cabEng;
+  if (e) cabAnimateTo(e.full.t0, e.full.t1);
+}
+
+// 入口:与原 renderChart 同签名。首次、档位切换、语言/主题切换都会走到这里
+function renderChart() {
+  if (!rawData) return;
+  const e = cabEnsure();
+  if (!e) return;
+  const t = I18N[currentLang] || I18N.ja;
+  e.data = cabBuildData();
+  e.full = e.data.full;
+  cabLayout();
+  e.hintText = t.hint || '';
+  const fullSpan = e.full.t1 - e.full.t0;
+  const T = tchart();
+  e.readout.style.background = T.tooltipBg;
+  e.readout.style.borderColor = T.tooltipBorder;
+  e.readout.style.color = T.tooltipText;
+  if (!e.win || cabNeedReset) {
+    const wm = RANGE_WINDOW_MONTHS[activeRange];
+    const w = wm > 0 ? Math.min(fullSpan, wm * 30.44 * CAB_DAY) : fullSpan;
+    e.win = { t0: e.full.t1 - w, t1: e.full.t1 };
+    cabNeedReset = false;
+  } else {
+    cabClampWin(0);
+  }
+  cabSyncRange();
+  e.needs = true;
+  cabDraw();
+}
+
+// 尺寸变化:重排后立刻重画(resize 不做缓动,免得抖)
+function cabResize() {
+  if (!cabEng || !cabEng.data) return;
+  cabLayout();
+  cabDraw();
+}
+
+async function boot(token) {
   if (!rawData) {
     let lastErr = null;
     const dataList = cabForcedBase ? [cabForcedBase + 'app/cabinet/data.json'] : DATA_CANDIDATES;
@@ -2680,7 +2972,7 @@ async function boot(token) {
         dismissVeil();
         setTimeout(() => {
           isInitialAnimating = false;
-          if (chart) try { chart.resize(); } catch (e) {}
+          cabResize();
         }, 1250);
       });
     });
@@ -2691,31 +2983,7 @@ async function boot(token) {
   return true;
 }
 
-function ensureEcharts() {
-  const g = (typeof window !== 'undefined') ? window : globalThis;
-  if (g.echarts) return Promise.resolve(g.echarts);
-  const viaImport = async () => {
-    for (const u of ECHARTS_URLS) {
-      try { await import(/* @vite-ignore */u); if (g.echarts) return g.echarts; } catch (e) {}
-    }
-    throw new Error('echarts import failed');
-  };
-  const viaScript = () => new Promise((resolve, reject) => {
-    if (typeof document === 'undefined') return reject(new Error('echarts: no dom'));
-    const libs = ECHARTS_URLS.slice();
-    const next = () => {
-      const u = libs.shift();
-      if (!u) return reject(new Error('echarts CDN failed'));
-      const s = document.createElement('script');
-      s.src = u; s.async = true;
-      s.onload = () => { if (g.echarts) resolve(g.echarts); else { try { s.remove(); } catch (e) {} next(); } };
-      s.onerror = () => { try { s.remove(); } catch (e) {} next(); };
-      document.head.appendChild(s);
-    };
-    next();
-  });
-  return viaImport().catch(viaScript);
-}
+
 
 function mountCabinet(root, opts) {
   opts = opts || {};
@@ -2777,10 +3045,8 @@ function unmountCabinet() {
   if (typeof window !== 'undefined' && window.removeEventListener) window.removeEventListener('resize', onCabResize);
   if (ro) { try { ro.disconnect(); } catch (e) {} ro = null; }
   if (resizeRaf) { cancelAnimationFrame(resizeRaf); resizeRaf = null; }
-  lastWmSig = '';
-  lastWmCount = 0;
+  cabRelease();
   isInitialAnimating = false;
-  if (chart) { try { chart.dispose(); } catch (e) {} chart = null; }
   if (hostEl) {
     try {
       const vp = hostEl.querySelector('.cab-viewport');
@@ -2804,7 +3070,7 @@ function setCabinetLang(lang) {
 function setCabinetTheme(t) {
   const id = THEME_MAP[t] || 'tactical';
   currentVariant = id;
-  if (chart && rawData) {
+  if (rawData && hostEl) {
     computeStats();
     renderPanel(focusCabinet || null);
     renderChart();
@@ -2816,6 +3082,7 @@ function setCabinetRange(id) {
   if (!RANGE_WINDOW_MONTHS.hasOwnProperty(id)) return false;
   activeRange = id;
   focusCabinet = null;
+  cabNeedReset = true;
   if (!rawData) return true;
   renderZoomSeg();
   renderPanel(null);
