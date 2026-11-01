@@ -929,7 +929,7 @@ FONT_VER = "__FONT_VER__"
 WEATHER_VER = "__WEATHER_VER__"
 
 
-def head(title, desc, path, jsonld=None, extra_head="", body_class=""):
+def head(title, desc, path, jsonld=None, extra_head="", body_class="", chapter=""):
     is_404 = path == "/404.html"
     u = SITE_URL + ("/" if is_404 else path)
     alts = "".join(
@@ -948,7 +948,7 @@ def head(title, desc, path, jsonld=None, extra_head="", body_class=""):
             "if(l==='ja'||l==='zh'||l==='en')d.lang=l;"
             "}catch(e){}</script>")
     return f"""<!doctype html>
-<html lang="ja" data-theme="sage">
+<html lang="ja" data-theme="sage"{f' data-chapter="{chapter}"' if chapter else ""}>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1045,7 +1045,7 @@ def page(path, title, desc, body, active="", jsonld=None, register=True, head_ex
     body = body.replace('<table class="data-table">', '<div class="table-scroll"><table class="data-table">')
     body = body.replace('</table>', '</table></div>')
     body_class = ' class="chapter-app"' if fullscreen else ''
-    html_doc = head(title, desc, path, jsonld, head_extra, body_class) + mast(active) + body
+    html_doc = head(title, desc, path, jsonld, head_extra, body_class, active) + mast(active) + body
     html_doc += shell_tail() if fullscreen else foot()
     if register:
         PAGES.append((path, title, desc))
@@ -1759,9 +1759,9 @@ def write_site(files):
 
     # favicon
     fav = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
-           f'<rect width="64" height="64" fill="#E9EDE3"/>'
+           f'<rect width="64" height="64" fill="#F5F3ED"/>'
            f'<text x="31" y="48" text-anchor="middle" font-family="Outfit,Helvetica,Arial,sans-serif" '
-           f'font-weight="800" font-size="46" fill="#2F6B4F">J</text></svg>')
+           f'font-weight="800" font-size="46" fill="#CD5545">J</text></svg>')
     (SITE / "assets/favicon.svg").write_text(fav, encoding="utf-8")
 
 

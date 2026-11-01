@@ -92,8 +92,8 @@ const I18N = {
 
 const THEME_MAP = { mono: "editorial", sage: "editorial", dark: "tactical", editorial: "editorial", tactical: "tactical" };
 const RAMP = {
-  tactical: ["#1A120E", "#2A1710", "#4A2014", "#6B2A18", "#8C351C", "#AD4020", "#CE4B24", "#EF5629", "#FF6A3D"],
-  editorial: ["#E2E8DC", "#DCE4D9", "#C6D6C8", "#AFC8B6", "#97B9A3", "#7FAA91", "#679B7E", "#4F8C6B", "#2F6B4F"],
+  tactical: ["#0E0E0C", "#181B10", "#222914", "#2D3717", "#384619", "#43551A", "#4F651B", "#5B751A", "#678618"],
+  editorial: ["#F5F3ED", "#E2E5D4", "#D0D7BB", "#BDCAA2", "#ABBC8A", "#9AAF71", "#88A158", "#78933C", "#678618"],
 };
 const BOUNDS23 = [[35.52, 138.94], [35.90, 139.94]];
 
@@ -210,7 +210,7 @@ function accentColor() {
     const v = getComputedStyle(rootEl || document.documentElement).getPropertyValue("--accent").trim();
     if (v) return v;
   } catch (e) {}
-  return curVariant === "tactical" ? "#FF6A3D" : "#2F6B4F";
+  return "#678618";
 }
 function styleTown(f) {
   const p = f && f.properties;

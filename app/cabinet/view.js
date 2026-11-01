@@ -187,7 +187,7 @@ const CAB_CSS = `
 
 .cab-panel .panel-card {
   flex-shrink: 0;
-  background: var(--bg-card, #E9EDE3);
+  background: var(--bg-card, #F5F3ED);
   border: 0;
   border-radius: var(--radius, 4px);
   padding: 16px 18px;
@@ -257,7 +257,7 @@ const CAB_CSS = `
 .cab-panel .policy-item {
   margin-bottom: 11px;
   padding-left: 10px;
-  border-left: 2.5px solid var(--accent, #FF6A3D);
+  border-left: 2.5px solid var(--accent, #3F7DCA);
 }
 .cab-panel .policy-item:last-child {
   margin-bottom: 0;
@@ -289,9 +289,9 @@ const CAB_CSS = `
   width: fit-content;
 }
 .cab-panel .back-btn:hover {
-  background: var(--accent, #FF6A3D);
+  background: var(--accent, #3F7DCA);
   color: #fff;
-  border-color: var(--accent, #FF6A3D);
+  border-color: var(--accent, #3F7DCA);
 }
 @media (max-width: 960px) {
   /* 竖屏：图表 58% / 档案面板 42% 上下分栏，面板不再被 display:none 整块砍掉 */
@@ -1348,36 +1348,34 @@ const VARIANT_CHART = {
     chart: {
       gridBorder: 'rgba(237,235,228,0.08)',
       pointBorder: '#0E0E0C',
-      tooltipBg: 'rgba(20,20,18,0.94)',
+      tooltipBg: 'rgba(14,14,12,0.94)',
       tooltipBorder: 'rgba(237,235,228,0.16)',
       tooltipText: '#EDEBE4',
       zoomBorder: 'rgba(237,235,228,0.14)',
-      zoomFill: 'rgba(255,106,61,0.22)',
-      zoomHandle: '#FF6A3D',
-      zoomText: '#A09E96'
+      zoomFill: 'rgba(63,125,202,0.22)',
+      zoomHandle: '#3F7DCA',
+      zoomText: '#A3A199'
     },
     palette: [
-      '#FF6A3D','#4E9B80','#E5A93C','#5B8FF9','#C27BA0',
-      '#D95F4E','#2CA02C','#F28E2B','#76B7B2','#EDC948',
-      '#B07AA1','#FF9DA7','#9C755F','#BAB0AC'
+      '#B54C3D','#986608','#607E08','#0A8474','#0A8090','#3072C1','#9553A4',
+      '#E17363','#CA8A10','#85A73B','#12B09B','#11ABBF','#589AED','#BE7ACE'
     ]
   },
   editorial: {
     chart: {
       gridBorder: 'rgba(20,26,21,0.08)',
-      pointBorder: '#E9EDE3',
-      tooltipBg: 'rgba(242,245,238,0.96)',
+      pointBorder: '#F5F3ED',
+      tooltipBg: 'rgba(245,243,237,0.96)',
       tooltipBorder: 'rgba(20,26,21,0.14)',
-      tooltipText: '#141A15',
-      zoomBorder: 'rgba(20,26,21,0.12)',
-      zoomFill: 'rgba(47,107,79,0.18)',
-      zoomHandle: '#2F6B4F',
-      zoomText: '#56635A'
+      tooltipText: '#1A1A16',
+      zoomBorder: 'rgba(26,26,22,0.12)',
+      zoomFill: 'rgba(63,125,202,0.18)',
+      zoomHandle: '#3F7DCA',
+      zoomText: '#5B5A53'
     },
     palette: [
-      '#C84B31','#2F6B4F','#D48806','#1D39C4','#722ED1',
-      '#A8071A','#389E0D','#D46B08','#08979C','#096DD9',
-      '#531DAB','#C41D7F','#614700','#595959'
+      '#892218','#684503','#405604','#055A4F','#045762','#044B94','#6D2C7B',
+      '#B54C3D','#986608','#607E08','#0A8474','#0A8090','#3072C1','#9553A4'
     ]
   }
 };
@@ -1690,7 +1688,7 @@ function renderPanel(targetCabId) {
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px dashed var(--line-main, rgba(0,0,0,0.08))">
             <span>${langKey==='zh'?'最短短命 · 鸠山由纪夫':langKey==='en'?'Shortest: Yukio Hatoyama':'最短退任：鳩山由紀夫'}</span>
-            <span style="font-size:14px;font-weight:250;color:#A83A24">266 ${langKey==='zh'?'天':langKey==='en'?'days':'日'} (9${langKey==='zh'?'个月':langKey==='en'?'mo':'ヶ月'})</span>
+            <span style="font-size:14px;font-weight:250;color:var(--danger-ink)">266 ${langKey==='zh'?'天':langKey==='en'?'days':'日'} (9${langKey==='zh'?'个月':langKey==='en'?'mo':'ヶ月'})</span>
           </div>
         </div>
       </div>
@@ -1718,7 +1716,7 @@ function renderPanel(targetCabId) {
     trendBadgeZh: "", trendBadgeJa: "", trendBadgeEn: "",
     crisisZh: ""
   };
-  const color = s.color || '#FF6A3D';
+  const color = s.color || '#3F7DCA';
   const isPinned = focusCabinet === cabId;
 
   const pmTitle = langKey === 'zh' ? (p.nameZh || s.pm) : (langKey === 'en' ? (p.nameEn || s.pm) : (p.nameJa || s.pm));
@@ -1826,7 +1824,7 @@ function renderPanel(targetCabId) {
     <!-- 卡片 4: 辞职转折危机与操作栏 -->
     <div class="panel-card" style="padding:14px 16px">
       ${crisisTitle ? `
-        <div style="font-size:13.5px;font-weight:300;color:#A83A24;margin-bottom:4px;display:flex;align-items:center;gap:6px">
+        <div style="font-size:13.5px;font-weight:300;color:var(--danger-ink);margin-bottom:4px;display:flex;align-items:center;gap:6px">
           <svg viewBox="0 0 16 16" width="13" height="13" fill="currentColor"><path d="M8 2l6 12H2L8 2zm0 3.5a.75.75 0 00-.75.75v3.5a.75.75 0 001.5 0v-3.5A.75.75 0 008 5.5zm0 6a.75.75 0 100-1.5.75.75 0 000 1.5z"/></svg>
           ${langKey==='zh'?'政权转折与辞任危机':langKey==='en'?'TURNING POINT & EXIT':'退陣・政権交代の契機'}
         </div>
@@ -1947,7 +1945,7 @@ function tenureSparkline(points, color, id) {
   [{ i: hiI, up: 1 }, { i: loI, up: 0 }].forEach(function (m) {
     if (m.i < 0) return;
     const cx = px(m.i), cy = py(vs[m.i]);
-    out += '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="3.2" fill="var(--bg, #141412)" stroke="' + color + '" stroke-width="1.6"></circle>';
+    out += '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="3.2" fill="var(--bg, #F5F3ED)" stroke="' + color + '" stroke-width="1.6"></circle>';
     out += '<text x="' + cx.toFixed(1) + '" y="' + (m.up ? cy - 9 : cy + 16).toFixed(1)
       + '" text-anchor="middle" font-size="11" font-weight="400" fill="' + color + '">' + vs[m.i].toFixed(1) + '</text>';
   });
@@ -1989,10 +1987,10 @@ function shareCardCanvas(cabId) {
   g.scale(dpr, dpr);
   const rs = getComputedStyle(document.documentElement);
   const pick = function (name, fb) { return paintableColor(rs.getPropertyValue(name), fb); };
-  const bg = pick('--bg', '#141412');
+  const bg = pick('--bg', '#F5F3ED');
   const ink = pick('--ink', '#EDEBE4');
-  const muted = pick('--muted', '#A09E96');
-  const accent = pick('--accent', '#FF6A3D');
+  const muted = pick('--muted', '#A3A199');
+  const accent = pick('--accent', '#3F7DCA');
   const fSans = cssFont('--font-sans', 'system-ui, sans-serif');
   const fJa = cssFont('--ja-sans', fSans);
   const pad = 64;
@@ -2193,7 +2191,7 @@ let cabEscal = {};        // 月度区间(每任内阁的实际数据范围)
 const CAB_DAY = 86400000;
 
 function cabIsDark() { return currentVariant !== 'editorial'; }
-function cabMuted() { return cabIsDark() ? '#A09E96' : '#56635A'; }
+function cabMuted() { return cabIsDark() ? '#A3A199' : '#5B5A53'; }
 function cabHair() { return cabIsDark() ? 'rgba(237,235,228,0.10)' : 'rgba(20,26,21,0.10)'; }
 function cabBandFill() { return cabIsDark() ? 'rgba(255,255,255,0.026)' : 'rgba(0,0,0,0.026)'; }
 function cabPillFill() { return cabIsDark() ? 'rgba(255,255,255,0.055)' : 'rgba(20,26,21,0.045)'; }
@@ -2630,7 +2628,7 @@ function cabDrawCross() {
   ctx.moveTo(Math.round(h.x) + 0.5, e.plot.y);
   ctx.lineTo(Math.round(h.x) + 0.5, e.plot.y + e.plot.h);
   ctx.stroke();
-  ctx.fillStyle = dark ? '#0E0E0C' : '#E9EDE3';
+  ctx.fillStyle = dark ? '#0E0E0C' : '#F5F3ED';
   ctx.strokeStyle = hexToRgba(h.cab.color, 1);
   ctx.lineWidth = 2;
   ctx.beginPath();

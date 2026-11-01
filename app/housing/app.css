@@ -4,7 +4,7 @@
 
   position: absolute; inset: 0; z-index: 9999;
 
-  background: var(--bg-page, #E9EDE3);
+  background: var(--bg-page, #F5F3ED);
 
   display: flex; align-items: center; justify-content: center;
 
@@ -150,8 +150,8 @@
   --text-faint: var(--muted);
   --line-main: transparent;
   --line-strong: var(--ink);
-  --accent: #2F6B4F;
-  --accent-soft: rgba(47, 107, 79, .08);
+  --accent: var(--accent-base);
+  --accent-soft: var(--accent-soft-base);
   --shadow-card: none;
   --card-glass: none;
   /* 选中气泡必须是实心：旧的 color-mix(--surface, transparent) 只有 ~4% 不透明度，地图注记会透上来压住文字 */
@@ -173,8 +173,8 @@
   --text-faint: var(--muted);
   --line-main: transparent;
   --line-strong: var(--ink);
-  --accent: #FF6A3D;
-  --accent-soft: rgba(255, 106, 61, .12);
+  --accent: var(--accent-base);
+  --accent-soft: var(--accent-soft-base);
   --shadow-card: none;
   --card-glass: none;
   /* 选中气泡必须是实心：旧的 color-mix(--surface, transparent) 只有 ~4% 不透明度，地图注记会透上来压住文字 */
@@ -1244,20 +1244,20 @@ html body #hsg-root #hsg-ctl-host .hsg-q { border-radius: var(--btn-radius, 2px)
    与犯罪率章对齐：重点色 / 卡片表面 / 无阴影（必须排在通用 #hsg-root 之后）
    ===================================================================== */
 #hsg-root[data-hsg-variant="editorial"] {
-  --accent: #2F6B4F;
-  --accent-soft: rgba(47, 107, 79, .08);
-  --zoom-accent: #2F6B4F;
-  --zoom-accent-soft: rgba(47, 107, 79, .08);
+  --accent: var(--accent-base);
+  --accent-soft: var(--accent-soft-base);
+  --zoom-accent: var(--accent-base);
+  --zoom-accent-soft: var(--accent-soft-base);
   --bg-card: var(--bg);
   --bg-card-sub: var(--surface);
   --line-main: transparent;
   --shadow-card: none;
 }
 #hsg-root[data-hsg-variant="tactical"] {
-  --accent: #FF6A3D;
-  --accent-soft: rgba(255, 106, 61, .12);
-  --zoom-accent: #FF6A3D;
-  --zoom-accent-soft: rgba(255, 106, 61, .12);
+  --accent: var(--accent-base);
+  --accent-soft: var(--accent-soft-base);
+  --zoom-accent: var(--accent-base);
+  --zoom-accent-soft: var(--accent-soft-base);
   --bg-card: var(--bg);
   --bg-card-sub: var(--surface);
   --line-main: transparent;

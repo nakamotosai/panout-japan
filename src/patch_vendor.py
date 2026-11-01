@@ -20,6 +20,11 @@ REPLACEMENTS = [
         1,
     ),
     (
+        "sage:{bg:15330787,coast:1713436,gridA:13686472,gridB:12108462}",
+        "sage:{bg:16118765,coast:1710614,gridA:15131610,gridB:14276042}",
+        1,
+    ),
+    (
         "gv=I_((()=>{try{return localStorage.getItem(`eq-theme`)}catch{return`tactical`}})());",
         "gv=I_((()=>{try{return document.documentElement.getAttribute('data-theme')||localStorage.getItem('eq-theme')}catch{return'sage'}})());try{window.__setQuakeTheme=function(t){ax(t)}}catch(e){};",
         1,

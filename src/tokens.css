@@ -37,6 +37,9 @@
   --accent-ink: var(--accent-ink-base);
   --accent-soft-base: color-mix(in srgb, var(--accent-base) var(--accent-soft-mix), transparent);
   --accent-soft: var(--accent-soft-base);
+  /* semantic alert, kept on the 朱 hue in both themes */
+  --danger: var(--c-crime);
+  --danger-ink: color-mix(in oklab, var(--c-crime) var(--accent-ink-mix), var(--accent-ink-target));
 
   /* ---- type families ---- */
   --serif: 'Instrument Serif', 'Serif Fallback', 'Noto Serif SC', 'Noto Serif JP', Georgia, 'Times New Roman', serif;
@@ -136,6 +139,14 @@ html[data-palette="d"] {
   --c-population: #427DC7;
   --accent-base: var(--c-crime);
 }
+
+/* Chapter pages take their chapter's colour as the page accent. */
+html[data-chapter="weather"] { --accent-base: var(--c-weather); }
+html[data-chapter="quake"] { --accent-base: var(--c-quake); }
+html[data-chapter="crime"] { --accent-base: var(--c-crime); }
+html[data-chapter="cabinet"] { --accent-base: var(--c-cabinet); }
+html[data-chapter="housing"] { --accent-base: var(--c-housing); }
+html[data-chapter="population"] { --accent-base: var(--c-population); }
 
 /* Metric-compatible serif fallback. Instrument Serif is 72% the width of Georgia
    in the same string; without this the EN H1 would reflow when the webfont lands. */

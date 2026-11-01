@@ -207,10 +207,10 @@ function readColors() {
   const cs = getComputedStyle(document.documentElement);
   const g = (k, fallback) => (cs.getPropertyValue(k) || fallback).trim();
   return {
-    ink: g("--ink", "#17211A"),
-    muted: g("--muted", "#56635A"),
-    accent: g("--accent", "#2F6B4F"),
-    bg: g("--bg", "#E9EDE3"),
+    ink: g("--ink", "#1A1A16"),
+    muted: g("--muted", "#5B5A53"),
+    accent: g("--accent", "#A165AE"),
+    bg: g("--bg", "#F5F3ED"),
     surface: g("--surface", "rgba(23,33,26,.045)"),
   };
 }
