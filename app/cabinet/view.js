@@ -246,6 +246,62 @@ const CAB_CSS = `
     right: 12px !important;
   }
 }
+
+/* 任期内支持率曲线 + 分享按钮 */
+.cab-panel .tenure-block { margin: 14px 0 0 0; }
+.cab-panel .tenure-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+.cab-panel .tenure-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: 4px;
+  overflow: visible;
+}
+.cab-panel .tenure-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 6px;
+}
+.cab-panel .tenure-note {
+  font-size: 11px;
+  font-weight: 350;
+  color: var(--muted);
+  line-height: 1.4;
+}
+.cab-panel .cab-share {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  font-family: var(--font-sans, system-ui, sans-serif);
+  font-size: 12px;
+  font-weight: 400;
+  padding: 7px 12px;
+  border-radius: var(--btn-radius, 2px);
+  border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.cab-panel .cab-share:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+.cab-panel .cab-share:active { transform: scale(0.98); }
+.cab-panel .cab-share.is-done { background: var(--accent); border-color: var(--accent); color: #fff; }
+@media (max-width: 960px) {
+  .cab-panel .tenure-svg { max-height: 120px; }
+}
 `;
 
 const CAB_PROFILES = {
@@ -1225,7 +1281,6 @@ const VARIANT_CHART = {
       tooltipBg: 'rgba(20,20,18,0.94)',
       tooltipBorder: 'rgba(237,235,228,0.16)',
       tooltipText: '#EDEBE4',
-      markLabelBg: 'rgba(14,14,12,0.85)',
       zoomBorder: 'rgba(237,235,228,0.14)',
       zoomFill: 'rgba(255,106,61,0.22)',
       zoomHandle: '#FF6A3D',
@@ -1244,7 +1299,6 @@ const VARIANT_CHART = {
       tooltipBg: 'rgba(242,245,238,0.96)',
       tooltipBorder: 'rgba(20,26,21,0.14)',
       tooltipText: '#141A15',
-      markLabelBg: 'rgba(233,237,227,0.88)',
       zoomBorder: 'rgba(20,26,21,0.12)',
       zoomFill: 'rgba(47,107,79,0.18)',
       zoomHandle: '#2F6B4F',
@@ -1307,6 +1361,10 @@ const I18N = {
     highLabel: '最高支持率',
     lowLabel: '最低支持率',
     pollsLabel: '世論調査回数',
+    tenureTitle: '任期中の支持率',
+    shareLabel: '画像で保存',
+    shareDone: '保存しました',
+    shareFail: '保存できませんでした',
     overviewTitle: '14の内閣 · 331か月',
     overviewDesc: '1998年から2026年までのNHK放送文化研究所、選挙WEB、各社世論調査を月平均で集計。',
     overviewHint: '首相の区間や折線にマウスを合わせると、詳細な内閣データと経歴が表示されます。',
@@ -1325,6 +1383,10 @@ const I18N = {
     highLabel: '最高支持率',
     lowLabel: '最低支持率',
     pollsLabel: '民调统计数',
+    tenureTitle: '任期内支持率曲线',
+    shareLabel: '保存图片',
+    shareDone: '已保存',
+    shareFail: '保存失败',
     overviewTitle: '14届内阁 · 331个月',
     overviewDesc: '1998年至2026年间NHK放送文化研究所、选举WEB及各主要媒体舆论调查月均汇总。',
     overviewHint: '鼠标悬停于首相任期或折线上，可查看该内阁的完整数据指标与执政档案。',
@@ -1343,6 +1405,10 @@ const I18N = {
     highLabel: 'Highest Approval',
     lowLabel: 'Lowest Approval',
     pollsLabel: 'Recorded Polls',
+    tenureTitle: 'Approval in office',
+    shareLabel: 'Save image',
+    shareDone: 'Saved',
+    shareFail: 'Could not save',
     overviewTitle: '14 Cabinets · 331 Mos',
     overviewDesc: 'Monthly aggregate of cabinet polls from NHK, Nikkei, Asahi, Yomiuri and Kyodo (1998–2026).',
     overviewHint: 'Hover over any cabinet segment or curve to inspect historical data and editorial profile.',
@@ -1456,7 +1522,10 @@ function computeStats() {
         highYM,
         low: Math.round(low * 10) / 10,
         lowYM,
-        polls: totalPolls
+        polls: totalPolls,
+        // 任期曲线与分享卡片都按这条月次序列画
+        points: cBuckets.slice().sort(function (a, b) { return a.ym < b.ym ? -1 : 1; })
+          .map(function (b) { return { ym: b.ym, v: Math.round((b.sums / b.n) * 10) / 10, n: b.n }; })
       };
     }
   });
@@ -1618,6 +1687,22 @@ function renderPanel(targetCabId) {
         ${s.start.slice(0, 7)} — ${s.end.slice(0, 7)} (${s.months}${langKey==='zh'?'个月':langKey==='en'?' months':'ヶ月'} / ${p.days || (s.months * 30)}${langKey==='zh'?'天':langKey==='en'?' days':'日'})
       </div>
 
+      <!-- 任期内支持率曲线 + 分享按钮(在四个指标上方) -->
+      <div class="tenure-block">
+        <div class="tenure-head">
+          <span>${t.tenureTitle}</span>
+          <span>${s.points && s.points.length ? s.points[0].ym + ' — ' + s.points[s.points.length - 1].ym : ''}</span>
+        </div>
+        ${tenureSparkline(s.points || [], color, cabId)}
+        <div class="tenure-foot">
+          <span class="tenure-note">${langKey==='zh'?'月度均值 · 各社民调按月平均':langKey==='en'?'Monthly means across the term':'月次平均・各社調査を月ごとに平均'}</span>
+          <button type="button" class="cab-share" id="cab-btn-share" aria-label="${t.shareLabel}">
+            <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 11.2V2.8M8 2.8 5.2 5.6M8 2.8l2.8 2.8"></path><path d="M2.8 9.6v3.6h10.4V9.6"></path></svg>
+            <span class="cab-share-label">${t.shareLabel}</span>
+          </button>
+        </div>
+      </div>
+
       <!-- 四宫格数据块 -->
       <div class="stat-grid">
         <div class="stat-box">
@@ -1687,6 +1772,14 @@ function renderPanel(targetCabId) {
     </div>
   `;
 
+  const shareBtn = panelEl.querySelector('#cab-btn-share');
+  if (shareBtn) {
+    shareBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      saveShareCard(cabId, shareBtn);
+    });
+  }
+
   const backBtn = panelEl.querySelector('#cab-btn-back');
   if (backBtn) {
     backBtn.onclick = (e) => {
@@ -1739,8 +1832,6 @@ function refreshWindowLabels(startPct, endStartPct) {
   const win = new Date(t0 + (t1 - t0) * pct / 100).toISOString().slice(0, 10);
   const endPct = Math.max(pct, Math.min(100, endStartPct || 100));
   const winEnd = new Date(t0 + (t1 - t0) * endPct / 100).toISOString().slice(0, 10);
-  const isNarrow = window.innerWidth <= 960;
-  const pPM = plotPxPerMonth(win);
   lastSeries.forEach((sr) => {
     const c = rawData.cabinets.find(x => x.id === sr.__cabId);
     // markLine.data 是「一组两点」的数组：data[0] = [起点, 终点]
@@ -1749,37 +1840,351 @@ function refreshWindowLabels(startPct, endStartPct) {
     // 窗口右侧之外的任期内阁也一并藏掉，免得 markLine 被裁到图外还留着状态
     const out = c.end <= win || c.start > winEnd;
     const clamped = c.start < win && !out;
-    const x = clamped ? win : c.start;
+    // 数据点落在每月 15 号:分隔线与名签跟着第一条数据点走,才和折线的换色点对齐
+    const firstPt = (sr.data && sr.data.length) ? sr.data[0][0] : c.start;
+    // 第一个数据点贴到/越过绘图区左沿时同样按"贴左沿"处理:窗口起点是估算值,
+    // 数据点可能刚好落在它左边一点点,整条 markLine 会被裁到绘图区外、名字跟着消失。
+    let clampedNow = clamped;
+    try {
+      const pxFirst = chart.convertToPixel({ xAxisIndex: 0 }, firstPt);
+      if (isFinite(pxFirst) && pxFirst <= 3) clampedNow = true;
+    } catch (err) {}
+    const x = clampedNow ? win : firstPt;
     pair[0].coord = [x, 0];
     pair[1].coord = [x, 96];
-    if (pair[1].label) {
-      const spanPx = ((new Date(c.end) - new Date(c.start)) / 86400000 / 30.44) * pPM;
-      const txt = String(pair[1].label.formatter || '');
-      const slack = /[A-Za-z]/.test(txt) ? 1.28 : 0.62;
-      const fs = pair[1].label.fontSize || 11;
-      pair[1].label.show = !isNarrow && !out && (clamped || spanPx >= chipTextPx(txt, fs) * slack);
-      // 默认名字在分割线右边；只有贴着绘图区右沿会切字时才翻到左侧
-      let px = NaN;
-      try { px = chart.convertToPixel({ xAxisIndex: 0 }, x); } catch (err) {}
-      // 只在真会被画布右沿切掉时才翻到线左侧；图表右侧是给面板留的空白，不算越界
-      const overflow = isFinite(px) && px + chipTextPx(txt, 11) > chart.getWidth() - 6;
-      pair[1].label.align = overflow ? 'right' : 'left';
-      pair[1].label.offset = overflow ? [-6, 0] : [4, 0];
+    const tail = sr.markLine.data[1];
+    if (tail && tail.length > 1) {
+      tail[0].coord = [x, 97];
+      tail[1].coord = [x, 100];
     }
     sr.markLine.lineStyle = sr.markLine.lineStyle || {};
-    // 完全透明会把整条 markLine（含名字）一起吞掉，跨窗口左沿的只留一条很淡的影子
-    sr.markLine.lineStyle.opacity = out ? 0 : (clamped ? 0.16 : 0.65);
+    // 跨窗口左沿的只留一条很淡的影子(完全透明会把整条 markLine 一起吞掉)
+    sr.markLine.lineStyle.opacity = out ? 0 : (clampedNow ? 0.16 : 0.65);
   });
   chart.setOption({ series: lastSeries }, { lazyUpdate: true });
+  // 区间名水印按新的窗口重排(位置/字号都按像素算,不走 markLine 的 endLabel)
+  relayoutWatermarks();
 }
 
-const _chipCtx = (function () {
-  try { return document.createElement('canvas').getContext('2d'); } catch (e) { return null; }
-})();
-function chipTextPx(text, fs) {
-  if (!_chipCtx) return text.length * fs * 0.62 + 14;
-  _chipCtx.font = '400 ' + fs + 'px system-ui, sans-serif';
-  return _chipCtx.measureText(text).width + 14;   // 含内边距
+/* ── 区间名水印 / 任期曲线 / 分享卡片 ───────────────────────────── */
+
+// 区间水印字号:由区间实际像素宽度反推,放不下就不印(窄屏与"全期間"自动消失)
+function watermarkFor(text, spanPx, isNarrow) {
+  const txt = String(text || '');
+  const cjk = /[^\x00-\xff]/.test(txt);
+  const unit = cjk ? 1.0 : 0.6;
+  const avail = spanPx * 0.94 - 8;
+  const size = Math.max(0, Math.min(96, Math.floor(avail / Math.max(1, txt.length * unit))));
+  return { text: txt, size: size, show: !isNarrow && size >= 20 };
+}
+
+// 绘图区左右边距:面板占右边 384px,水印与 ECharts 的 grid 必须用同一套数字
+function cabGridL() { return window.innerWidth <= 960 ? 36 : 48; }
+function cabGridR() { return window.innerWidth <= 960 ? 20 : 384; }
+
+// 区间名水印:用 graphic 文本画,位置与字号都在这里算死。
+// 不用 markLine 的 endLabel —— 它贴到绘图区左沿时整条 markLine 会被裁掉,名字跟着消失。
+function relayoutWatermarks() {
+  if (!chart || !lastSeries || !rawData) return;
+  const narrow = window.innerWidth <= 960;
+  const left = cabGridL();
+  const right = cabGridR();
+  const W = chart.getWidth() || 0;
+  const items = [];
+  lastSeries.forEach(function (sr) {
+    if (!sr.__wm || !sr.data || !sr.data.length) return;
+    let x0, x1;
+    try {
+      x0 = chart.convertToPixel({ xAxisIndex: 0 }, sr.data[0][0]);
+      x1 = chart.convertToPixel({ xAxisIndex: 0 }, sr.data[sr.data.length - 1][0]);
+    } catch (e) { return; }
+    if (!isFinite(x0) || !isFinite(x1)) return;
+    const vis0 = Math.max(x0, left);
+    const vis1 = Math.min(x1, W - right);
+    const wpx = vis1 - vis0;
+    if (wpx < 24) return;
+    const wm = watermarkFor(sr.__wm, wpx, narrow);
+    if (!wm.show) return;
+    items.push({
+      type: 'text',
+      left: Math.round(vis0 + 10),
+      top: 34,
+      silent: true,
+      z: 8,
+      style: {
+        text: wm.text,
+        font: '700 ' + wm.size + 'px ' + cssFont('--ja-sans', 'system-ui, sans-serif'),
+        fill: hexToRgba(sr.__color || '#595959', currentVariant === 'editorial' ? 0.26 : 0.20)
+      }
+    });
+  });
+  chart.setOption({ graphic: items }, { replaceMerge: ['graphic'] });
+}
+
+// 任期支持率曲线:内联 SVG,不另起 ECharts 实例
+function tenureSparkline(points, color, id) {
+  const W = 316, H = 112, padT = 14, padB = 20;
+  const n = points.length;
+  if (!n) return '';
+  const vs = points.map(function (q) { return q.v; });
+  let lo = Math.min.apply(null, vs), hi = Math.max.apply(null, vs);
+  if (hi - lo < 12) { const mid = (hi + lo) / 2; lo = mid - 6; hi = mid + 6; }
+  const span = Math.max(1, hi - lo);
+  const px = function (i) { return n === 1 ? W / 2 : (i / (n - 1)) * W; };
+  const py = function (v) { return padT + (1 - (v - lo) / span) * (H - padT - padB); };
+  const line = points.map(function (q, i) {
+    return (i ? 'L' : 'M') + px(i).toFixed(1) + ' ' + py(q.v).toFixed(1);
+  }).join(' ');
+  const hiI = vs.indexOf(Math.max.apply(null, vs));
+  const loI = vs.indexOf(Math.min.apply(null, vs));
+  const gid = 'cabspark-' + String(id).replace(/[^a-z0-9]/gi, '');
+  let out = '<svg class="tenure-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-hidden="true">';
+  out += '<defs><linearGradient id="' + gid + '" x1="0" y1="0" x2="0" y2="1">'
+    + '<stop offset="0" stop-color="' + hexToRgba(color, 0.34) + '"></stop>'
+    + '<stop offset="1" stop-color="' + hexToRgba(color, 0.02) + '"></stop></linearGradient></defs>';
+  [0, 0.5, 1].forEach(function (f) {
+    const gy = (padT + f * (H - padT - padB)).toFixed(1);
+    out += '<line x1="0" y1="' + gy + '" x2="' + W + '" y2="' + gy
+      + '" stroke="var(--line-main, rgba(0,0,0,0.12))" stroke-width="1" stroke-dasharray="2 5"></line>';
+  });
+  out += '<path d="' + line + ' L' + W + ' ' + (H - padB) + ' L0 ' + (H - padB) + ' Z" fill="url(#' + gid + ')"></path>';
+  out += '<path d="' + line + '" fill="none" stroke="' + color + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"></path>';
+  [{ i: hiI, up: 1 }, { i: loI, up: 0 }].forEach(function (m) {
+    if (m.i < 0) return;
+    const cx = px(m.i), cy = py(vs[m.i]);
+    out += '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="3.2" fill="var(--bg, #141412)" stroke="' + color + '" stroke-width="1.6"></circle>';
+    out += '<text x="' + cx.toFixed(1) + '" y="' + (m.up ? cy - 9 : cy + 16).toFixed(1)
+      + '" text-anchor="middle" font-size="11" font-weight="400" fill="' + color + '">' + vs[m.i].toFixed(1) + '</text>';
+  });
+  out += '</svg>';
+  return out;
+}
+
+// canvas 只认它自己支持的颜色写法:token 用了 color-mix/新语法时回退到兜底色
+function paintableColor(raw, fallback) {
+  const v = String(raw || '').trim();
+  if (!v) return fallback;
+  try {
+    const c = document.createElement('canvas').getContext('2d');
+    c.fillStyle = '#000000';
+    c.fillStyle = v;
+    if (c.fillStyle === '#000000' && !/^#0{6}$|^black$|^rgb\(\s*0\s*,\s*0\s*,\s*0\s*\)$/i.test(v)) return fallback;
+    return v;
+  } catch (e) { return fallback; }
+}
+
+function shareSourcesLine(langKey) {
+  if (langKey === 'zh') return '来源:NHK・日经・朝日・时事・读卖・JNN・共同 各社民调(月度均值)';
+  if (langKey === 'en') return 'Sources: NHK, Nikkei, Asahi, Jiji, Yomiuri, JNN and Kyodo polls (monthly means)';
+  return '出典:NHK・日経・朝日・時事・読売・JNN・共同 各社世論調査(月次平均)';
+}
+
+// 分享卡片:把这一任的首相名 + 任期支持率曲线 + 四个指标画成一张 1200×675 PNG
+function shareCardCanvas(cabId) {
+  const s = cabStats[cabId];
+  if (!s || !s.points || !s.points.length) return null;
+  const p = CAB_PROFILES[cabId] || {};
+  const langKey = currentLang;
+  const t = I18N[langKey] || I18N.ja;
+  const dpr = 2, W = 1200, H = 675;
+  const cv = document.createElement('canvas');
+  cv.width = W * dpr; cv.height = H * dpr;
+  const g = cv.getContext('2d');
+  if (!g) return null;
+  g.scale(dpr, dpr);
+  const rs = getComputedStyle(document.documentElement);
+  const pick = function (name, fb) { return paintableColor(rs.getPropertyValue(name), fb); };
+  const bg = pick('--bg', '#141412');
+  const ink = pick('--ink', '#EDEBE4');
+  const muted = pick('--muted', '#A09E96');
+  const accent = pick('--accent', '#FF6A3D');
+  const fSans = cssFont('--font-sans', 'system-ui, sans-serif');
+  const fJa = cssFont('--ja-sans', fSans);
+  const pad = 64;
+
+  g.fillStyle = bg;
+  g.fillRect(0, 0, W, H);
+
+  g.textAlign = 'left';
+  g.textBaseline = 'alphabetic';
+  g.fillStyle = accent;
+  g.font = '400 20px ' + fSans;
+  g.fillText('japan.ouuut.com/cabinet/', pad, 60);
+  g.textAlign = 'right';
+  g.fillStyle = muted;
+  g.fillText(langKey === 'zh' ? '内阁支持率 · 月度均值' : (langKey === 'en' ? 'Cabinet approval · monthly means' : '内閣支持率・月次平均'), W - pad, 60);
+
+  const pmTitle = langKey === 'zh' ? (p.nameZh || s.pm) : (langKey === 'en' ? (p.nameEn || s.pm) : (p.nameJa || s.pm));
+  const eraTitle = langKey === 'zh' ? p.eraNumberZh : (langKey === 'en' ? p.eraNumberEn : p.eraNumberJa);
+  const partyTitle = langKey === 'zh' ? p.partyZh : (langKey === 'en' ? p.partyEn : p.partyJa);
+  const firstYM = s.points[0].ym, lastYM = s.points[s.points.length - 1].ym;
+  g.textAlign = 'left';
+  g.fillStyle = ink;
+  g.font = '300 58px ' + fJa;
+  g.fillText(pmTitle, pad, 152);
+  g.fillStyle = muted;
+  g.font = '400 19px ' + fSans;
+  g.fillText([eraTitle, String(partyTitle || '').split('(')[0], firstYM + ' — ' + lastYM].filter(Boolean).join('   ·   '), pad, 190);
+
+  // 曲线区
+  const plotX0 = pad + 54, plotX1 = W - pad, plotY0 = 246, plotY1 = H - 178;
+  const vs = s.points.map(function (q) { return q.v; });
+  let lo = Math.min.apply(null, vs), hi = Math.max.apply(null, vs);
+  if (hi - lo < 10) { const mid = (hi + lo) / 2; lo = mid - 5; hi = mid + 5; }
+  const span = Math.max(1, hi - lo);
+  const n = vs.length;
+  const px = function (i) { return n === 1 ? (plotX0 + plotX1) / 2 : plotX0 + (i / (n - 1)) * (plotX1 - plotX0); };
+  const py = function (v) { return plotY0 + (1 - (v - lo) / span) * (plotY1 - plotY0); };
+
+  g.font = '400 15px ' + fSans;
+  [0, 0.5, 1].forEach(function (f) {
+    const v = hi - f * span;
+    const yy = plotY0 + f * (plotY1 - plotY0);
+    g.save();
+    g.strokeStyle = muted;
+    g.globalAlpha = 0.35;
+    g.setLineDash([3, 6]);
+    g.beginPath();
+    g.moveTo(plotX0, yy);
+    g.lineTo(plotX1, yy);
+    g.stroke();
+    g.restore();
+    g.fillStyle = muted;
+    g.textAlign = 'right';
+    const tickText = function (x) { return Math.abs(x - Math.round(x)) < 0.05 ? String(Math.round(x)) : x.toFixed(1); };
+    g.fillText(tickText(v), plotX0 - 12, yy + 5);
+  });
+  g.textAlign = 'center';
+  g.fillStyle = muted;
+  const tickIdx = [];
+  const step = Math.max(1, Math.ceil(n / 6));
+  for (let i = 0; i < n; i += step) tickIdx.push(i);
+  if (tickIdx[tickIdx.length - 1] !== n - 1) tickIdx.push(n - 1);
+  tickIdx.forEach(function (i) {
+    g.fillText(s.points[i].ym, px(i), plotY1 + 24);
+  });
+
+  const d = s.points.map(function (q, i) {
+    return (i ? 'L' : 'M') + px(i).toFixed(1) + ' ' + py(q.v).toFixed(1);
+  }).join(' ');
+  const grad = g.createLinearGradient(0, plotY0, 0, plotY1);
+  grad.addColorStop(0, hexToRgba(s.color, 0.34));
+  grad.addColorStop(1, hexToRgba(s.color, 0.02));
+  g.beginPath();
+  g.moveTo(px(0), py(vs[0]));
+  for (let i = 1; i < n; i++) g.lineTo(px(i), py(vs[i]));
+  g.lineTo(px(n - 1), plotY1);
+  g.lineTo(px(0), plotY1);
+  g.closePath();
+  g.fillStyle = grad;
+  g.fill();
+  g.beginPath();
+  g.moveTo(px(0), py(vs[0]));
+  for (let i = 1; i < n; i++) g.lineTo(px(i), py(vs[i]));
+  g.strokeStyle = s.color;
+  g.lineWidth = 2.4;
+  g.lineJoin = 'round';
+  g.lineCap = 'round';
+  g.stroke();
+  const hiI = vs.indexOf(hi), loI = vs.indexOf(lo);
+  g.font = '400 16px ' + fSans;
+  [hiI, loI].forEach(function (i, k) {
+    if (i < 0) return;
+    const cx = px(i), cy = py(vs[i]);
+    g.beginPath();
+    g.arc(cx, cy, 4, 0, Math.PI * 2);
+    g.fillStyle = bg;
+    g.fill();
+    g.lineWidth = 2;
+    g.strokeStyle = s.color;
+    g.stroke();
+    g.fillStyle = s.color;
+    g.textAlign = 'center';
+    // 最低点贴着底轴时标签改放点上方,否则会和月份刻度叠在一起
+    g.fillText(vs[i].toFixed(1) + '%', cx, (k === 0 || cy > plotY1 - 30) ? cy - 12 : cy + 22);
+  });
+
+  // 四个指标
+  const cells = [
+    [s.mean + '%', t.meanLabel],
+    [s.high + '%', t.highLabel],
+    [s.low + '%', t.lowLabel],
+    [String(s.polls), t.pollsLabel]
+  ];
+  const colW = (plotX1 - pad) / cells.length;
+  g.textAlign = 'left';
+  cells.forEach(function (c, i) {
+    const x = pad + i * colW;
+    g.fillStyle = ink;
+    g.font = '200 40px ' + fSans;
+    g.fillText(c[0], x, H - 108);
+    g.fillStyle = muted;
+    g.font = '400 15px ' + fSans;
+    g.fillText(c[1], x, H - 82);
+  });
+
+  g.fillStyle = muted;
+  g.font = '400 15px ' + fSans;
+  g.fillText(shareSourcesLine(langKey), pad, H - 36);
+  return cv;
+}
+
+function shareFilename(cabId, langKey) {
+  const d = new Date();
+  const stamp = d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0');
+  return 'japan-ouuut-cabinet-' + cabId + '-' + (langKey || currentLang) + '-' + stamp + '.png';
+}
+
+function downloadBlob(blob, name) {
+  try {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 1500);
+  } catch (e) {}
+}
+
+function flashShareButton(btn, key) {
+  if (!btn) return;
+  const t = I18N[currentLang] || I18N.ja;
+  const label = btn.querySelector('.cab-share-label');
+  if (label && !label.dataset.cabIdle) label.dataset.cabIdle = label.textContent;
+  if (label) label.textContent = t[key] || label.dataset.cabIdle;
+  btn.classList.toggle('is-done', key === 'shareDone');
+  clearTimeout(btn.__cabT);
+  btn.__cabT = setTimeout(function () {
+    if (label && label.dataset.cabIdle) label.textContent = label.dataset.cabIdle;
+    btn.classList.remove('is-done');
+  }, 2400);
+}
+
+function saveShareCard(cabId, btn) {
+  const cv = shareCardCanvas(cabId);
+  if (!cv) { flashShareButton(btn, 'shareFail'); return; }
+  const name = shareFilename(cabId);
+  cv.toBlob(function (blob) {
+    if (!blob) { flashShareButton(btn, 'shareFail'); return; }
+    try {
+      const file = (typeof File !== 'undefined') ? new File([blob], name, { type: 'image/png' }) : null;
+      if (file && navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) {
+        navigator.share({ files: [file], title: 'japan.ouuut.com/cabinet', text: name }).then(function () {
+          flashShareButton(btn, 'shareDone');
+        }).catch(function (err) {
+          // 用户主动取消不算失败;其它错误(桌面浏览器不支持文件分享等)退回下载
+          if (err && err.name === 'AbortError') { flashShareButton(btn, 'shareDone'); return; }
+          downloadBlob(blob, name);
+          flashShareButton(btn, 'shareDone');
+        });
+        return;
+      }
+    } catch (e) {}
+    downloadBlob(blob, name);
+    flashShareButton(btn, 'shareDone');
+  }, 'image/png');
 }
 // 每像素对应多少个月：用来判断相邻首相挨得太近、标签必然互相压字
 function plotPxPerMonth(winStartISO) {
@@ -1787,9 +2192,8 @@ function plotPxPerMonth(winStartISO) {
   const t0 = new Date(winStartISO).getTime();
   const t1 = new Date(ds[ds.length - 1]).getTime();
   const box = hostEl && hostEl.querySelector('#cab-chart');
-  // 绘图区宽度要扣掉固定右边距（那是右侧面板的地盘），否则每像素月数会被高估
-  const narrow = window.innerWidth <= 960;
-  const w = Math.max(200, (box ? box.clientWidth : 1000) - (narrow ? 36 : 48) - (narrow ? 20 : 384));
+  // 绘图区宽度要扣掉固定右边距(那是右侧面板的地盘),否则每像素月数会被高估
+  const w = Math.max(200, (box ? box.clientWidth : 1000) - cabGridL() - cabGridR());
   return w / Math.max(1, (t1 - t0) / 86400000 / 30.44);
 }
 
@@ -1808,9 +2212,9 @@ function renderChart() {
   const C = cabColors();
   const T = tchart();
   const isNarrow = window.innerWidth <= 960;
-  const gridL = isNarrow ? 36 : 48;
-  // 右侧面板 352px + 16px 边距 + 16px 呼吸：早先只留 344，最新一任的折线正好被面板压住
-  const gridR = isNarrow ? 20 : 384;
+  const gridL = cabGridL();
+  // 右侧面板 352px + 16px 边距 + 16px 呼吸:早先只留 344,最新一任的折线正好被面板压住
+  const gridR = cabGridR();
 
   const buckets = {};
   polls.forEach(p => {
@@ -1824,14 +2228,33 @@ function renderChart() {
     buckets[key].sources.push({ src: p.source, v: p.value, kind: p.kind || '' });
   });
 
+  // 每个内阁实际占用的月次区间(数据点落在每月 15 号)。背景条、分隔线、名签都以它为准:
+  // 用任期起始日期(可能落在某月 20 号之后)会和折线的换色点错开几像素到几十像素。
+  const cabSpan = {};
+  Object.keys(buckets).forEach(function (key) {
+    const r = buckets[key];
+    const d = r.ym + '-15';
+    const cur = cabSpan[r.cab.id];
+    if (!cur) { cabSpan[r.cab.id] = { first: d, last: d }; }
+    else {
+      if (d < cur.first) cur.first = d;
+      if (d > cur.last) cur.last = d;
+    }
+  });
+  const spanOf = function (c) {
+    const sp = cabSpan[c.id];
+    return { first: sp ? sp.first : c.start, last: sp ? sp.last : c.end };
+  };
+
   const markAreaData = cabinets.map((c, idx) => {
     const isEven = idx % 2 === 0;
     const bg = isEven
       ? (currentVariant === 'editorial' ? 'rgba(0,0,0,0.026)' : 'rgba(255,255,255,0.026)')
       : 'transparent';
+    const sp = spanOf(c);
     return [
-      { xAxis: c.start, itemStyle: { color: bg } },
-      { xAxis: c.end }
+      { xAxis: sp.first, itemStyle: { color: bg } },
+      { xAxis: sp.last }
     ];
   });
 
@@ -1866,17 +2289,25 @@ function renderChart() {
     const _sn = PM_SURNAME[c.id];
     const _pmBase = _sn ? _sn[currentLang === 'zh' ? 1 : currentLang === 'en' ? 2 : 0]
       : (currentLang === 'en' ? _full.split(' ').pop() : _full);
-    const labelX = clamped ? winStartISO : c.start;
-    // 英文姓氏比日文长得多，全期間视图里一年一换的内阁会互相压字：放不下就不标
+    const _span = spanOf(c);
+    // 窗口左沿判定:任期起点落在窗口外、或该内阁第一个数据点已经贴着/越过窗口左沿
+    // (窗口起点是按月数估的,可能刚好落在第一个数据点之后),两种都按"贴左沿"处理:
+    // 名字钉在左沿、竖线只留淡影 —— 否则 markLine 整条落在绘图区外会被裁掉,水印一起消失。
+    const clampedEff = clamped || (new Date(_span.first) < new Date(winStartISO));
+    const _visFirst = clampedEff ? winStartISO : _span.first;
+    const labelX = _visFirst;
+    // 区间名:字号按区间宽度反推,做成"大水印"印在区间左上角
     const _pPM = plotPxPerMonth(winStartISO);
-    const _spanPx = ((new Date(c.end) - new Date(c.start)) / 86400000 / 30.44) * _pPM;
-    // 任期不到 4 个月的宽度就别带 (1)/(2) 尾巴，否则一定压到邻居
+    // 宽度按「实际有数据、且在当前窗口里可见的月份跨度」算:
+    // 任期终点是名义值(高市标到 2030),跨窗口左沿的只算露出来的那截,
+    // 否则水印会按整段任期放大,压出画布盖到邻居身上。
+    const _visMonths = Math.max(0, (new Date(_span.last) - new Date(_visFirst)) / 86400000 / 30.44);
+    const _spanPx = _visMonths * _pPM;
+    // 任期不到 4 个月的宽度就别带 (1)/(2) 尾巴,否则一定压到邻居
     const _crowded = _spanPx < 44;
     const pmShort = _crowded ? _pmBase : _pmBase + _tag;
-    const _fs = _crowded ? 10 : 11;
-    const _slack = /[A-Za-z]/.test(pmShort) ? 1.28 : 0.62;
-    const showLabel = !isNarrow && !outOfWindow && !clamped
-      && _spanPx >= chipTextPx(pmShort, _fs) * _slack;
+    const wm = watermarkFor(pmShort, _spanPx, isNarrow);
+    const wmShow = wm.show && !outOfWindow;
     const points = [];
     Object.keys(buckets).sort().forEach(key => {
       const rec = buckets[key];
@@ -1890,6 +2321,8 @@ function renderChart() {
       const focused = focusCabinet === c.id;
       series.push({
         __cabId: c.id,
+        __color: color,
+        __wm: wmShow ? wm.text : '',
         name: pmName,
         type: 'line',
         data: points,
@@ -1933,40 +2366,17 @@ function renderChart() {
             color: currentVariant === 'editorial' ? 'rgba(23,33,26,0.18)' : 'rgba(237,235,228,0.16)',
             type: 'dashed',
             width: focused ? 2.5 : 1.2,
-            // 贴到窗口左沿的名字不应该凭空多出一条更替竖线
-            opacity: clamped ? 0 : (outOfWindow ? 0 : 0.65)
+            // 贴到窗口左沿的名字不应该凭空多出一条更替竖线,只留一条淡影
+            opacity: clampedEff ? 0.16 : (outOfWindow ? 0 : 0.65)
           },
           data: [
             [
               { coord: [labelX, 0], symbol: 'none' },
-              {
-                coord: [labelX, 96],
-                symbol: 'none',
-                label: {
-                  // 每位首相都标名字；窄屏放不下、或整段还在窗口左侧时不标
-                  show: showLabel,
-                  position: 'end',
-                  distance: 10,
-                  align: 'left',
-                  offset: [4, 0],
-                  formatter: String(pmShort),
-                  fontSize: _fs,
-                  fontWeight: 400,
-                  letterSpacing: .3,
-                  color: color,
-                  fontFamily: cssFont('--ja-sans', 'system-ui, sans-serif'),
-                  padding: [2, 6],
-                  borderRadius: 2,
-                  backgroundColor: T.markLabelBg,
-                  borderColor: hexToRgba(color, 0.45),
-                  borderWidth: 1.2,
-                  borderRadius: 4
-                }
-              }
+              { coord: [labelX, 96], symbol: 'none' }
             ],
             [
-              { coord: [c.start, 97], symbol: 'none' },
-              { coord: [c.start, 100], symbol: 'none' }
+              { coord: [labelX, 97], symbol: 'none' },
+              { coord: [labelX, 100], symbol: 'none' }
             ]
           ]
         }
@@ -2049,6 +2459,20 @@ function renderChart() {
       borderColor: currentVariant === 'editorial' ? 'rgba(20, 26, 21, 0.12)' : 'rgba(237, 235, 228, 0.14)',
       borderWidth: 1,
       padding: [12, 16],
+      // 右侧 384px 是档案面板的地盘:悬浮面板压到面板上会两边都看不清。
+      // 这里自己算落点(越过面板左沿就翻到光标左侧),不用 confine —— 它只保证不出浏览器窗口。
+      position: function (point, params, dom, rect, size) {
+        const w = size.contentSize[0], h = size.contentSize[1];
+        const W = size.viewSize[0], H = size.viewSize[1];
+        const limit = W - cabGridR() - 8;
+        let x = point[0] + 16;
+        if (x + w > limit) x = point[0] - 16 - w;
+        if (x < 8) x = 8;
+        let y = point[1] - h - 14;
+        if (y < 8) y = point[1] + 18;
+        if (y + h > H - 8) y = Math.max(8, H - 8 - h);
+        return [x, y];
+      },
       extraCssText: 'border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,0.12);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);pointer-events:none;',
       textStyle: { color: T.tooltipText, fontSize: 13, fontFamily: cssFont('--font-sans', 'system-ui, sans-serif') },
       formatter: function(params) {
@@ -2065,32 +2489,37 @@ function renderChart() {
         const pmName = cab ? cab.pm : '';
         const fontSans = 'var(--font-sans, system-ui, sans-serif)';
 
-        let html = '<div style="min-width:220px;font-family:' + fontSans + ';color:' + T.tooltipText + '">';
-        
-        // 顶栏：彩标 + 首相大名（优雅极细无衬线 16px）+ 发生年月
-        html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:12px">';
-        html += '<div style="display:flex;align-items:center;gap:8px">';
-        html += '<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:' + col + ';box-shadow:0 0 8px ' + hexToRgba(col, 0.6) + '"></span>';
-        html += '<span style="font-weight:300;font-size:16px;letter-spacing:-0.2px;color:' + T.tooltipText + '">' + pmName + '</span>';
+        const dim = currentVariant === 'editorial' ? '#56635A' : '#A09E96';
+        const hair = currentVariant === 'editorial' ? 'rgba(20,26,21,0.10)' : 'rgba(237,235,228,0.12)';
+
+        // 固定宽度 + 两列来源网格:面板不再随来源数量横向无限延伸
+        let html = '<div style="width:330px;max-width:min(330px,74vw);font-family:' + fontSans + ';color:' + T.tooltipText + '">';
+
+        // 顶栏:彩标 + 首相大名 + 发生年月
+        html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:10px">';
+        html += '<div style="display:flex;align-items:center;gap:8px;min-width:0">';
+        html += '<span style="display:inline-block;width:9px;height:9px;border-radius:50%;flex:none;background:' + col + ';box-shadow:0 0 8px ' + hexToRgba(col, 0.6) + '"></span>';
+        html += '<span style="font-weight:300;font-size:15px;letter-spacing:-0.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + pmName + '</span>';
         html += '</div>';
-        html += '<span style="color:' + (currentVariant === 'editorial' ? '#56635A' : '#A09E96') + ';font-size:12px;font-weight:350">' + ymStr + '</span>';
+        html += '<span style="color:' + dim + ';font-size:11.5px;font-weight:350;white-space:nowrap">' + ymStr + '</span>';
         html += '</div>';
 
-        // 核心支持率：超大 28px 极细无衬线数字（绝非 monospace / Times 粗衬线）
+        // 核心支持率:超大极细数字
         if (avg !== null) {
-          html += '<div style="display:flex;align-items:baseline;gap:6px;margin:6px 0 10px 0">';
-          html += '<span style="font-size:28px;font-weight:200;line-height:1;color:' + col + ';font-family:' + fontSans + ';letter-spacing:-0.5px">' + avg.toFixed(1) + '<span style="font-size:16px;font-weight:300">%</span></span>';
-          html += '<span style="font-size:12px;font-weight:350;color:' + (currentVariant === 'editorial' ? '#56635A' : '#A09E96') + '">' + n + (lang==='en'?' polls avg':lang==='zh'?' 家平均':'社平均') + '</span>';
+          html += '<div style="display:flex;align-items:baseline;gap:6px;margin:2px 0 8px 0">';
+          html += '<span style="font-size:26px;font-weight:200;line-height:1;color:' + col + ';font-family:' + fontSans + ';letter-spacing:-0.5px">' + avg.toFixed(1) + '<span style="font-size:14px;font-weight:300">%</span></span>';
+          html += '<span style="font-size:11.5px;font-weight:350;color:' + dim + '">' + n + (lang==='en'?' polls':lang==='zh'?' 家平均':'社平均') + '</span>';
           html += '</div>';
         }
 
-        // 各社明细数据：拉升至 12px 药丸胶囊，各社名字用 350 细体
+        // 各社明细:两列网格,信息密度取代横向长条
         if (sources.length > 0) {
-          html += '<div style="display:flex;flex-wrap:wrap;gap:6px;border-top:1px solid ' + (currentVariant === 'editorial' ? 'rgba(20,26,21,0.08)' : 'rgba(237,235,228,0.1)') + ';padding-top:8px;margin-top:2px">';
+          html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1px 12px;border-top:1px solid ' + hair + ';padding-top:7px">';
           sources.forEach(function(s) {
-            html += '<span style="font-size:12px;font-weight:350;padding:2px 8px;border-radius:4px;background:' + (currentVariant === 'editorial' ? 'rgba(20,26,21,0.05)' : 'rgba(255,255,255,0.06)') + ';color:' + (currentVariant === 'editorial' ? '#2b382d' : '#d2cfc4') + '">';
-            html += s.src + ' <span style="font-size:13px;font-weight:250;color:' + col + ';margin-left:3px">' + s.v.toFixed(1) + '%</span>';
-            html += '</span>';
+            html += '<div style="display:flex;align-items:baseline;justify-content:space-between;gap:6px;min-width:0">';
+            html += '<span style="font-size:11.5px;font-weight:350;color:' + dim + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + s.src + '</span>';
+            html += '<span style="font-size:12px;font-weight:400;color:' + col + ';font-variant-numeric:tabular-nums">' + s.v.toFixed(1) + '</span>';
+            html += '</div>';
           });
           html += '</div>';
         }
