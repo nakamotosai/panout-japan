@@ -1173,6 +1173,25 @@ def build_home_preview():
 <section class="wrap hp-band hp-live" aria-label="Chapters">
 {''.join(entries)}
 </section>
+<section class="wrap hp-statement" aria-labelledby="home-statement-title">
+<h1 id="home-statement-title" data-t="cover.title">{ja('cover.title')}</h1>
+<div class="hp-author">
+<div class="hp-author-intro">
+<p class="hp-author-role" data-t="author.role">{ja('author.role')}</p>
+<p class="hp-author-name">中本蔡 <span lang="en">NAKAMOTO SAI</span></p>
+<p class="hp-author-bio" data-t="author.bio">{ja('author.bio')}</p>
+</div>
+<nav class="hp-author-links" aria-label="Author and contact links" data-t-aria="author.links">
+<a href="https://ouuut.com/"><strong>ouuut.com</strong><small data-t="author.projects">{ja('author.projects')}</small><span aria-hidden="true">↗</span></a>
+<a href="https://saaaai.com/"><strong>saaaai.com</strong><small data-t="author.personal">{ja('author.personal')}</small><span aria-hidden="true">↗</span></a>
+<div class="hp-author-contact">
+<span class="hp-author-contact-label" data-t="author.contact">{ja('author.contact')}</span>
+<a href="mailto:sai@saaaai.com">sai@saaaai.com</a>
+<a href="https://x.com/saaaaicom" rel="me">X <span class="hp-author-handle">@saaaaicom</span></a>
+</div>
+</nav>
+</div>
+</section>
 <section class="wrap hp-provenance" aria-labelledby="method-title">
 <div class="hp-provenance-panel">
 <div class="hp-provenance-intro">
@@ -1193,25 +1212,6 @@ def build_home_preview():
 </div>
 </details>
 </div>
-</div>
-</section>
-<section class="wrap hp-statement" aria-labelledby="home-statement-title">
-<h1 id="home-statement-title" data-t="cover.title">{ja('cover.title')}</h1>
-<div class="hp-author">
-<div class="hp-author-intro">
-<p class="hp-author-role" data-t="author.role">{ja('author.role')}</p>
-<p class="hp-author-name">中本蔡 <span lang="en">NAKAMOTO SAI</span></p>
-<p class="hp-author-bio" data-t="author.bio">{ja('author.bio')}</p>
-</div>
-<nav class="hp-author-links" aria-label="Author and contact links" data-t-aria="author.links">
-<a href="https://ouuut.com/"><strong>ouuut.com</strong><small data-t="author.projects">{ja('author.projects')}</small><span aria-hidden="true">↗</span></a>
-<a href="https://saaaai.com/"><strong>saaaai.com</strong><small data-t="author.personal">{ja('author.personal')}</small><span aria-hidden="true">↗</span></a>
-<div class="hp-author-contact">
-<span class="hp-author-contact-label" data-t="author.contact">{ja('author.contact')}</span>
-<a href="mailto:sai@saaaai.com">sai@saaaai.com</a>
-<a href="https://x.com/saaaaicom" rel="me">X <span class="hp-author-handle">@saaaaicom</span></a>
-</div>
-</nav>
 </div>
 </section>
 </main>"""

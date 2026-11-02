@@ -364,8 +364,8 @@ html[lang="ja"] .hp-enter, html[lang="zh"] .hp-enter {
   stroke-linejoin: round;
 }
 
-/* C / provenance first: the complete, quiet evidence panel above the statement. */
-.hp-provenance { padding-top: 64px; }
+/* Colophon last: sources and counting rules sit under the statement, above the footer. */
+.hp-provenance { padding-top: 40px; }
 .hp-provenance-panel {
   display: grid;
   grid-template-columns: minmax(260px, .8fr) minmax(0, 1.2fr);
