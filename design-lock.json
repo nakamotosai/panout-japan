@@ -38,7 +38,7 @@
     }
   },
   "typography": {
-    "wordmark": "Outfit 800 33px; japan / .com stay var(--ink), only ouuut (five letters) and the second dot take the six chapter colours in order 青磁→山吹→朱→藍→苔→紫; the three phrase layers stay single-colour var(--accent)",
+    "wordmark": "Outfit 800 33px; japan / .com stay var(--ink), only ouuut (five letters) and the second dot take the six chapter colours in order 青磁→山吹→朱→藍→苔→紫; the three phrase layers stay ink (var(--ink), black on paper / white on charcoal)",
     "serif": "Instrument Serif 400 / Noto Serif JP 700 / Noto Serif SC 700",
     "sans": "Geist 400-500 / Noto Sans JP 500 / Noto Sans SC 500",
     "mono": "JetBrains Mono 400-500",

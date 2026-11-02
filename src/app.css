@@ -483,7 +483,7 @@ html[lang="zh"] .foot, html[lang="zh"] .pager {
 .wm-cycle > span { opacity: 0; }
 /* Keep every language layer animating; visibility only controls which is seen,
    so a language switch never restarts that layer's 12s phase. */
-.wm-phrase { display: flex; visibility: hidden; font-weight: 250; }
+.wm-phrase { display: flex; visibility: hidden; font-weight: 250; color: var(--ink); }
 .wm-phrase-ja {
   font-family: var(--ja-sans);
   font-size: .64em;
