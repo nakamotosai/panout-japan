@@ -39,6 +39,19 @@ SIX = ("--c-weather", "--c-quake", "--c-crime", "--c-cabinet", "--c-housing", "-
 WM_COLOUR = {6: 0, 7: 1, 8: 2, 9: 3, 10: 4, 11: 5}
 
 
+def paint_chars(text):
+    """Wrap each glyph in its chapter colour; the cycle restarts at every space."""
+    out, k = [], 0
+    for ch in text:
+        if ch == " ":
+            out.append(" ")
+            k = 0
+            continue
+        out.append(f'<span style="color:var({SIX[k % 6]})">{ch}</span>')
+        k += 1
+    return "".join(out)
+
+
 def wm_glyphs(anim=False, aria=False):
     out = []
     for i, ch in enumerate(BRAND):
@@ -560,7 +573,9 @@ COPY = {
     "skip": ("本文へ", "跳到正文", "Skip to content"),
     "crumb.home": ("表紙", "封面", "Cover"),
 
-    "cover.title": ("日本を、<em>六つの尺度</em>で見る。", "<em>六种尺度</em>看日本。", "Japan through <em>six scales</em>."),
+    "cover.title": (f"日本を、<em>{paint_chars('六つの尺度')}</em>で見る。",
+                    f"<em>{paint_chars('六种尺度')}</em>看日本。",
+                    f"Japan through <em>{paint_chars('six scales')}</em>."),
     "author.role": ("文・制作", "写作与制作", "Written & built by"),
     "author.bio": (
         "上海出身、東京を拠点にする中国語ライター・AIクリエイター。日本での暮らしや社会を観察し、資料を読めるかたちに編集している。",

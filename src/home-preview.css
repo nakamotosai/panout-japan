@@ -470,7 +470,8 @@ html[lang="ja"] .hp-statement h1, html[lang="zh"] .hp-statement h1 {
   letter-spacing: -.035em;
 }
 html[lang="zh"] .hp-statement h1 { font-family: var(--zh-sans); }
-.hp-statement h1 em { color: var(--accent); font-style: normal; }
+/* The statement's em is painted glyph by glyph in the six chapter colours (build.py paint_chars). */
+.hp-statement h1 em { font-style: normal; }
 
 /* Author signature belongs to the A statement, not another closing panel. */
 .hp-author {
