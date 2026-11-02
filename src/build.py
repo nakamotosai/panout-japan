@@ -33,7 +33,29 @@ SRC = ROOT / "src"
 WEATHER_SRC = SRC / "weather"
 SITE_URL = "https://japan.ouuut.com"
 BRAND = "japan.ouuut.com"
-WM = '<span class="wm-main">japan</span><span class="wm-tld">.ouuut.com</span>'
+# 六色字标：只有 ouuut 五个字母和第二个点吃六色，japan / com 保持墨色，
+# 这样字标还是一句话，而不是一道彩虹。顺序与站点六章一致（青磁→紫）。
+SIX = ("--c-weather", "--c-quake", "--c-crime", "--c-cabinet", "--c-housing", "--c-population")
+WM_COLOUR = {6: 0, 7: 1, 8: 2, 9: 3, 10: 4, 11: 5}
+
+
+def wm_glyphs(anim=False, aria=False):
+    out = []
+    for i, ch in enumerate(BRAND):
+        css = []
+        if anim:
+            css.append(f"--i:{i}")
+        if i in WM_COLOUR:
+            css.append(f"color:var({SIX[WM_COLOUR[i]]})")
+        else:
+            css.append("color:var(--ink)")
+        style = f' style="{";".join(css)}"' if css else ""
+        hide = ' aria-hidden="true"' if aria else ""
+        out.append(f"<span{hide}{style}>{ch}</span>")
+    return "".join(out)
+
+
+WM = wm_glyphs()
 
 
 def animated_wordmark():
@@ -42,8 +64,11 @@ def animated_wordmark():
     phrases = (("ja", "六つの尺度で日本を見る"), ("zh", "六种尺度看日本"), ("en", "Six scales of Japan"))
     for group, text in (("domain", BRAND),) + tuple(
             (f"phrase-{lang}", phrase) for lang, phrase in phrases):
-        glyphs = "".join(f'<span aria-hidden="true" style="--i:{i}">{"&nbsp;" if c == " " else c}</span>'
-                         for i, c in enumerate(text))
+        if group == "domain":
+            glyphs = wm_glyphs(anim=True, aria=True)
+        else:
+            glyphs = "".join(f'<span aria-hidden="true" style="--i:{i}">{"&nbsp;" if c == " " else c}</span>'
+                             for i, c in enumerate(text))
         phrase_class = " wm-phrase" if group.startswith("phrase-") else ""
         layers.append(f'<span class="wm-cycle wm-{group}{phrase_class}" aria-hidden="true">{glyphs}</span>')
     return ('<span class="wm-static">' + WM + '</span>'
@@ -986,8 +1011,13 @@ THEME_DOTS = """<button class="theme-toggle" type="button" data-theme-toggle ari
 </svg>
 </button>"""
 
-LANG_NAV = """<div class="lang-nav" role="group" aria-label="Language">
-<button type="button" data-lang="en" aria-pressed="false">EN</button><span class="lang-sep">·</span><button type="button" data-lang="ja" aria-pressed="true">日本語</button><span class="lang-sep">·</span><button type="button" data-lang="zh" aria-pressed="false">中文</button>
+LANG_SWITCH = """<div class="lang-switch" data-lang-switch>
+<button class="lang-btn" type="button" aria-expanded="false"><span class="sr-only" data-t="ui.lang">语言</span><span data-lang-current lang="ja">日本語</span><svg class="lang-caret" viewBox="0 0 8 8" aria-hidden="true"><path d="M1.5 3 4 5.5 6.5 3" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"></path></svg></button>
+<div class="lang-menu">
+<button type="button" data-lang="ja" lang="ja" aria-current="true">日本語</button>
+<button type="button" data-lang="zh" lang="zh" aria-current="false">中文</button>
+<button type="button" data-lang="en" lang="en" aria-current="false">EN</button>
+</div>
 </div>"""
 
 
@@ -1008,7 +1038,7 @@ def mast(active=""):
 </nav>
 <div class="tools">
 {THEME_DOTS}
-{LANG_NAV}
+{LANG_SWITCH}
 <button class="burger" type="button" data-burger aria-expanded="false" aria-controls="mobile-menu" aria-label="Menu"><span></span><span></span></button>
 </div>
 </div></header>
@@ -1022,7 +1052,7 @@ def mast(active=""):
 {link('/population/', 'nav.population', 'population')}
 </nav>
 <div class="mobile-foot">
-{LANG_NAV}
+{LANG_SWITCH}
 {THEME_DOTS}
 </div>
 </div>

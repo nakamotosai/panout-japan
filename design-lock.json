@@ -1,9 +1,12 @@
 {
   "project": "panout-japan",
-  "updated": "2026-10-26",
+  "updated": "2026-11-02",
   "source_of_truth": "ouuut-v2 design-lock + live computed styles at 1440px, 2026-10-21. japan.ouuut.com must read as the same publication as ouuut.com.",
   "style": "Tokyo Expedition Magazine Editorial / ouuut family. Two themes only: sage (day) and dark (night). Zero structural lines.",
-  "themes": ["sage", "dark"],
+  "themes": [
+    "sage",
+    "dark"
+  ],
   "theme_boot": "localStorage pj-theme wins; otherwise sage 06:00-17:59, dark otherwise. No mono.",
   "tokens": {
     "sage": {
@@ -35,7 +38,7 @@
     }
   },
   "typography": {
-    "wordmark": "Outfit 800 33px, all accent, suffix 45% font-size",
+    "wordmark": "Outfit 800 33px; japan / .com stay var(--ink), only ouuut (five letters) and the second dot take the six chapter colours in order 青磁→山吹→朱→藍→苔→紫; the three phrase layers stay single-colour var(--accent)",
     "serif": "Instrument Serif 400 / Noto Serif JP 700 / Noto Serif SC 700",
     "sans": "Geist 400-500 / Noto Sans JP 500 / Noto Sans SC 500",
     "mono": "JetBrains Mono 400-500",
@@ -56,7 +59,14 @@
   },
   "home": {
     "band": "Six plates, three across, two rows; grid gap 16px. Two columns ≤1199px, one column ≤1000px (horizontal card), vertical card ≤640px.",
-    "order": ["weather", "quake", "crime", "cabinet", "housing", "news"],
+    "order": [
+      "weather",
+      "quake",
+      "crime",
+      "cabinet",
+      "housing",
+      "news"
+    ],
     "plate_box": "aspect-ratio 1000/332 at ≥1001px (340 before the block under the band needed the fold); 641-1000px the card turns horizontal and that breakpoint's own rule wins — height:100% with min-height 188px, no aspect-ratio applies there; at ≤640px the card turns vertical and it is 1000/680 again (measured 0.6801 at 390px). Every plate is a build-time SVG at viewBox 1000×760, centred, never stretched (preserveAspectRatio meet). The wide box ratio is deliberate: it letterboxes the plates to 42-46% of the box width (~110-120px of gutter per side) at ≥1200px, which is the price of six plates inside one screen, not an accident. The shipped labels inside those plates (.micro/.legend 22px, .ward 24px user units) render at 3.9-4.4px there, as they already did at 4-7px before this round.",
     "preview_plates": "weather and news have no feed yet: the foot reads「予告」/「预告」/「Soon」without the 開く arrow, the card is a div rather than an a, and hover neither lifts nor tints it.",
     "h1": "The selected A statement follows the C provenance panel, rather than repeating the old band-adjacent title. ZH: 「六种尺度看日本。」with only「六种尺度」inside em, coloured var(--accent). JA: 「日本を、六つの尺度で見る。」with only「六つの尺度」highlighted. EN: 「Japan through six scales.」with only「six scales」highlighted. All three use white-space:nowrap and px+vw sizing, with language-specific sizes ≤640px; no rem-based growth. Desktop sizes: EN clamp(38px,5.3vw,78px), JA/ZH clamp(38px,5vw,72px); ≤640px: EN clamp(22px,6.4vw,38px), JA clamp(20px,6.7vw,34px), ZH clamp(24px,8.2vw,44px). The global h1 !important font policy is overridden only for .hp-statement h1 and the C heading, never for cards.",
@@ -191,5 +201,9 @@
     "Homepage runs six prod-style plates, three across and two down, in this order: weather, quake, crime, cabinet, housing, news. The four chapter plates are links; the weather and news plates are previews (no live feed), so they carry「予告」instead of「開く」and are not links.",
     "Charts use one signal hue per theme; no rainbow categorical palette.",
     "Motion: grain, scroll progress, header scrolled, .rv reveal, theme view-transition. No custom cursor/particles."
-  ]
+  ],
+  "masthead_controls": {
+    "theme_toggle": "44x44 hit area, 15px icon, 1.25 stroke (16 viewBox), muted→ink on hover",
+    "language": "current language + 8px caret disclosure; menu 116px min, 1px color-mix(ink 14%) border, 4px radius, no shadow; aria-current, Escape/outside/arrow keys; mobile panel opens upward"
+  }
 }

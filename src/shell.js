@@ -6,6 +6,7 @@
   var doc = document.documentElement;
   var THEMES = ['sage', 'dark'];
   var LANGS = ['ja', 'zh', 'en'];
+  var LANG_LABEL = { ja: '日本語', zh: '中文', en: 'EN' };
   var dic = null;
   var scriptSrc = (document.currentScript && document.currentScript.src) || '';
   var VER = '';
@@ -48,9 +49,14 @@
     if (LANGS.indexOf(l) < 0) return;
     put('pj-lang', l);
     doc.lang = l;
-    var btns = document.querySelectorAll('[data-lang]');
+    var btns = document.querySelectorAll('[data-lang-switch] [data-lang]');
     for (var i = 0; i < btns.length; i++) {
-      btns[i].setAttribute('aria-pressed', String(btns[i].dataset.lang === l));
+      btns[i].setAttribute('aria-current', String(btns[i].dataset.lang === l));
+    }
+    var cur = document.querySelectorAll('[data-lang-current]');
+    for (var c = 0; c < cur.length; c++) {
+      cur[c].textContent = LANG_LABEL[l] || l;
+      cur[c].setAttribute('lang', l);
     }
     if (animate && dic) {
       doc.classList.add('lang-switching');
@@ -321,6 +327,10 @@
       menu.classList.remove('open');
       document.body.classList.remove('menu-open');
       btn.setAttribute('aria-expanded', 'false');
+      var open = document.querySelectorAll('.lang-menu.open');
+      for (var i = 0; i < open.length; i++) open[i].classList.remove('open');
+      var exp = document.querySelectorAll('.lang-btn[aria-expanded="true"]');
+      for (var j = 0; j < exp.length; j++) exp[j].setAttribute('aria-expanded', 'false');
     }
     function toggle() {
       var open = !menu.classList.contains('open');
@@ -340,6 +350,54 @@
     window.addEventListener('resize', function () {
       if (window.innerWidth > 760) close();
     });
+  }
+
+  // Language disclosure: the button names the current language, the menu lists
+  // all three. Escape, outside click and Tab close it; arrows move inside it.
+  function setupLangSwitch() {
+    var boxes = document.querySelectorAll('[data-lang-switch]');
+    for (var b = 0; b < boxes.length; b++) (function (box) {
+      var btn = box.querySelector('.lang-btn');
+      var menu = box.querySelector('.lang-menu');
+      if (!btn || !menu) return;
+      function items() { return menu.querySelectorAll('[data-lang]'); }
+      function close() {
+        menu.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+      }
+      function open() {
+        menu.classList.add('open');
+        btn.setAttribute('aria-expanded', 'true');
+        var first = menu.querySelector('[data-lang][aria-current="true"]') || items()[0];
+        if (first) first.focus();
+      }
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (menu.classList.contains('open')) close(); else open();
+      });
+      btn.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); open(); }
+      });
+      menu.addEventListener('click', function (e) {
+        if (e.target.closest && e.target.closest('[data-lang]')) close();
+      });
+      menu.addEventListener('keydown', function (e) {
+        var list = items();
+        var idx = Array.prototype.indexOf.call(list, document.activeElement);
+        if (e.key === 'Escape') { e.preventDefault(); close(); btn.focus(); }
+        else if (e.key === 'ArrowDown') { e.preventDefault(); list[(idx + 1) % list.length].focus(); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); list[(idx - 1 + list.length) % list.length].focus(); }
+        else if (e.key === 'Home') { e.preventDefault(); list[0].focus(); }
+        else if (e.key === 'End') { e.preventDefault(); list[list.length - 1].focus(); }
+        else if (e.key === 'Tab') close();
+      });
+      box.addEventListener('focusout', function (e) {
+        if (!box.contains(e.relatedTarget)) close();
+      });
+      document.addEventListener('click', function (e) {
+        if (!box.contains(e.target)) close();
+      });
+    })(boxes[b]);
   }
 
   function setupReveal() {
@@ -386,6 +444,7 @@
     legacyHash();
     setupHeader();
     setupMenu();
+    setupLangSwitch();
     setupReveal();
     setupStages();
     setupPlates();
