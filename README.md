@@ -108,6 +108,7 @@ bash tools/panout_weather_refresh.sh --force        # 手动强制一次
 - `progress.md` —— 逐轮流水（只增不改）
 - `F:/archive/20261025-ca-hybrid-panout/closing-options/` —— 已归档的六卡以下四方案历史对照台。用户选定 **C＋A**，正式实现见 `src/build.py` 与 `src/home-preview.css`；本地 `http://127.0.0.1:8900/` 为定稿首页。六章全部接入；人口章见 `/population/`，新闻占位已删除。入口见 `HANDOFF.md`。
 - `MASTER-CHECKLIST.md` —— 发布验收清单
-- `docs/WEATHER-REFRESH.md` —— 天气日更运行手册（systemd、Kuma、失败恢复、回滚）
+- `docs/WEATHER-REFRESH.md` —— 天气日更运行手册(systemd、Kuma、失败恢复、回滚)
+- `docs/content-gap-japan.md` —— 四章(地震/犯罪/内阁/住宅)正文扩写要点清单(日文,下一轮正文工作的输入)
 - `docs/UPGRADE-DIRECTIONS.md` —— 三个子站的后续升级方向
 - `AGENTS.md` —— 本仓门规（备份、提交、发布）
