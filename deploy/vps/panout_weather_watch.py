@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 """External watchdog for the daily Pan Out Japan weather refresh.
 
-Read-only: checks the refresh state, the production page and the versioned
-data.js, then pushes Kuma monitor panout-weather-refresh. Incidents go through
+Read-only: checks the refresh state, the production page and the data.js it
+publishes, then pushes Kuma monitor panout-weather-refresh. Incidents go through
 watchdog_common so the TG event layer stays separate from the Kuma red/green.
 """
 from __future__ import annotations
@@ -26,7 +26,7 @@ UA = {"User-Agent": "panout-weather-watch/1.0"}
 JST = dt.timezone(dt.timedelta(hours=9))
 DEADLINE = dt.time(6, 40)
 MAX_AGE = dt.timedelta(hours=26)
-DATA_RE = re.compile(r"/assets/weather/data\.js\?v=[0-9a-f]+")
+DATA_RE = re.compile(r"/assets/weather/data\.js(?:\?v=[0-9a-f]+)?")
 
 
 def fetch(path: str, timeout: int = 25) -> tuple[int, bytes, dict]:
@@ -95,7 +95,7 @@ def check() -> str | None:
         return "/weather/ 缺少 H1"
     match = DATA_RE.search(html)
     if not match:
-        return "/weather/ 未引用版本化 data.js"
+        return "/weather/ 未引用 data.js"
 
     try:
         code, raw, headers = fetch(match.group(0))
@@ -136,9 +136,14 @@ def check() -> str | None:
             return f"{rid} week 日期不连续"
         if axis[-1] < base + dt.timedelta(days=6):
             return f"{rid} week 覆盖不足（到 {axis[-1]}）"
+    # 2026-11-03:部署切换不是原子的 —— 边缘还在回上一版时,新 URL 的请求会拿到旧正文,
+    # 长缓存会把它钉在那个 URL 上一整个 max-age(当天天气刷新就是因此被判失败并回滚)。
+    # 判据因此反过来:data.js 必须每次校验。
     cache = headers.get("cache-control", "")
-    if "immutable" not in cache:
-        return f"data.js cache-control 缺 immutable: {cache}"
+    if "immutable" in cache or "max-age=31536000" in cache:
+        return f"data.js 被长缓存钉住(新版 URL 会锁住旧正文): {cache}"
+    if "max-age=0" not in cache and "no-cache" not in cache:
+        return f"data.js 不是每次校验: {cache}"
     return None
 
 

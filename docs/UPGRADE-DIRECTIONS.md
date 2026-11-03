@@ -316,7 +316,7 @@ graph TD
 3. **修真实缺陷**：
    - `/crime/`、`/cabinet/` 旧路径 → 301 到 `#/crime` 或返回真 404（现在卡死并外泄占位文案）
    - 缺失资源返回真 404，不回退 index.html
-   - 数据文件缓存头改 `immutable` + 内容哈希
+   - 数据文件缓存头改为每次校验(`max-age=0, must-revalidate`)+ 内容哈希;`immutable`/长 max-age 会在部署切换窗口把旧正文钉在新版 URL 上(2026-11-03 天气刷新事故)
    - 删除生产 DOM 里的 `プレースホルダ` ×6 与 `three.js canvas mounts here`
    - 移除 vendor 的 `quake.japan.ouuut.com` 水印
 4. **移动端横向溢出**：`.tools` / `.theme-dots` 在 390px 下溢出 91–106px。

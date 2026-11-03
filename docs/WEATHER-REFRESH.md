@@ -65,18 +65,18 @@ manual refresh.
    valid precipitation period; required metadata.
 5. Completeness floors: at most 7 missing `todayHigh`, at most 7 missing
    `todayPop`, at most 2 empty overviews.
-6. Full build: 6 pages, 47 no-JS weather rows, current `data.js?v=` hash, no
-   unresolved placeholders.
+6. Full build: 6 pages, 47 no-JS weather rows, the page references
+   `/assets/weather/data.js`, no unresolved placeholders.
 7. Deployment artifact first: the Pages URL `wrangler` just printed must already
    serve the new `generatedAt` (3 tries, 5s apart). The artifact is authoritative
    the moment the upload returns, so a failure here is a real defect.
 8. Then production: `/weather/` 200, the referenced `data.js` parses,
-   `generatedAt` matches, 47 regions, immutable cache policy — retried 10 times,
-   20s apart. The production domain is only re-pointed at the new deployment
-   *after* the upload, so a short budget measures propagation, not correctness:
-   on 2026-11-03 06:12 JST that lag outlived the old 3x10s budget (the artifact
-   was already `v=a1513657` while `japan.ouuut.com` still served `v=6e0b6e42`),
-   a good deployment was rolled back and the day's refresh was lost.
+   `generatedAt` matches, 47 regions, and the asset must revalidate rather than
+   come back long-cached — retried 10 times, 20s apart. The production domain is
+   only re-pointed at the new deployment *after* the upload, so a short budget
+   measures propagation, not correctness: on 2026-11-03 06:12 JST that lag
+   outlived the old 3x10s budget, a good deployment was rolled back and the day's
+   refresh was lost.
 9. Source: commit `src/weather/data.js` and `src/weather/DATA-NOTES.md`, push to
    GitHub and Gitea, fetch and require `0 ahead / 0 behind`.
 
@@ -89,24 +89,29 @@ rolled back...", which is all the watchdog could see. If source push fails after
 a verified deployment, the production snapshot is kept and the monitor goes red;
 the next run retries the source update.
 
-## Asset cache pitfalls
+## Asset cache policy
 
-`/assets/*` is served `immutable` for a year, and Pages resolves a path while
-ignoring its query string. So a request for `data.js?v=<new>` that arrives while
-the edge still serves the previous deployment returns — and pins for a year — the
-**previous** body under the new version's URL. 2026-11-03: that entry is what
-failed the first verification attempt, `?v=a1513657` holding the 11-02 snapshot
-(`cf-cache-status: HIT`, `age: 19642`), and every retry kept reading it.
+A Pages deployment switch is not atomic: for a moment the edge still answers an
+asset path from the previous deployment. A `?v=` stamp turned that from "stale for
+a few seconds" into "pinned for the whole max-age": the previous body was served
+*under the fresh URL* and, under `immutable`/a year, stayed there, so a fix looked
+like it never applied. 2026-11-03: `?v=a1513657` held the 11-02 snapshot
+(`cf-cache-status: HIT`, `age: 19642`), which failed the first verification attempt
+and made every retry hopeless.
 
-- The pipeline now fetches the asset through a unique `&cb=` key, so verification
-  measures the deployment pointer rather than a cache entry, and cannot pin one
-  itself.
-- The hourly probe still fetches exactly like a browser does: staleness that
-  actually reaches users is what it reports.
-- The Pages token has no Cache Purge permission (401 on `purge_cache`), so an
-  operator cannot clear such an entry without minting a token that has it. The
-  durable fix is to name the asset after its content (`data.<version>.js`) instead
-  of versioning it with a query string, which a stale path can never shadow.
+So the site revalidates by default (`_headers` `/*` rule: `max-age=0,
+must-revalidate`). Only two exceptions exist: `/assets/fonts/*` keeps `immutable`
+because a fingerprinted woff2 is the one URL that fully identifies its bytes, and
+`/data/*` keeps a day because those CSVs are not stamped and change daily. The
+weather runtime carries **no** `?v=` at all: a stable URL plus ETag revalidation
+costs one conditional round trip (304) and cannot pin anything.
+
+Both the pipeline (`verify_site`) and the hourly probe assert that `data.js` does
+*not* come back long-cached, so a regression fails loudly instead of serving stale
+data quietly. Entries pinned before this change stay pinned until revalidated or
+evicted, and the Pages token has no Cache Purge permission (401 on `purge_cache`) —
+but the pinned entries are orphan URLs that no page references any more, which is
+why nothing needs purging.
 
 ## Manual release check
 
@@ -131,12 +136,12 @@ Kuma monitor `panout-weather-refresh` (id 54) is fed by two independent paths:
 - The external probe `/home/ubuntu/vps-ops/scripts/panout_weather_watch.py`
   (source `deploy/vps/panout_weather_watch.py`) runs at minute 45 every hour.
   It reads `state.json`, requires a success by **06:40 JST**, rejects a failure
-  newer than the last success, then fetches `/weather/` and the versioned
-  `data.js`. It reconciles `generatedAt`, 47 regions, all `reportDatetime`
+  newer than the last success, then fetches `/weather/` and the `data.js` it
+  publishes. It reconciles `generatedAt`, 47 regions, all `reportDatetime`
   dates, the seven-day week axis (consecutive, starting today *or* tomorrow —
   JMA's 17:00 product covers "tomorrow + 6" while the 06:10 refresh holds the
   previous day's copy, so `week[0]` is often today; the front end aligns by
-  date, not by offset), and the immutable cache header.
+  date, not by offset), and the revalidating cache header.
 
 Registration: `/home/ubuntu/watchdog/registry.json` item
 `panout-japan.weather`, cron `panout-weather-watch`, heartbeat

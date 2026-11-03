@@ -43,8 +43,8 @@
 - [~] **E3** 共享 shell 约 15KB，章节按需加载；天气页额外按需加载 343KB 运行时。首页 Lighthouse TBT 0ms 为上一发布；天气页未重跑 Lighthouse，实测 1 个 133ms long task。
 - [x] **E4** 首页 LCP 2.1s（上一发布）；天气页实测 LCP 240ms，静态直出。
 - [~] **E5** 生产 CLS 0；字标固定舞台，动效只改 opacity。天气页实测 CLS 0。
-- [x] **E6** HTML max-age=0；静态资源长期缓存且带内容版本；字典已独立版本化。
-- [~] **E7** 校验使用 cache-bust；生产已正确返回新版，未额外执行全站 purge。
+- [x] **E6** HTML 与全部静态资源 `max-age=0, must-revalidate`(2026-11-03 起;仅字体 woff2 保持 `immutable`、`/data/*` 保持一天);字典独立版本化。
+- [~] **E7** 校验直接取页面发布的 URL(资源每次校验,不再需要 cache-bust);生产已正确返回新版,未额外执行全站 purge。
 - [~] **E8** 首页移动端 Lighthouse 97/100/100/100（上一发布）；天气页未重跑 Lighthouse，CLS 0、LCP 240ms、无横向溢出。
 
 ## F. 安全

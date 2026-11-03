@@ -13,7 +13,6 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
-import hashlib
 import json
 import os
 import re
@@ -96,12 +95,6 @@ def http_get(url: str, timeout: int = 30) -> tuple[int, dict, bytes]:
         return response.status, dict(response.headers), response.read()
 
 
-def weather_version() -> str:
-    names = ["app.js", "data.js", "geo.js", "weather.css"]
-    payload = "".join((SITE / "assets/weather" / name).read_text("utf-8") for name in sorted(names))
-    return hashlib.sha1(payload.encode("utf-8")).hexdigest()[:8]
-
-
 def verify_build(data: dict, report: dict) -> None:
     if not SITE.exists():
         raise RuntimeError("site/ was not created")
@@ -110,11 +103,11 @@ def verify_build(data: dict, report: dict) -> None:
         if not (SITE / page).is_file():
             raise RuntimeError(f"Missing built page: {page}")
     html = (SITE / "weather/index.html").read_text("utf-8")
-    if "__WEATHER_VER__" in html or "__CSS_VER__" in html:
-        raise RuntimeError("Unresolved placeholder in weather HTML")
-    version = weather_version()
-    if f"/assets/weather/data.js?v={version}" not in html:
-        raise RuntimeError("Weather HTML does not reference the current data version")
+    unresolved = re.search(r"__[A-Z]+_VER__", html)
+    if unresolved:
+        raise RuntimeError(f"Unresolved placeholder in weather HTML: {unresolved.group(0)}")
+    if 'src="/assets/weather/data.js"' not in html:
+        raise RuntimeError("Weather HTML does not reference /assets/weather/data.js")
     body = html.split("<tbody>", 1)[1].split("</tbody>", 1)[0]
     rows = body.count("<tr>")
     if rows != 47:
@@ -122,7 +115,7 @@ def verify_build(data: dict, report: dict) -> None:
     built = W.parse_js_object(SITE / "assets/weather/data.js", "WEATHER_DATA")
     if built["generatedAt"] != data["generatedAt"] or len(built["regions"]) != 47:
         raise RuntimeError("Built data.js does not match the validated snapshot")
-    log(f"Build verified: 6 pages, 47 rows, weather v{version}, {report['regions']} regions")
+    log(f"Build verified: 6 pages, 47 rows, {report['regions']} regions")
 
 
 def list_production_deployments() -> list[dict]:
@@ -209,19 +202,15 @@ def verify_site(base_url: str, expected: str) -> str:
     if status != 200:
         raise RuntimeError(f"{base_url} /weather/ HTTP {status}")
     html = raw.decode("utf-8", "replace")
-    match = re.search(r'src="(/assets/weather/data\.js\?v=[^"]+)"', html)
+    match = re.search(r'src="(/assets/weather/data\.js(?:\?v=[^"]+)?)"', html)
     if not match:
         raise RuntimeError(f"{base_url} weather HTML does not reference data.js")
-    # Fetch the versioned asset through a unique cache key. `/assets/*` is served
-    # immutable, and for a few seconds after wrangler returns the production domain
-    # can still be routing assets to the previous deployment: a plain request would
-    # then both read a stale body *and* pin it to that version's URL for a year.
-    # 2026-11-03 evidence: the entry `/assets/weather/data.js?v=a1513657`
-    # held the previous snapshot (age 5.4h, cf-cache-status HIT), so the first
-    # attempt failed and every retry was hopeless. Verifying the deployment pointer
-    # is the pipeline's job; whether users' cached copy is fresh is the probe's.
-    asset_url = base_url + match.group(1) + "&cb=" + os.urandom(4).hex()
-    status, headers, raw = http_get(asset_url)
+    # Fetch exactly the URL the page publishes. That is only safe because the asset
+    # revalidates: while a deployment switch is in flight the edge can answer from the
+    # previous deployment, and under a long cache that body would then be pinned to the
+    # URL the new page just started advertising (2026-11-03). The policy is asserted
+    # below, and the hourly watchdog asserts it again on the user-facing side.
+    status, headers, raw = http_get(base_url + match.group(1))
     if status != 200:
         raise RuntimeError(f"{base_url} data.js HTTP {status}")
     live = parse_js_text(raw.decode("utf-8"), "WEATHER_DATA")
@@ -230,8 +219,13 @@ def verify_site(base_url: str, expected: str) -> str:
     if len(live.get("regions", [])) != 47:
         raise RuntimeError(f"{base_url} live data does not contain 47 regions")
     cache_control = headers.get("Cache-Control", "")
-    if "immutable" not in cache_control and "max-age=31536000" not in cache_control:
-        raise RuntimeError(f"{base_url} unexpected data.js cache policy: {cache_control!r}")
+    if "immutable" in cache_control or "max-age=31536000" in cache_control:
+        raise RuntimeError(
+            f"{base_url} data.js is long-cached, which pins a stale body to a fresh URL: "
+            f"{cache_control!r}"
+        )
+    if "max-age=0" not in cache_control and "no-cache" not in cache_control:
+        raise RuntimeError(f"{base_url} data.js does not revalidate: {cache_control!r}")
     return cache_control
 
 

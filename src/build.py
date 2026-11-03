@@ -966,7 +966,6 @@ PAGES = []
 CSS_VER = "__CSS_VER__"
 JS_VER = "__JS_VER__"
 FONT_VER = "__FONT_VER__"
-WEATHER_VER = "__WEATHER_VER__"
 
 
 def head(title, desc, path, jsonld=None, extra_head="", body_class="", chapter=""):
@@ -1261,7 +1260,13 @@ def build_preview_redirect():
 
 
 def weather_assets():
-    """Weather runtime is shipped as versioned static assets, not inlined."""
+    """Weather runtime is shipped as static assets on a stable URL, not inlined.
+
+    Deliberately no `?v=` stamp: while a deployment switch is in flight the edge can
+    still answer an asset path from the previous deployment, so a freshly minted URL
+    buys nothing and, under a long cache, pins the previous body to it (2026-11-03).
+    These files are revalidated instead — see the `_headers` block in `write_meta()`.
+    """
     return {
         "app.js": (WEATHER_SRC / "app.js").read_text(encoding="utf-8"),
         "data.js": (WEATHER_SRC / "data.js").read_text(encoding="utf-8"),
@@ -1270,7 +1275,7 @@ def weather_assets():
     }
 
 
-def build_weather(ver):
+def build_weather():
     def temp(v):
         return "—" if v is None or v == "" else f"{esc(v)}°"
 
@@ -1305,12 +1310,12 @@ def build_weather(ver):
 <div class="table-scroll"><table><thead><tr><th>都道府県</th><th>天気</th><th>最高 / 最低</th><th>降水確率</th></tr></thead><tbody>{rows}</tbody></table></div>
 </section></noscript>
 </main>
-<script src="/assets/weather/data.js?v={ver}" defer></script>
-<script src="/assets/weather/geo.js?v={ver}" defer></script>
-<script src="/assets/weather/app.js?v={ver}" defer></script>"""
+<script src="/assets/weather/data.js" defer></script>
+<script src="/assets/weather/geo.js" defer></script>
+<script src="/assets/weather/app.js" defer></script>"""
     return page("/weather/", PAGE_META["weather"]["ja"][0], PAGE_META["weather"]["ja"][1],
                 body, "weather", jsonld,
-                head_extra=f'<link rel="stylesheet" href="/assets/weather/weather.css?v={ver}">')
+                head_extra='<link rel="stylesheet" href="/assets/weather/weather.css">')
 
 
 def build_quake():
@@ -1621,20 +1626,17 @@ def fill_copy(s):
 
 # ---------------------------------------------------------------- main
 def main():
-    global CSS_VER, JS_VER, FONT_VER, WEATHER_VER
+    global CSS_VER, JS_VER, FONT_VER
     files = {}
 
     weather_files = weather_assets()
-    WEATHER_VER = hashlib.sha1(
-        "".join(weather_files[k] for k in sorted(weather_files)).encode("utf-8")
-    ).hexdigest()[:8]
 
     # Six chapters: /weather/, /quake/, /crime/, /cabinet/, /housing/, /population/ (plus the cover).
     # /preview/ remains a tiny redirect for the old preview URL.
     files["/"] = build_home_preview()
     files["/404.html"] = build_404()
     files["/preview/"] = build_preview_redirect()
-    files["/weather/"] = build_weather(WEATHER_VER)
+    files["/weather/"] = build_weather()
     files["/quake/"] = build_quake()
     files["/crime/"] = build_crime()
     files["/cabinet/"] = build_cabinet()
@@ -1881,11 +1883,17 @@ def write_meta(font_meta):
         "/404.html\n"
         "  X-Robots-Tag: noindex\n"
         "\n"
-        "/assets/*\n"
+        "# The site default is to revalidate, because a deployment switch is not atomic:\n"
+        "# while the edge still answers from the previous deployment, a request for an\n"
+        "# asset path returns the previous body. With a ?v= stamp under a long cache, that\n"
+        "# stale body then stays pinned to the fresh URL for the whole max-age, so a fix\n"
+        "# looks like it never applied and the page serves old data until the next stamp\n"
+        "# (2026-11-03: the weather refresh was rolled back for exactly this). ETag keeps\n"
+        "# revalidation at a 304, so the only cost is one conditional round trip.\n"
+        "# Fingerprinted bytes are the single exception: a URL identifies them fully.\n"
+        "/assets/fonts/*\n"
+        "  ! Cache-Control\n"
         "  Cache-Control: public, max-age=31536000, immutable\n"
-        "\n"
-        "/app/*\n"
-        "  Cache-Control: public, max-age=86400\n"
         "\n"
         "/data/*\n"
         "  Cache-Control: public, max-age=86400\n", encoding="utf-8")
