@@ -129,10 +129,12 @@ hopeless). A bare-path probe the same morning showed the same thing without any 
 Purge permission (401 on `purge_cache`). Hence: stamps stay, and nothing is
 long-cached.
 
-The weather runtime is the one place where reuse-without-validation is a correctness
-risk rather than a small win, so it is served `Cache-Control: no-cache` on top of the
-site default: whatever `max-age` the zone appends afterwards, the copy must be validated
-before every use, and unchanged bytes still answer from a 304.
+The weather runtime is the one place where a copy reused without revalidation would
+matter, so `Cache-Control: no-cache` is what it *wants* — and it is exactly what the
+zone will not deliver: the artifact serves `no-cache` but the production domain comes
+back `public, max-age=14400, must-revalidate` with `no-cache` dropped (measured
+2026-11-03 on deployment `de9d5303`). What keeps such a copy honest is the stamp: it can
+only ever be the release that published it, and the next release publishes a new one.
 
 Both the pipeline (`verify_site`) and the hourly probe assert that `data.js` does
 *not* come back long-cached, so a regression fails loudly instead of serving stale
