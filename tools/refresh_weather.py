@@ -203,37 +203,66 @@ def deploy() -> tuple[str | None, str | None]:
     return deployment_id, deployment_url
 
 
-def verify_production(data: dict) -> None:
+def verify_site(base_url: str, expected: str) -> str:
+    """Fetch one base URL and check it serves the new snapshot. Returns the cache policy."""
+    status, _headers, raw = http_get(base_url + "/weather/")
+    if status != 200:
+        raise RuntimeError(f"{base_url} /weather/ HTTP {status}")
+    html = raw.decode("utf-8", "replace")
+    match = re.search(r'src="(/assets/weather/data\.js\?v=[^"]+)"', html)
+    if not match:
+        raise RuntimeError(f"{base_url} weather HTML does not reference data.js")
+    status, headers, raw = http_get(base_url + match.group(1))
+    if status != 200:
+        raise RuntimeError(f"{base_url} data.js HTTP {status}")
+    live = parse_js_text(raw.decode("utf-8"), "WEATHER_DATA")
+    if live.get("generatedAt") != expected:
+        raise RuntimeError(f"{base_url} live generatedAt {live.get('generatedAt')} != {expected}")
+    if len(live.get("regions", [])) != 47:
+        raise RuntimeError(f"{base_url} live data does not contain 47 regions")
+    cache_control = headers.get("Cache-Control", "")
+    if "immutable" not in cache_control and "max-age=31536000" not in cache_control:
+        raise RuntimeError(f"{base_url} unexpected data.js cache policy: {cache_control!r}")
+    return cache_control
+
+
+def verify_production(data: dict, deployment_url: str | None = None) -> None:
+    """Two stages, because the two failures mean different things.
+
+    The Pages artifact is authoritative and stable the moment ``wrangler`` returns, so a
+    failure there is a real defect. The production domain is only re-pointed at the new
+    deployment *after* the upload: on 2026-11-03 06:12 JST that lag outlived the old
+    3x10s budget (the artifact was already correct at v=a1513657 while japan.ouuut.com
+    still served v=6e0b6e42), so a good deployment got rolled back and the refresh was
+    lost. Hence: artifact first with a short budget, then the production domain with a
+    budget sized for propagation.
+    """
     expected = data["generatedAt"]
+    if deployment_url:
+        last_error = None
+        for attempt in range(3):
+            try:
+                verify_site(deployment_url, expected)
+                log(f"Deployment artifact verified: {deployment_url}")
+                break
+            except Exception as exc:
+                last_error = exc
+                if attempt < 2:
+                    time.sleep(5)
+        else:
+            raise RuntimeError(f"Deployment artifact verification failed: {last_error}")
+    attempts, delay = 10, 20
     last_error = None
-    for attempt in range(3):
+    for attempt in range(attempts):
         try:
-            status, _headers, raw = http_get(SITE_URL + "/weather/")
-            if status != 200:
-                raise RuntimeError(f"/weather/ HTTP {status}")
-            html = raw.decode("utf-8", "replace")
-            match = re.search(r'src="(/assets/weather/data\.js\?v=[^"]+)"', html)
-            if not match:
-                raise RuntimeError("Weather HTML does not reference data.js")
-            data_url = SITE_URL + match.group(1)
-            status, headers, raw = http_get(data_url)
-            if status != 200:
-                raise RuntimeError(f"data.js HTTP {status}")
-            live = parse_js_text(raw.decode("utf-8"), "WEATHER_DATA")
-            if live.get("generatedAt") != expected:
-                raise RuntimeError(f"Live generatedAt {live.get('generatedAt')} != {expected}")
-            if len(live.get("regions", [])) != 47:
-                raise RuntimeError("Live data does not contain 47 regions")
-            cache_control = headers.get("Cache-Control", "")
-            if "immutable" not in cache_control and "max-age=31536000" not in cache_control:
-                raise RuntimeError(f"Unexpected data.js cache policy: {cache_control!r}")
+            cache_control = verify_site(SITE_URL, expected)
             log(f"Production verified: {expected}, data.js {cache_control}")
             return
         except Exception as exc:
             last_error = exc
-            if attempt < 2:
-                time.sleep(10)
-    raise RuntimeError(f"Production verification failed: {last_error}")
+            if attempt < attempts - 1:
+                time.sleep(delay)
+    raise RuntimeError(f"Production verification failed after {attempts} attempts: {last_error}")
 
 
 def commit_and_push(data: dict) -> str:
@@ -286,6 +315,7 @@ def main() -> int:
         return 0
 
     old_data = DATA.read_text("utf-8")
+    old_notes = NOTES.read_text("utf-8") if NOTES.is_file() else None
     deployed = False
     previous_deployment = None
     try:
@@ -308,14 +338,14 @@ def main() -> int:
             return 0
 
         previous_deployment = get_deployment_id()
-        deployment_id, _url = deploy()
+        deployment_id, deployment_url = deploy()
         deployed = True
         try:
-            verify_production(data)
-        except Exception:
+            verify_production(data, deployment_url)
+        except Exception as exc:
             if rollback(previous_deployment):
                 deployed = False
-                raise RuntimeError("Production verification failed; rolled back to the previous deployment")
+                raise RuntimeError(f"{exc}; rolled back to the previous deployment") from exc
             raise
 
         commit = None
@@ -337,7 +367,9 @@ def main() -> int:
     except Exception as exc:
         if not deployed:
             DATA.write_text(old_data, encoding="utf-8")
-            log("Restored previous data.js")
+            if old_notes is not None:
+                NOTES.write_text(old_notes, encoding="utf-8")
+            log("Restored previous data.js and DATA-NOTES.md")
         try:
             record_failure(exc)
         except Exception as state_exc:

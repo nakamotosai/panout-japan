@@ -115,16 +115,27 @@ def check() -> str | None:
     regions = payload.get("regions") or []
     if len(regions) != 47:
         return f"线上 region 数 {len(regions)} != 47"
-    expected_week = (
-        dt.date.fromisoformat(state["last_success_date"]) + dt.timedelta(days=1)
-    ).isoformat()
+    # 2026-11-02：JMA 周间轴随发布时刻漂移 —— 17:00 产品覆盖「次日起 7 天」，但每日
+    # 06:10 刷新拿到的是前一天 17:00 那份，week[0] 就是当天。两种都合法（前端已按日期
+    # 对齐），判据改成：连续 7 天、起点是今天或明天、末尾覆盖到 +6。
+    base = dt.date.fromisoformat(state["last_success_date"])
     for region in regions:
         rid = region.get("id", "?")
         if not str(region.get("reportDatetime", "")).startswith(state["last_success_date"]):
             return f"{rid} reportDatetime 与 last_success_date 不一致"
         week = region.get("week") or []
-        if len(week) != 7 or week[0].get("date") != expected_week:
+        try:
+            axis = [dt.date.fromisoformat(str(day.get("date") or "")) for day in week]
+        except ValueError:
+            return f"{rid} week 日期无法解析"
+        if len(axis) != 7:
+            return f"{rid} week 长度 {len(axis)} != 7"
+        if axis[0] not in (base, base + dt.timedelta(days=1)):
+            return f"{rid} week 起点 {axis[0]} 不是 {base} 或 {base + dt.timedelta(days=1)}"
+        if any((b - a).days != 1 for a, b in zip(axis, axis[1:])):
             return f"{rid} week 日期不连续"
+        if axis[-1] < base + dt.timedelta(days=6):
+            return f"{rid} week 覆盖不足（到 {axis[-1]}）"
     cache = headers.get("cache-control", "")
     if "immutable" not in cache:
         return f"data.js cache-control 缺 immutable: {cache}"
