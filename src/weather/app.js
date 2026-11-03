@@ -8,7 +8,14 @@
   var regions = DATA && DATA.regions || [];
   var byId = Object.fromEntries(regions.map(function (r) { return [r.id, r]; }));
   var saved = null;
-  var lang = document.documentElement.lang || 'ja';
+  // 语言来自 <html lang>(构建期写死,四语各一份页面);本视图只有 ja/zh/en 三套词表,
+  // 所以 zh-Hans / zh-Hant 都按 zh 取词。
+  var lang = (function (raw) {
+    raw = String(raw || '').toLowerCase();
+    if (raw.indexOf('zh') === 0) return 'zh';
+    if (raw.indexOf('en') === 0) return 'en';
+    return 'ja';
+  })(document.documentElement.lang);
   var state = { selected: '130000', day: 0, pickerOpen: false, filter: '' };
   var T = {
     ja: {
@@ -253,6 +260,5 @@
     if (map && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); choose(map.dataset.mapId, 'map'); return; }
     if (e.key === 'Escape') { openPicker(false); }
   });
-  window.addEventListener('pj:lang', function (e) { lang = e.detail || document.documentElement.lang || 'ja'; render(); });
   window.addEventListener('DOMContentLoaded', function () { lang = document.documentElement.lang || 'ja'; render(); });
 })();

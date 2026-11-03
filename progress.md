@@ -18,7 +18,8 @@
 
 ## 2026-10-13 · M0 单页上线（本番装配轮）
 
-- 装配：`site/assemble.mjs` 重写（preview 壳去 preview 文案 + SEO 头注入 + app 13 文件显式直装 + 旧三子路径清场 + sitemap 单页化 + llms 改 hash 门），`--check` 幂等。
+- 装配:`site/assemble.mjs` 重写(preview 壳去 preview 文案 + SEO 头注入 + app 13 文件显式直装 + 旧三子路径清场 + sitemap 单页化 + llms 改 hash 门),`--check` 幂等。
+
 - 修：crime remount 双 invalidateSize（60ms rAF + 1500ms 兜底）+ label zoom 门（<10 藏）+ loadLeaflet CSS 先补后 return；quake 手机菜单收窄；SEO 头（canonical/hreflang/OG/Twitter/JSON-LD/favicon）进 preview。
 - 部署：CF Pages `panout-site`（`f8b2f04b`，ouuut token），`japan.ouuut.com`（已绑）+ 部署域三视图全验（quake 3D/crime 58 tiles+62 label/cabinet chart，零 error；手机 390 全过）。
 -  A1–A7：A1 robots+sitemap ✅ A2 单 canonical ✅ A3 canonical ✅ A4 hreflang 闭环 ✅ A5 三语 title ✅ A6 单 active h1 ✅ A7 无 noindex ✅。
@@ -641,3 +642,16 @@
 - 边缘侧:实测 `/assets/*` 在自定义域被抬到 `max-age=14400, must-revalidate`,根因是 zone 的 Browser Cache TTL(4h)改写浏览器侧 `Cache-Control`,不是 Pages 默认;`*.pages.dev` 不过这条改写。改法是 `ouuut.com` zone 上一条 host 级 Cache Rule(`http.host eq "japan.ouuut.com"` → `browser_ttl: respect_origin`,ruleset `59f0e3bd2d1f4b2eb390341190a13857` / rule `03d96559182942969c946a84a372fe0f`),不动管 16 个主机名的 zone 级设置。定向 purge 9 条旧条目(含钉住 11-02 快照的 `?v=a1513657`)。
 - 验收:自定义域 `data.js`/`app.css` 均回 `max-age=0, must-revalidate`(+`REVALIDATED`),字体仍 `immutable`,CSV 仍一天,zone 设置仍 14400;探针 exit 0、Kuma ok、ego 实载 47 行 + 字体 loaded。提交 `c4c8b55`。
 - 未完成:2026-11-03 06:10 JST 自动刷新在生产校验步失败(Kuma DOWN 06:12:29,单元 exit 1,日志已轮转);已给服务加 `~/.cache/panout-weather/refresh.log` 落盘,待 11-04 06:10 观察。web-audit 仍缺 `.audit/config.json`,48 项全未跑。
+
+## 2026-11-04 · 四语真静态页 + 结构化数据(T2)
+
+- 语言:`src/build.py` 按 `LANGS = ja / zh-Hans / zh-Hant / en` 渲染 7 页 × 4 = 28 个真页面(ja 保持 `/weather/` 等默认路径,其余 `/zh-Hans/weather/` 等);`<html lang>`、目录前缀、hreflang、sitemap、JSON-LD `inLanguage` 同源。删掉 `?lang=` 与 `site/assets/i18n.json`、`data-t` 属性与 shell.js 的客户端换词逻辑。
+- hreflang:每页 4 条互指 + `x-default` → ja;语言切换器改成原生 `<details>` + 四个站内 `<a href lang hreflang>`(无 JS 可展开、键盘可达)。
+- sitemap:每条路由四个 `<loc>`(四语各一),每条 `<loc>` 带四条 `xhtml:link` + `x-default`。
+- og:image:7 页 × 4 语 = 28 张 1200×630;生成器 `tools/make_og_cards.py`(读 `build.py` 的 PAGE_META/tr),产物入库 `assets/og/`,构建复制进 `site/assets/og/` 并缺图即报错;`twitter:card` → `summary_large_image`。
+- 结构化数据:`@graph` = Organization + Person + WebSite + WebPage(+ BreadcrumbList + Dataset);Dataset 的 `creator`/`publisher` 改本站 Organization,官方机构进 `isBasedOn`/`citation`,补 `distribution`(`/data/*.csv`、housing 的 `towns.json`)、`dateModified`、`isAccessibleForFree`、`variableMeasured`;`Organization.sameAs` = ouuut.com / saaaai.com / X,`url` 与 `@id` 同域;`Person`(中本蔡 / NAKAMOTO SAI)+ `author`;页脚加署名。
+- 面包屑:章节页可见面包屑(封面 → 章节)+ `BreadcrumbList`,同一函数出两边;全屏舞台高度按 `--crumb-h` 扣减。
+- 繁体:`src/hant.py`(OpenCC s2tw 等价实现)+ `src/hant_data.py`(由 `tools/gen_hant_tables.py` 从本机 OpenCC 词表裁剪生成)。上线构建机不需要 opencc;文案出现词表字符集外的字时构建直接报错。
+- 验收:`python src/build.py` → `pages: 28`(fonts 13 文件);`site/` 起 8907 本地服务,28 页 200 且 `<html lang>` 正确、四语正文互不相同、hreflang 五条目标全 200、无 `?lang=`、sitemap 28 loc / 每条 4+x-default、28 张 og 均 1200×630;`verify_sites.py --only 3,4,8`(japan 域改写到本地)断言 3、4 通过,断言 8 的 japan 项(`Dataset.distribution`)通过,整体仍红在 find 的 `BreadcrumbList` 与 cn 的 `citation`(别的仓,不在本轮范围)。
+- 已知限制:章节交互部件(`app/*/view.js`)与海报 SVG 里的日文标注只有 ja/zh/en 三套词表,zh-Hant 页的部件按简体渲染;四章正文扩写未做,要点清单见 `docs/content-gap-japan.md`。
+- 唯一 next:四章正文扩写(quake/crime/cabinet/housing 现 355–506 字),并给章节视图补 zh-Hant 词表。

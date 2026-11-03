@@ -26,6 +26,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 import svgkit as S
 import home_plates as HP
+import hant
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
@@ -112,7 +113,7 @@ PAGE_META = {
     "home": {
         "ja": (f"{BRAND} — 日本を、六つの尺度で見る",
                f"{f"{Q_N:,}"}の震源、5,234の町丁、331か月の内閣支持率、23区の住宅価格、47都道府県の天気、1,719市町村の人口。六つの尺度、六つの入口から直接起動する。"),
-        "zh": (f"{BRAND} — 用六个尺度看日本",
+        "zh-Hans": (f"{BRAND} — 用六个尺度看日本",
                f"{f"{Q_N:,}"} 个震源、5,234 个町丁、331 个月的內閣支持率、23 区住宅价格、47 个都道府县的天气、1,719 个市町村的人口。六个尺度，六个入口直接启动。"),
         "en": (f"{BRAND} — Japan in six scales",
                f"{f"{Q_N:,}"} hypocentres, 5,234 neighbourhoods, 331 months of cabinet approval, 23-ward housing prices, 47-prefecture weather and 1,719 municipalities of population. Six scales; six entry points."),
@@ -120,7 +121,7 @@ PAGE_META = {
     "quake": {
         "ja": (f"地震 — {f"{Q_N:,}"}の震源 | {BRAND}",
                f"2000年から{Q_END_JA}までのM4以上震源{f"{Q_N:,}"}点。年別・月別・深さ・エネルギーで見る。"),
-        "zh": (f"地震 — {f"{Q_N:,}"} 个震源 | {BRAND}",
+        "zh-Hans": (f"地震 — {f"{Q_N:,}"} 个震源 | {BRAND}",
                f"2000 年至 {Q_END_JA}，M4 以上震源 {f"{Q_N:,}"} 点。按年份、月份、深度与能量查看。"),
         "en": (f"Earthquakes — {f"{Q_N:,}"} hypocentres | {BRAND}",
                f"{f"{Q_N:,}"} M4+ hypocentres from 2000 to {Q_END_JA}. By year, month, depth and energy."),
@@ -128,7 +129,7 @@ PAGE_META = {
     "crime": {
         "ja": (f"犯罪 — 5,234の町丁 | {BRAND}",
                "2025年の東京都内5,234町丁の認知件数。人口あたりの率で62区市町村を並べる。"),
-        "zh": (f"犯罪 — 5,234 个町丁 | {BRAND}",
+        "zh-Hans": (f"犯罪 — 5,234 个町丁 | {BRAND}",
                "2025 年东京都内 5,234 个町丁的立案数，按人均发案率排列 62 个区市町村。"),
         "en": (f"Crime — 5,234 neighbourhoods | {BRAND}",
                "Recorded offences for 5,234 neighbourhoods across Tokyo in 2025, ranked per capita across 62 municipalities."),
@@ -136,7 +137,7 @@ PAGE_META = {
     "cabinet": {
         "ja": (f"内閣 — 331か月の支持率 | {BRAND}",
                "1998年から2026年までの内閣支持率646調査。月次平均331か月、14内閣。"),
-        "zh": (f"内阁 — 331 个月的支持率 | {BRAND}",
+        "zh-Hans": (f"内阁 — 331 个月的支持率 | {BRAND}",
                "1998 年至 2026 年的 646 次内阁支持率调查，月度均值 331 个月、14 届内阁。"),
         "en": (f"Cabinet — 331 months of approval | {BRAND}",
                "646 approval polls from 1998 to 2026: 331 monthly means across 14 cabinets."),
@@ -144,7 +145,7 @@ PAGE_META = {
     "housing": {
         "ja": (f"住宅 — 町名の価格 | {BRAND}",
                "東京の中古マンション成約価格。直近4四半期（2025Q2–2026Q1）を町名（地区名）ごとの平均㎡単価で塗った地図。国交省データを加工。"),
-        "zh": (f"住宅 — 町名房价 | {BRAND}",
+        "zh-Hans": (f"住宅 — 町名房价 | {BRAND}",
                "东京二手房成交价：把最近四个季度（2025Q2–2026Q1）按町名的平均㎡单价涂成地图，数据来自国土交通省。"),
         "en": (f"Housing — town-level prices | {BRAND}",
                "Closed condo prices in Tokyo for the latest four quarters (2025Q2–2026Q1), mapped as mean price per m² by town. Derived from MLIT data."),
@@ -152,14 +153,14 @@ PAGE_META = {
     "weather": {
         "ja": (f"天気 — 日本の47都道府県 | {BRAND}",
                "気象庁の予報から、47都道府県の今日・明日と7日間の天気、気温、降水確率を見る。"),
-        "zh": (f"天气 — 日本47都道府县 | {BRAND}",
+        "zh-Hans": (f"天气 — 日本47都道府县 | {BRAND}",
                "来自日本气象厅的预报：47 个都道府县的今天、明天与未来七天天气、气温和降水概率。"),
         "en": (f"Weather — Japan’s 47 prefectures | {BRAND}",
                "JMA forecasts for all 47 prefectures: today, tomorrow and the next seven days, with temperatures and precipitation probability."),
     },
     "404": {
         "ja": (f"404 — この頁は、ない | {BRAND}", "このURLには頁がありません。表紙または五つの章から辿り直せます。"),
-        "zh": (f"404 — 这一页不存在 | {BRAND}", "这个网址没有对应页面。可以回到首页或五个章节。"),
+        "zh-Hans": (f"404 — 这一页不存在 | {BRAND}", "这个网址没有对应页面。可以回到首页或五个章节。"),
         "en": (f"404 — Page not found | {BRAND}", "No page exists at this URL. Return to the cover or choose a chapter."),
     },
 }
@@ -185,7 +186,7 @@ PAGE_META["population"] = {
            f"2025年国勢調査。{POP_N['pop']:,}人、{POP['meta']['n']:,}市町村。"
            f"{100 * POP_N['declining'] / POP['meta']['n']:.1f}%の市町村が減少し、"
            f"{POP_N['decliningShare']}%が減少市町村に住む。2050年は{POP_N['pop2050']:,}人。"),
-    "zh": (f"人口 — {POP['meta']['n']:,} 个市町村的现在 | {BRAND}",
+    "zh-Hans": (f"人口 — {POP['meta']['n']:,} 个市町村的现在 | {BRAND}",
            f"2025 年国势调查。{POP_N['pop']:,} 人、{POP['meta']['n']:,} 个市町村。"
            f"{100 * POP_N['declining'] / POP['meta']['n']:.1f}% 的市町村在减少，"
            f"{POP_N['decliningShare']}% 的人住在减少的市町村。2050 年为 {POP_N['pop2050']:,} 人。"),
@@ -194,6 +195,11 @@ PAGE_META["population"] = {
            f"{100 * POP_N['declining'] / POP['meta']['n']:.1f}% of municipalities are shrinking; "
            f"{POP_N['decliningShare']}% of people live in them. {POP_N['pop2050']:,} by 2050."),
 }
+# 繁体的 title/description 同样由简体列转出,不另维护一份(见 src/hant.py)。
+for _page in PAGE_META:
+    PAGE_META[_page]["zh-Hant"] = (hant.convert(PAGE_META[_page]["zh-Hans"][0]),
+                                   hant.convert(PAGE_META[_page]["zh-Hans"][1]))
+
 _weather_raw = (WEATHER_SRC / "data.js").read_text(encoding="utf-8")
 WEATHER_DOC = json.loads(_weather_raw.split("=", 1)[1].rstrip().rstrip(";"))
 WEATHER_REGIONS = WEATHER_DOC["regions"]
@@ -951,16 +957,74 @@ COPY = {
              "The URL changed, or the page was never built. Start again from the six chapters."),
     "nf.home": ("表紙へ戻る", "回到封面", "Back to the cover"),
 
+    # 章节舞台图注、天气页的 noscript 兜底表、页面结构标签。{n} 之类由调用点 format 填。
+    "nav.label": ("章", "章节", "Chapters"),
+    "crumb.nav": ("パンくず", "面包屑", "Breadcrumb"),
+    "q.caption": ("M4+ · {n}の震源 · 2000–{end} · USGS ComCat",
+                  "M4+ · {n} 个震源 · 2000–{end} · USGS ComCat",
+                  "M4+ · {n} hypocentres · 2000–{end} · USGS ComCat"),
+    "c.caption": ("1点=1町丁 · 本土{n}町丁(島嶼部は枠外)· 2025 · 警視庁",
+                  "1 点 = 1 个町丁 · 本土 {n} 个町丁(岛屿部分不在框内)· 2025 · 警视厅",
+                  "1 dot = 1 neighbourhood · {n} on the mainland (islands fall outside the frame) · 2025 · Tokyo police"),
+    "h.caption": ("中古マンション · 成約{n}件 · {basis}(直近4四半期)· 国土交通省",
+                  "二手公寓 · 成交 {n} 笔 · {basis}(最近四个季度)· 国土交通省",
+                  "Used flats · {n} transactions · {basis} (latest four quarters) · MLIT"),
+    "pop.caption": ("{n}市町村 · 2025年国勢調査 · 総務省統計局",
+                    "{n} 个市町村 · 2025 年国势调查 · 总务省统计局",
+                    "{n} municipalities · 2025 Census · Statistics Bureau"),
+    "w.noscript.h1": ("日本の天気", "日本的天气", "Japan’s weather"),
+    "w.noscript.p": ("気象庁の予報を47都道府県ごとに整列しました。インタラクティブな地図はJavaScriptで動作します。",
+                     "把气象厅的预报按 47 个都道府县排列。交互式地图需要 JavaScript。",
+                     "JMA forecasts arranged across all 47 prefectures. The interactive map needs JavaScript."),
+    "w.th.pref": ("都道府県", "都道府県", "Prefecture"),
+    "w.th.summary": ("天気", "天气", "Forecast"),
+    "w.th.temp": ("最高 / 最低", "最高 / 最低", "High / Low"),
+    "w.th.pop": ("降水確率", "降水概率", "Precip. probability"),
+
     "foot.built": ("静的生成", "静态生成", "Statically generated"),
 }
 
 
-def ja(key):
-    return COPY[key][0]
+# ---------------------------------------------------------------- 语言
+# 四份真静态页:ja 走默认路径,其余走 /zh-Hans/ /zh-Hant/ /en/。每份页面在构建期
+# 就把对应语言的文案渲染进 HTML(不再靠 shell.js 改 DOM),所以下面几处必须一致:
+# 目录前缀、<html lang>、hreflang、sitemap 的 <loc>、JSON-LD 的 inLanguage。
+LANGS = ("ja", "zh-Hans", "zh-Hant", "en")
+PREFIX = {"ja": "", "zh-Hans": "/zh-Hans", "zh-Hant": "/zh-Hant", "en": "/en"}
+OG_LOCALE = {"ja": "ja_JP", "zh-Hans": "zh_CN", "zh-Hant": "zh_TW", "en": "en_US"}
+LANG_SCHEMA = {"ja": "ja", "zh-Hans": "zh-Hans", "zh-Hant": "zh-Hant", "en": "en"}
+# 章节视图(app/*/view.js)自带 ja/zh/en 三语词表。zh-Hant 页交给它们时按 zh 传,
+# 于是交互部件是简体、静态正文是繁体——已知限制,见交接说明与 docs/content-gap-japan.md。
+VIEW_LANG = {"ja": "ja", "zh-Hans": "zh", "zh-Hant": "zh", "en": "en"}
+# COPY 的列序:繁体列不单独维护,由简体列按 OpenCC s2tw 转换(见 src/hant.py)。
+_COPY_IDX = {"ja": 0, "zh-Hans": 1, "en": 2}
+COPY_HANT = {k: hant.convert(v[1]) for k, v in COPY.items()}
+CUR = "ja"
 
 
-def tattr(key):
-    return f' data-t="{key}"'
+def set_lang(lang):
+    global CUR
+    CUR = lang
+
+
+def url(path="/"):
+    """站内路由 → 当前语言下的真实 URL(`/` → `/`、`/zh-Hans/`)。"""
+    return PREFIX[CUR] + path
+
+
+def url_in(lang, path="/"):
+    return PREFIX[lang] + path
+
+
+def tr(key):
+    if CUR == "zh-Hant":
+        return COPY_HANT[key]
+    return COPY[key][_COPY_IDX[CUR]]
+
+
+def alternate_urls(path):
+    """一条路由的四种语言 URL(顺序固定,ja 在前,便于人读)。"""
+    return [(lang, SITE_URL + url_in(lang, path)) for lang in LANGS]
 
 
 PAGES = []
@@ -970,13 +1034,29 @@ FONT_VER = "__FONT_VER__"
 WEATHER_VER = "__WEATHER_VER__"
 
 
+def route_key(path):
+    """路由 → og:image 文件名用的键(/ → home,/weather/ → weather)。"""
+    if path == "/":
+        return "home"
+    return path.strip("/").split("/")[-1].replace(".html", "")
+
+
+def og_image(path):
+    return f"/assets/og/{route_key(path)}-{CUR}.png"
+
+
 def head(title, desc, path, jsonld=None, extra_head="", body_class="", chapter=""):
     is_404 = path == "/404.html"
-    u = SITE_URL + ("/" if is_404 else path)
-    alts = "".join(
-        f'<link rel="alternate" hreflang="{code}" href="{u}{"" if code == "ja" else "?lang=" + code}">'
-        for code in ("ja", "zh", "en"))
-    alts += f'<link rel="alternate" hreflang="x-default" href="{u}">'
+    u = SITE_URL + url("/" if is_404 else path)
+    # 四向互指 + x-default 指 ja 版。每一条目标都是构建产物里真实存在的页面,
+    # 不再有 ?lang= 那种「同一份 HTML 换 query」的假变体。
+    alts = ""
+    if not is_404:
+        alts = "".join(
+            f'<link rel="alternate" hreflang="{lang}" href="{SITE_URL + url_in(lang, path)}">\n'
+            for lang in LANGS)
+        alts += (f'<link rel="alternate" hreflang="x-default" '
+                 f'href="{SITE_URL + url_in("ja", path)}">')
     ld = ""
     if jsonld:
         ld = '<script type="application/ld+json">' + json.dumps(jsonld, ensure_ascii=False) + "</script>"
@@ -984,12 +1064,19 @@ def head(title, desc, path, jsonld=None, extra_head="", body_class="", chapter="
             "var t=null;try{t=localStorage.getItem('pj-theme')}catch(e){}"
             "if(t!=='sage'&&t!=='dark'){var h=new Date().getHours();t=(h>=6&&h<18)?'sage':'dark';}"
             "d.dataset.theme=t;"
-            "var l=null;try{l=(new URLSearchParams(location.search)).get('lang')}catch(e){}"
-            "if(l!=='ja'&&l!=='zh'&&l!=='en'){try{l=localStorage.getItem('pj-lang')}catch(e){l=null}}"
-            "if(l==='ja'||l==='zh'||l==='en')d.lang=l;"
             "}catch(e){}</script>")
+    # 404 是 noindex 的一次性页面,也不参与分享:不发 og:image(没有它的卡片)。
+    og_block = ""
+    if not is_404:
+        og_block = (f'<meta property="og:image" content="{SITE_URL + og_image(path)}">\n'
+                    f'<meta property="og:image:width" content="1200">\n'
+                    f'<meta property="og:image:height" content="630">\n'
+                    f'<meta property="og:image:alt" content="{esc(title)}">\n')
+    locale_alts = "".join(
+        f'<meta property="og:locale:alternate" content="{OG_LOCALE[lang]}">\n'
+        for lang in LANGS if lang != CUR)
     return f"""<!doctype html>
-<html lang="ja" data-theme="sage"{f' data-chapter="{chapter}"' if chapter else ""}>
+<html lang="{CUR}" data-view-lang="{VIEW_LANG[CUR]}" data-theme="sage"{f' data-chapter="{chapter}"' if chapter else ""}>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1003,8 +1090,8 @@ def head(title, desc, path, jsonld=None, extra_head="", body_class="", chapter="
 <meta property="og:title" content="{esc(title)}">
 <meta property="og:description" content="{esc(desc)}">
 <meta property="og:url" content="{u}">
-<meta property="og:locale" content="ja_JP">
-<meta name="twitter:card" content="summary">
+{og_block}<meta property="og:locale" content="{OG_LOCALE[CUR]}">
+{locale_alts}<meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#F5F3ED">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="/assets/fonts/outfit-800.woff2?v=__FONT_VER__" as="font" type="font/woff2" crossorigin>
@@ -1014,37 +1101,49 @@ def head(title, desc, path, jsonld=None, extra_head="", body_class="", chapter="
 {extra_head}
 </head>
 <body{body_class}>
-<a class="skip" href="#main"{tattr('skip')}>{ja('skip')}</a>
+<a class="skip" href="#main">{tr('skip')}</a>
 <div class="grain" aria-hidden="true"></div>
 <div class="scroll-progress" aria-hidden="true"></div>
 """
 
 
-THEME_DOTS = """<button class="theme-toggle" type="button" data-theme-toggle aria-label="切换配色" title="切换配色" hidden>
+def theme_toggle():
+    return f"""<button class="theme-toggle" type="button" data-theme-toggle data-label-to-dark="{esc(tr('ui.theme.toDark'))}" data-label-to-light="{esc(tr('ui.theme.toLight'))}" aria-label="{esc(tr('ui.theme'))}" title="{esc(tr('ui.theme'))}" hidden>
 <svg class="theme-icon" viewBox="0 0 16 16" aria-hidden="true">
 <g class="icon-sun" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="8" cy="8" r="3"></circle><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.5 1.5M11.5 11.5 13 13M13 3l-1.5 1.5M4.5 11.5 3 13"></path></g>
 <path class="icon-moon" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" d="M13 9.7A5.5 5.5 0 0 1 6.3 3a5.5 5.5 0 1 0 6.7 6.7Z"></path>
 </svg>
 </button>"""
 
-LANG_SWITCH = """<div class="lang-switch" data-lang-switch>
-<button class="lang-btn" type="button" aria-expanded="false"><span class="sr-only" data-t="ui.lang">语言</span><span data-lang-current lang="ja">日本語</span><svg class="lang-caret" viewBox="0 0 8 8" aria-hidden="true"><path d="M1.5 3 4 5.5 6.5 3" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"></path></svg></button>
-<div class="lang-menu">
-<button type="button" data-lang="ja" lang="ja" aria-current="true">日本語</button>
-<button type="button" data-lang="zh" lang="zh" aria-current="false">中文</button>
-<button type="button" data-lang="en" lang="en" aria-current="false">EN</button>
-</div>
-</div>"""
+
+LANG_NAMES = {"ja": "日本語", "zh-Hans": "简体中文", "zh-Hant": "繁體中文", "en": "English"}
 
 
-def mast(active=""):
+def lang_switch(path="/"):
+    """语言切换器 = 四条真站内链接。
+
+    原生 `<details>` 披露菜单:不依赖 JS、键盘可达;爬虫在任意语言页都能顺着这些
+    `<a href>` 发现其余三语(旧版是 JS 改 ?lang= 的按钮,爬虫看不见目标页)。
+    """
+    items = "".join(
+        f'<a href="{url_in(lang, path)}" lang="{lang}" hreflang="{lang}"'
+        f'{" aria-current=\"page\"" if lang == CUR else ""}>{LANG_NAMES[lang]}</a>'
+        for lang in LANGS)
+    return f"""<details class="lang-switch" data-lang-switch>
+<summary class="lang-btn"><span class="sr-only">{esc(tr('ui.lang'))}</span><span lang="{CUR}">{LANG_NAMES[CUR]}</span><svg class="lang-caret" viewBox="0 0 8 8" aria-hidden="true"><path d="M1.5 3 4 5.5 6.5 3" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"></path></svg></summary>
+<div class="lang-menu">{items}</div>
+</details>"""
+
+
+def mast(active="", path="/"):
     def link(href, key, ch):
         cur = ' aria-current="page"' if ch == active else ""
-        return f'<a href="{href}"{cur}{tattr(key)}>{ja(key)}</a>'
+        return f'<a href="{url(href)}"{cur}>{tr(key)}</a>'
 
+    switch = lang_switch(path)
     return f"""<header class="masthead"><div class="wrap masthead-in">
-<a class="wordmark wordmark-cycle" href="/" aria-label="{BRAND}">{animated_wordmark()}</a>
-<nav class="chapters" aria-label="Chapters">
+<a class="wordmark wordmark-cycle" href="{url('/')}" aria-label="{BRAND}">{animated_wordmark()}</a>
+<nav class="chapters" aria-label="{esc(tr('nav.label'))}">
 {link('/weather/', 'nav.weather', 'weather')}
 {link('/quake/', 'nav.quake', 'quake')}
 {link('/crime/', 'nav.crime', 'crime')}
@@ -1053,13 +1152,13 @@ def mast(active=""):
 {link('/population/', 'nav.population', 'population')}
 </nav>
 <div class="tools">
-{THEME_DOTS}
-{LANG_SWITCH}
-<button class="burger" type="button" data-burger aria-expanded="false" aria-controls="mobile-menu" aria-label="Menu"><span></span><span></span></button>
+{theme_toggle()}
+{switch}
+<button class="burger" type="button" data-burger aria-expanded="false" aria-controls="mobile-menu" aria-label="{esc(tr('nav.label'))}"><span></span><span></span></button>
 </div>
 </div></header>
 <div class="mobile-menu" id="mobile-menu">
-<nav class="mobile-nav-links" aria-label="Chapters">
+<nav class="mobile-nav-links" aria-label="{esc(tr('nav.label'))}">
 {link('/weather/', 'nav.weather', 'weather')}
 {link('/quake/', 'nav.quake', 'quake')}
 {link('/crime/', 'nav.crime', 'crime')}
@@ -1068,8 +1167,8 @@ def mast(active=""):
 {link('/population/', 'nav.population', 'population')}
 </nav>
 <div class="mobile-foot">
-{LANG_SWITCH}
-{THEME_DOTS}
+{switch}
+{theme_toggle()}
 </div>
 </div>
 """
@@ -1079,24 +1178,159 @@ def shell_tail():
     return '<script src="/assets/shell.js?v=__JS_VER__" defer></script>\n</body></html>'
 
 
+# ---------------------------------------------------------------- 结构化数据
+# 站点实体(Organization / Person / WebSite)每页都发一份 @graph,页面上的发布者与
+# 作者都能解析到稳定 @id;章节页再把 Dataset 挂进同一张图。
+SITE_ORG_ID = SITE_URL + "/#organization"
+SITE_PERSON_ID = SITE_URL + "/#person"
+SITE_SITE_ID = SITE_URL + "/#website"
+
+
+def organization_node():
+    return {
+        "@type": "Organization",
+        "@id": SITE_ORG_ID,
+        "name": BRAND,
+        "alternateName": "ouuut",
+        # @id 与 url 同域(japan.ouuut.com);另两站与社媒进 sameAs。
+        "url": SITE_URL + "/",
+        "sameAs": ["https://ouuut.com/", "https://saaaai.com/", "https://x.com/saaaaicom"],
+        "founder": {"@id": SITE_PERSON_ID},
+        "logo": {"@type": "ImageObject", "url": SITE_URL + "/assets/favicon.svg"},
+    }
+
+
+def person_node():
+    return {
+        "@type": "Person",
+        "@id": SITE_PERSON_ID,
+        "name": "中本蔡",
+        "alternateName": "NAKAMOTO SAI",
+        "url": "https://saaaai.com/",
+        "sameAs": ["https://saaaai.com/", "https://ouuut.com/", "https://x.com/saaaaicom"],
+        "email": "mailto:sai@saaaai.com",
+        "knowsLanguage": list(LANGS),
+    }
+
+
+def website_node():
+    return {
+        "@type": "WebSite",
+        "@id": SITE_SITE_ID,
+        "name": BRAND,
+        "url": SITE_URL + "/",
+        "inLanguage": list(LANGS),
+        "publisher": {"@id": SITE_ORG_ID},
+        "author": {"@id": SITE_PERSON_ID},
+    }
+
+
+def is_top(path):
+    """封面与 404 是顶层页:没有面包屑层级。"""
+    return path in ("/", "/404.html")
+
+
+def breadcrumb_node(path):
+    items = [{"@type": "ListItem", "position": 1, "name": tr("crumb.home"),
+              "item": SITE_URL + url("/")},
+             {"@type": "ListItem", "position": 2, "name": tr(f"nav.{route_key(path)}"),
+              "item": SITE_URL + url(path)}]
+    return {"@type": "BreadcrumbList", "@id": SITE_URL + url(path) + "#breadcrumb",
+            "itemListElement": items}
+
+
+def breadcrumbs(path):
+    """可见面包屑(顶层 → 章节);封面与 404 不发。与 JSON-LD 同源。"""
+    if is_top(path):
+        return ""
+    return (f'<nav class="crumbs" aria-label="{esc(tr("crumb.nav"))}"><ol>'
+            f'<li><a href="{url("/")}">{tr("crumb.home")}</a></li>'
+            f'<li aria-current="page">{tr(f"nav.{route_key(path)}")}</li>'
+            f'</ol></nav>\n')
+
+
+def page_graph(path, title, desc, node=None):
+    page_url = SITE_URL + url(path)
+    graph = [
+        organization_node(),
+        person_node(),
+        website_node(),
+        {"@type": "WebPage",
+         "@id": page_url + "#webpage",
+         "url": page_url,
+         "name": title,
+         "description": desc,
+         "inLanguage": LANG_SCHEMA[CUR],
+         "isPartOf": {"@id": SITE_SITE_ID},
+         "about": {"@id": SITE_ORG_ID},
+         "author": {"@id": SITE_PERSON_ID},
+         "publisher": {"@id": SITE_ORG_ID},
+         "breadcrumb": {"@id": page_url + "#breadcrumb"}},
+    ]
+    if not is_top(path):
+        graph.append(breadcrumb_node(path))
+    if node:
+        node = dict(node)
+        node.setdefault("author", {"@id": SITE_PERSON_ID})
+        node.setdefault("inLanguage", LANG_SCHEMA[CUR])
+        graph.append(node)
+    return {"@context": "https://schema.org", "@graph": graph}
+
+
+def dataset_node(name, desc, path, official, distribution, coverage, spatial,
+                 license_url, variables, extra_citations=()):
+    """章节页 Dataset:creator / publisher 都是本站,官方机构是出处不是作者。
+
+    它们进 isBasedOn 与 citation;distribution 指向本站真实存在的数据文件。
+    """
+    page_url = SITE_URL + url(path)
+    return {
+        "@type": "Dataset",
+        "@id": page_url + "#dataset",
+        "name": name,
+        "description": desc,
+        "url": page_url,
+        "inLanguage": LANG_SCHEMA[CUR],
+        "creator": {"@id": SITE_ORG_ID},
+        "publisher": {"@id": SITE_ORG_ID},
+        "author": {"@id": SITE_PERSON_ID},
+        "isBasedOn": official,
+        "citation": [official, *extra_citations],
+        "license": license_url,
+        "isAccessibleForFree": True,
+        "dateModified": BUILD_DATE,
+        "temporalCoverage": coverage,
+        "spatialCoverage": spatial,
+        "variableMeasured": variables,
+        "distribution": [
+            {"@type": "DataDownload", "contentUrl": SITE_URL + u,
+             "encodingFormat": fmt, "name": u.rsplit("/", 1)[-1]}
+            for u, fmt in distribution
+        ],
+        "isPartOf": {"@id": SITE_SITE_ID},
+    }
+
+
 def foot():
     return f"""<footer class="foot hp-foot"><div class="wrap foot-in">
-<div class="foot-top"><a class="wordmark" href="/" aria-label="{BRAND}">{WM}</a></div>
+<div class="foot-top"><a class="wordmark" href="{url('/')}" aria-label="{BRAND}">{WM}</a></div>
 <div class="foot-bottom">
-<span><a href="https://creativecommons.org/licenses/by/4.0/" rel="license">CC BY 4.0</a> · <span{tattr('foot.built')}>{ja('foot.built')}</span> · {BUILD_DATE}</span>
+<span><a href="https://saaaai.com/" rel="author me">中本蔡 / NAKAMOTO SAI</a> · <a href="https://creativecommons.org/licenses/by/4.0/" rel="license">CC BY 4.0</a> · <span>{tr('foot.built')}</span> · {BUILD_DATE}</span>
 </div>
 </div></footer>
 {shell_tail()}"""
 
 
-def page(path, title, desc, body, active="", jsonld=None, register=True, head_extra="", fullscreen=False):
+def page(path, title, desc, body, active="", node=None, register=True, head_extra="", fullscreen=False):
     body = body.replace('<table class="data-table">', '<div class="table-scroll"><table class="data-table">')
     body = body.replace('</table>', '</table></div>')
     body_class = ' class="chapter-app"' if fullscreen else ''
-    html_doc = head(title, desc, path, jsonld, head_extra, body_class, active) + mast(active) + body
+    html_doc = head(title, desc, path, page_graph(path, title, desc, node),
+                    head_extra, body_class, active)
+    html_doc += mast(active, path) + breadcrumbs(path) + body
     html_doc += shell_tail() if fullscreen else foot()
     if register:
-        PAGES.append((path, title, desc))
+        PAGES.append({"path": path, "lang": CUR, "title": title, "desc": desc})
     return html_doc
 
 
@@ -1104,7 +1338,7 @@ def stats(items):
     out = ['<dl class="stats rv">']
     for label_key, value, unit in items:
         u = f"<small>{esc(unit)}</small>" if unit else ""
-        out.append(f'<div><dt{tattr(label_key)}>{ja(label_key)}</dt>'
+        out.append(f'<div><dt>{tr(label_key)}</dt>'
                    f'<dd>{value}{u}</dd></div>')
     out.append("</dl>")
     return "".join(out)
@@ -1150,24 +1384,24 @@ def build_home_preview():
 
     entries = []
     for key, num, href, verb, topic, count, unit, claim, source_key, svg in rows:
-        foot = f'<span class="hp-enter"><span data-t="prod.open">{ja("prod.open")}</span> ↗</span>'
-        count_html = (f'<b data-t="card.population.count">{ja("card.population.count")}</b>'
+        foot = f'<span class="hp-enter"><span>{tr("prod.open")}</span> ↗</span>'
+        count_html = (f'<b>{tr("card.population.count")}</b>'
                       if key == "population" else f"<b>{count}</b>")
-        card = f"""<div class="hp-entry-head"><span class="hp-num">{num}</span><span class="hp-verb" data-t="{verb}">{ja(verb)}</span><span class="hp-topic" data-t="{topic}">{ja(topic)}</span></div>
+        card = f"""<div class="hp-entry-head"><span class="hp-num">{num}</span><span class="hp-verb">{tr(verb)}</span><span class="hp-topic">{tr(topic)}</span></div>
 <div class="hp-entry-visual" aria-hidden="true"><div class="hp-plate">{svg}</div></div>
 <div class="hp-entry-body">
-<p class="hp-count">{count_html}<small data-t="{unit}">{ja(unit)}</small></p>
-<p class="hp-claim" data-t="{claim}">{ja(claim)}</p>
-<div class="hp-entry-foot"><span class="hp-source" data-t="{source_key}">{ja(source_key)}</span>{foot}</div>
+<p class="hp-count">{count_html}<small>{tr(unit)}</small></p>
+<p class="hp-claim">{tr(claim)}</p>
+<div class="hp-entry-foot"><span class="hp-source">{tr(source_key)}</span>{foot}</div>
 </div>"""
-        entries.append(f'<a class="hp-entry" data-chapter="{key}" href="{href}">\n{card}\n</a>')
+        entries.append(f'<a class="hp-entry" data-chapter="{key}" href="{url(href)}">\n{card}\n</a>')
 
     source_items = []
     for key in ("weather", "quake", "crime", "cabinet", "housing", "population"):
         source_items.append(
-            f'<article class="hp-source-item"><h3><span data-t="home.{key}.title">{ja(f"home.{key}.title")}</span>'
-            f'<span aria-hidden="true">—</span><a href="/{key}/"><span data-t="home.{key}.source">{ja(f"home.{key}.source")}</span> ↗</a></h3>'
-            f'<p data-t="home.{key}.copy">{ja(f"home.{key}.copy")}</p></article>'
+            f'<article class="hp-source-item"><h3><span>{tr(f"home.{key}.title")}</span>'
+            f'<span aria-hidden="true">—</span><a href="{url(f'/{key}/')}"><span>{tr(f"home.{key}.source")}</span> ↗</a></h3>'
+            f'<p>{tr(f"home.{key}.copy")}</p></article>'
         )
 
     body = f"""<main id="main" class="hp">
@@ -1175,18 +1409,18 @@ def build_home_preview():
 {''.join(entries)}
 </section>
 <section class="wrap hp-statement" aria-labelledby="home-statement-title">
-<h1 id="home-statement-title" data-t="cover.title">{ja('cover.title')}</h1>
+<h1 id="home-statement-title">{tr('cover.title')}</h1>
 <div class="hp-author">
 <div class="hp-author-intro">
-<p class="hp-author-role" data-t="author.role">{ja('author.role')}</p>
+<p class="hp-author-role">{tr('author.role')}</p>
 <p class="hp-author-name">中本蔡 <span lang="en">NAKAMOTO SAI</span></p>
-<p class="hp-author-bio" data-t="author.bio">{ja('author.bio')}</p>
+<p class="hp-author-bio">{tr('author.bio')}</p>
 </div>
-<nav class="hp-author-links" aria-label="Author and contact links" data-t-aria="author.links">
-<a href="https://ouuut.com/"><strong>ouuut.com</strong><small data-t="author.projects">{ja('author.projects')}</small><span aria-hidden="true">↗</span></a>
-<a href="https://saaaai.com/"><strong>saaaai.com</strong><small data-t="author.personal">{ja('author.personal')}</small><span aria-hidden="true">↗</span></a>
+<nav class="hp-author-links" aria-label="Author and contact links">
+<a href="https://ouuut.com/"><strong>ouuut.com</strong><small>{tr('author.projects')}</small><span aria-hidden="true">↗</span></a>
+<a href="https://saaaai.com/"><strong>saaaai.com</strong><small>{tr('author.personal')}</small><span aria-hidden="true">↗</span></a>
 <div class="hp-author-contact">
-<span class="hp-author-contact-label" data-t="author.contact">{ja('author.contact')}</span>
+<span class="hp-author-contact-label">{tr('author.contact')}</span>
 <a href="mailto:sai@saaaai.com">sai@saaaai.com</a>
 <a href="https://x.com/saaaaicom" rel="me">X <span class="hp-author-handle">@saaaaicom</span></a>
 </div>
@@ -1197,18 +1431,18 @@ def build_home_preview():
 <div class="hp-provenance-panel">
 <div class="hp-provenance-intro">
 <p class="hp-kicker">PRIMARY SOURCES / STATIC BUILD</p>
-<h2 id="method-title" data-t="m.h1">{ja('m.h1')}</h2>
-<p class="hp-provenance-lede" data-t="home.c.lede">{ja('home.c.lede')}</p>
+<h2 id="method-title">{tr('m.h1')}</h2>
+<p class="hp-provenance-lede">{tr('home.c.lede')}</p>
 </div>
 <div class="hp-provenance-content">
 <details class="hp-sources" open>
-<summary data-t="home.details">{ja('home.details')}</summary>
+<summary>{tr('home.details')}</summary>
 <div class="hp-sources-body">
 <div class="hp-sources-list">{''.join(source_items)}</div>
 <div class="hp-definitions">
-<h3 data-t="home.definitions">{ja('home.definitions')}</h3>
-<p data-t="home.definitions.copy">{ja('home.definitions.copy')}</p>
-<p data-t="home.compiled">{ja('home.compiled')}</p>
+<h3>{tr('home.definitions')}</h3>
+<p>{tr('home.definitions.copy')}</p>
+<p>{tr('home.compiled')}</p>
 </div>
 </div>
 </details>
@@ -1217,32 +1451,25 @@ def build_home_preview():
 </section>
 </main>"""
 
-    jsonld = {"@context": "https://schema.org", "@graph": [
-        {"@type": "Organization", "@id": SITE_URL + "/#organization", "name": "ouuut",
-         "url": "https://ouuut.com/", "sameAs": ["https://x.com/saaaaicom"]},
-        {"@type": "WebSite", "@id": SITE_URL + "/#website", "name": BRAND, "url": SITE_URL + "/",
-         "inLanguage": ["ja", "zh", "en"],
-         "publisher": {"@id": SITE_URL + "/#organization"}},
-    ]}
-    return page("/", PAGE_META["home"]["ja"][0], PAGE_META["home"]["ja"][1],
-                body, "", jsonld, register=True,
+    return page("/", PAGE_META["home"][CUR][0], PAGE_META["home"][CUR][1],
+                body, "", None, register=True,
                 head_extra='<style>\n' + css + '\n</style>')
 
 
 def build_404():
-    links = "".join(f'<li><a href="/{key}/" data-t="nav.{key}">{ja(f"nav.{key}")}</a></li>'
+    links = "".join(f'<li><a href="{url(f"/{key}/")}">{tr(f"nav.{key}")}</a></li>'
                     for key in ("weather", "quake", "crime", "cabinet", "housing", "population"))
     body = f'''<main id="main" class="cover"><div class="wrap">
-<p class="eyebrow" data-t="nf.code">404</p>
-<h1 data-t="nf.h1">{ja("nf.h1")}</h1>
-<p class="lede" data-t="nf.p">{ja("nf.p")}</p>
-<nav aria-label="Chapters"><ul>{links}</ul></nav>
+<p class="eyebrow">404</p>
+<h1>{tr("nf.h1")}</h1>
+<p class="lede">{tr("nf.p")}</p>
+<nav aria-label="{esc(tr('nav.label'))}"><ul>{links}</ul></nav>
 <div class="hero-actions">
-<a class="btn-primary" href="/" data-t="nf.home">{ja("nf.home")}</a>
-<a href="mailto:sai@saaaai.com" data-t="author.contact">{ja("author.contact")}</a>
+<a class="btn-primary" href="{url("/")}">{tr("nf.home")}</a>
+<a href="mailto:sai@saaaai.com">{tr("author.contact")}</a>
 </div>
 </div></main>'''
-    return page("/404.html", PAGE_META["404"]["ja"][0], PAGE_META["404"]["ja"][1], body,
+    return page("/404.html", PAGE_META["404"][CUR][0], PAGE_META["404"][CUR][1], body,
                 register=False)
 
 
@@ -1278,6 +1505,17 @@ def weather_assets():
     }
 
 
+def region_name(r):
+    """都道府県名:ja / zh-Hans / zh-Hant / en;繁体同样走站点自己的转换规则。"""
+    if CUR == "zh-Hans":
+        return r.get("nameZh") or r["nameJa"]
+    if CUR == "zh-Hant":
+        return hant.convert(r.get("nameZh") or r["nameJa"])
+    if CUR == "en":
+        return r.get("nameEn") or r["nameJa"]
+    return r["nameJa"]
+
+
 def build_weather(ver):
     def temp(v):
         return "—" if v is None or v == "" else f"{esc(v)}°"
@@ -1287,85 +1525,89 @@ def build_weather(ver):
         return "—" if v is None else f"{esc(v)}%"
 
     rows = "".join(
-        f'<tr><th scope="row">{esc(r["nameJa"])}</th>'
+        f'<tr><th scope="row">{esc(region_name(r))}</th>'
         f'<td>{esc(r.get("summaryJa") or "")}</td>'
         f'<td>{temp(r.get("today", {}).get("high"))} / {temp(r.get("today", {}).get("low"))}</td>'
         f'<td>{pop_text(r)}</td></tr>'
         for r in WEATHER_REGIONS
     )
     week = WEATHER_REGIONS[0]["week"]
-    jsonld = {
-        "@context": "https://schema.org", "@type": "Dataset",
-        "name": "Japan weather forecast by prefecture",
-        "description": "JMA short-range and seven-day forecasts for all 47 prefectures; a static snapshot, not live observations.",
-        "temporalCoverage": f"{week[0]['date']}/{week[-1]['date']}",
-        "spatialCoverage": "Japan (47 prefectures)",
-        "creator": {"@type": "Organization", "name": "気象庁"},
-        "isBasedOn": "https://www.jma.go.jp/bosai/forecast/",
-        "url": SITE_URL + "/weather/",
-    }
+    jsonld = dataset_node(
+        "Japan weather forecast by prefecture",
+        "JMA short-range and seven-day forecasts for all 47 prefectures; a static snapshot, not live observations.",
+        "/weather/",
+        "https://www.jma.go.jp/bosai/forecast/",
+        [("/data/weather.csv", "text/csv")],
+        f"{week[0]['date']}/{week[-1]['date']}",
+        "Japan (47 prefectures)",
+        "https://www.jma.go.jp/jma/kishou/info/coment.html",
+        ["Forecast temperature (°C)", "Precipitation probability (%)", "Weather code"],
+    )
     body = f"""<main id="main" class="weather-lab">
 <div class="wrap" id="weather-app"></div>
 <noscript><section class="wrap weather-static-fallback">
 <p class="micro">気象庁 / JMA</p>
-<h1>日本の天気</h1>
-<p class="muted">気象庁の予報を47都道府県ごとに整列しました。インタラクティブな地図はJavaScriptで動作します。</p>
-<div class="table-scroll"><table><thead><tr><th>都道府県</th><th>天気</th><th>最高 / 最低</th><th>降水確率</th></tr></thead><tbody>{rows}</tbody></table></div>
+<h1>{tr('w.noscript.h1')}</h1>
+<p class="muted">{tr('w.noscript.p')}</p>
+<div class="table-scroll"><table><thead><tr><th>{tr('w.th.pref')}</th><th>{tr('w.th.summary')}</th><th>{tr('w.th.temp')}</th><th>{tr('w.th.pop')}</th></tr></thead><tbody>{rows}</tbody></table></div>
 </section></noscript>
 </main>
 <script src="/assets/weather/data.js?v={ver}" defer></script>
 <script src="/assets/weather/geo.js?v={ver}" defer></script>
 <script src="/assets/weather/app.js?v={ver}" defer></script>"""
-    return page("/weather/", PAGE_META["weather"]["ja"][0], PAGE_META["weather"]["ja"][1],
+    return page("/weather/", PAGE_META["weather"][CUR][0], PAGE_META["weather"][CUR][1],
                 body, "weather", jsonld,
                 head_extra=f'<link rel="stylesheet" href="/assets/weather/weather.css?v={ver}">')
 
 
 def build_quake():
     body = f"""<main id="main" class="chapter-app-page">
-<h1 class="sr-only"{tattr('q.h1')}>{ja('q.h1')}</h1>
-<p class="sr-only"{tattr('q.lede')}>{ja('q.lede')}</p>
+<h1 class="sr-only">{tr('q.h1')}</h1>
+<p class="sr-only">{tr('q.lede')}</p>
 <div class="stage" data-live="0" data-stage-auto="quake" data-view="quake">
 <div class="stage-poster">{quake_poster()}</div>
-<p class="stage-caption">M4+ · {n(Q_N)} hypocentres · 2000–{Q_END_DOT} · USGS ComCat</p>
+<p class="stage-caption">{tr('q.caption').format(n=n(Q_N), end=Q_END_DOT)}</p>
 <div class="stage-live" id="v-quake-viewport"></div>
 </div>
 </main>"""
-    jsonld = {
-        "@context": "https://schema.org", "@type": "Dataset",
-        "name": "Japan M4+ hypocentres 2000–2026",
-        "description": "USGS ComCat hypocentres M4.0+ in the Japan region.",
-        "temporalCoverage": "2000-01-01/2026-07-15",
-        "spatialCoverage": "Japan region (122–150E, 20–50N)",
-        "license": "https://www.usgs.gov/information-policies-and-instructions/copyrights-and-credits",
-        "creator": {"@type": "Organization", "name": "USGS"},
-        "url": SITE_URL + "/quake/",
-    }
-    return page("/quake/", PAGE_META["quake"]["ja"][0], PAGE_META["quake"]["ja"][1],
+    jsonld = dataset_node(
+        "Japan M4+ hypocentres 2000–2026",
+        "USGS ComCat hypocentres M4.0+ in the Japan region.",
+        "/quake/",
+        "https://earthquake.usgs.gov/fdsnws/event/1/",
+        [("/data/quakes.csv", "text/csv")],
+        f"2000-01-01/{Q_END[:10]}",
+        "Japan region (120–150E, 20–50N)",
+        "https://www.usgs.gov/information-policies-and-instructions/copyrights-and-credits",
+        ["Hypocentre magnitude (Mw)", "Hypocentre depth (km)", "Origin time (UTC)"],
+        extra_citations=("https://earthquake.usgs.gov/data/comcat/",),
+    )
+    return page("/quake/", PAGE_META["quake"][CUR][0], PAGE_META["quake"][CUR][1],
                 body, "quake", jsonld, fullscreen=True)
 
 
 def build_crime():
     body = f"""<main id="main" class="chapter-app-page">
-<h1 class="sr-only"{tattr('c.h1')}>{ja('c.h1')}</h1>
-<p class="sr-only"{tattr('c.lede')}>{ja('c.lede')}</p>
+<h1 class="sr-only">{tr('c.h1')}</h1>
+<p class="sr-only">{tr('c.lede')}</p>
 <div class="stage stage-crime" data-live="0" data-stage-auto="crime" data-view="crime">
 <div class="stage-poster">{crime_poster()}</div>
-<p class="stage-caption">1 dot = 1 町丁 · 本土 {n(len([p for p in POINTS if p.get("lng") and 138.9 <= p["lng"] <= 139.96 and 35.46 <= p["lat"] <= 35.92]))} chome（島嶼部は枠外）· 2025 · 警視庁</p>
+<p class="stage-caption">{tr('c.caption').format(n=n(len([p for p in POINTS if p.get("lng") and 138.9 <= p["lng"] <= 139.96 and 35.46 <= p["lat"] <= 35.92])))}</p>
 <div class="stage-live"></div>
 </div>
 </main>"""
-    jsonld = {
-        "@context": "https://schema.org", "@type": "Dataset",
-        "name": "Tokyo crime by neighbourhood, 2025",
-        "description": "Tokyo Metropolitan Police recorded incidents by chome, 2025.",
-        "temporalCoverage": "2025",
-        "spatialCoverage": "Tokyo",
-        "license": "https://creativecommons.org/licenses/by/4.0/",
-        "creator": {"@type": "Organization", "name": "警視庁"},
-        "url": SITE_URL + "/crime/",
-    }
-    return page("/crime/", PAGE_META["crime"]["ja"][0], PAGE_META["crime"]["ja"][1],
+    jsonld = dataset_node(
+        "Tokyo crime by neighbourhood, 2025",
+        "Tokyo Metropolitan Police recorded incidents by chome, 2025.",
+        "/crime/",
+        "https://www.keishicho.metro.tokyo.lg.jp/about_mpd/statistics/",
+        [("/data/crime.csv", "text/csv")],
+        "2025",
+        "Tokyo",
+        "https://creativecommons.org/licenses/by/4.0/",
+        ["Recorded incidents", "Resident population", "Incidents per 1,000 residents"],
+    )
+    return page("/crime/", PAGE_META["crime"][CUR][0], PAGE_META["crime"][CUR][1],
                 body, "crime", jsonld, fullscreen=True)
 
 
@@ -1374,8 +1616,8 @@ def build_cabinet():
     head_extra = """<link rel="preload" href="/app/cabinet/data.json" as="fetch" crossorigin>
 <link rel="modulepreload" href="/app/cabinet/view.js">"""
     body = f"""<main id="main" class="chapter-app-page">
-<h1 class="sr-only"{tattr('b.h1')}>{ja('b.h1')}</h1>
-<p class="sr-only"{tattr('b.lede')}>{ja('b.lede')}</p>
+<h1 class="sr-only">{tr('b.h1')}</h1>
+<p class="sr-only">{tr('b.lede')}</p>
 <div class="stage stage-cabinet" data-live="0" data-stage-auto="cabinet" data-view="cabinet">
 <noscript><style>#cab-app-veil{{display:none !important}}</style></noscript>
 <div class="cab-veil" id="cab-app-veil" role="progressbar" aria-label="Loading cabinet approval data">
@@ -1386,7 +1628,7 @@ def build_cabinet():
         <path class="cab-veil-path-glow" d="M0,14 L30,14 L45,4 L60,24 L75,10 L90,14 L120,14" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </div>
-    <div class="cab-veil-text"{tattr('cab.loading')}>{ja('cab.loading')}</div>
+    <div class="cab-veil-text">{tr('cab.loading')}</div>
   </div>
 </div>
 <noscript>
@@ -1400,40 +1642,44 @@ def build_cabinet():
 <div class="stage-live"></div>
 </div>
 </main>"""
-    jsonld = {
-        "@context": "https://schema.org", "@type": "Dataset",
-        "name": "Japanese cabinet approval, 1998–2026",
-        "description": "Monthly cabinet approval ratings aggregated from NHK, Nikkei, Asahi, Jiji, Yomiuri, JNN and Kyodo polls.",
-        "temporalCoverage": "1998-07/2026-10",
-        "spatialCoverage": "Japan",
-        "license": "https://creativecommons.org/licenses/by/4.0/",
-        "url": SITE_URL + "/cabinet/",
-    }
-    return page("/cabinet/", PAGE_META["cabinet"]["ja"][0], PAGE_META["cabinet"]["ja"][1],
+    jsonld = dataset_node(
+        "Japanese cabinet approval, 1998–2026",
+        "Monthly cabinet approval ratings aggregated from NHK, Nikkei, Asahi, Jiji, Yomiuri, JNN and Kyodo polls.",
+        "/cabinet/",
+        "https://www.nhk.or.jp/senkyo/",
+        [("/data/cabinet-monthly.csv", "text/csv"), ("/data/cabinet.csv", "text/csv")],
+        f"{min(p['date'] for p in POLLS)[:7]}/{max(p['date'] for p in POLLS)[:7]}",
+        "Japan",
+        "https://creativecommons.org/licenses/by/4.0/",
+        ["Cabinet approval (%)", "Poll count per month"],
+        extra_citations=("https://www.nikkei.com/", "https://www.kyodo.co.jp/"),
+    )
+    return page("/cabinet/", PAGE_META["cabinet"][CUR][0], PAGE_META["cabinet"][CUR][1],
                 body, "cabinet", jsonld, head_extra=head_extra, fullscreen=True)
 
 
 def build_housing():
     body = f"""<main id="main" class="chapter-app-page">
-<h1 class="sr-only"{tattr('h.h1')}>{ja('h.h1')}</h1>
-<p class="sr-only"{tattr('h.lede')}>{ja('h.lede')}</p>
+<h1 class="sr-only">{tr('h.h1')}</h1>
+<p class="sr-only">{tr('h.lede')}</p>
 <div class="stage stage-housing" data-live="0" data-stage-auto="housing" data-view="housing">
 <div class="stage-poster">{HP.housing_svg(HOUSE_WARDS, MUNI_POLY, 1000, 620, deals=HOUSE_N, towns=HOUSE_TOWNS)}</div>
-<p class="stage-caption">中古マンション · 成約 {HOUSE_N:,}件 · {HOUSE['basis']}（直近4四半期） · 国土交通省</p>
+<p class="stage-caption">{tr('h.caption').format(n=f"{HOUSE_N:,}", basis=HOUSE['basis'])}</p>
 <div class="stage-live"></div>
 </div>
 </main>"""
-    jsonld = {
-        "@context": "https://schema.org", "@type": "Dataset",
-        "name": f"Tokyo — used flat mean prices by town, {HOUSE['basis']}",
-        "description": "Mean closed price per town for used flats in Tokyo's 23 wards, derived from the MLIT Real Estate Information Library.",
-        "temporalCoverage": "2025-04-01/2026-03-31",
-        "spatialCoverage": "Tokyo 23 wards",
-        "license": "https://www.digital.go.jp/resources/open_data/public_data_license_v1.0",
-        "creator": {"@type": "Organization", "name": "国土交通省 不動産情報ライブラリ"},
-        "url": SITE_URL + "/housing/",
-    }
-    return page("/housing/", PAGE_META["housing"]["ja"][0], PAGE_META["housing"]["ja"][1],
+    jsonld = dataset_node(
+        f"Tokyo — used flat mean prices by town, {HOUSE['basis']}",
+        "Mean closed price per town for used flats in Tokyo's 23 wards, derived from the MLIT Real Estate Information Library.",
+        "/housing/",
+        "https://www.reinfolib.mlit.go.jp/",
+        [("/app/housing/data/towns.json", "application/json")],
+        "2025-04-01/2026-03-31",
+        "Tokyo 23 wards",
+        "https://www.digital.go.jp/resources/open_data/public_data_license_v1.0",
+        ["Mean closed price per m2 (JPY)", "Transaction count per town"],
+    )
+    return page("/housing/", PAGE_META["housing"][CUR][0], PAGE_META["housing"][CUR][1],
                 body, "housing", jsonld, fullscreen=True)
 
 
@@ -1494,8 +1740,8 @@ def build_population():
     n_munis = POP["meta"]["n"]
 
     def strip(key, value, unit=None):
-        u = f'<small data-t="{unit}">{ja(unit)}</small>' if unit else ""
-        return (f'<div><dt data-t="{key}">{ja(key)}</dt>'
+        u = f'<small>{tr(unit)}</small>' if unit else ""
+        return (f'<div><dt>{tr(key)}</dt>'
                 f'<dd>{value}{u}</dd></div>')
 
     strip_html = "".join([
@@ -1522,91 +1768,92 @@ def build_population():
             f'<td class="num">{p["index2050"]}</td></tr>'
         )
     table = f"""<div class="pop-table-wrap"><table class="data-table">
-<thead><tr><th class="idx">#</th><th data-t="pop.table.th.pref">{ja('pop.table.th.pref')}</th>
-<th class="num" data-t="pop.table.th.pop">{ja('pop.table.th.pop')}</th>
-<th class="num" data-t="pop.table.th.change">{ja('pop.table.th.change')}</th>
-<th class="num" data-t="pop.table.th.age65">{ja('pop.table.th.age65')}</th>
-<th class="num" data-t="pop.table.th.pop2050">{ja('pop.table.th.pop2050')}</th>
-<th class="num" data-t="pop.table.th.index">{ja('pop.table.th.index')}</th></tr></thead>
+<thead><tr><th class="idx">#</th><th>{tr('pop.table.th.pref')}</th>
+<th class="num">{tr('pop.table.th.pop')}</th>
+<th class="num">{tr('pop.table.th.change')}</th>
+<th class="num">{tr('pop.table.th.age65')}</th>
+<th class="num">{tr('pop.table.th.pop2050')}</th>
+<th class="num">{tr('pop.table.th.index')}</th></tr></thead>
 <tbody>{''.join(rows)}</tbody></table></div>"""
 
     pyramid = pop_pyramid_svg(POP)
-    jsonld = {
-        "@context": "https://schema.org", "@type": "Dataset",
-        "name": "Japan population by municipality, 2025",
-        "description": "2025 Census population, households, age structure and IPSS 2050 projection for 1,719 municipalities.",
-        "temporalCoverage": "2025-10-01/2050-10-01",
-        "spatialCoverage": "Japan",
-        "license": "https://www.e-stat.go.jp/terms-of-use",
-        "creator": [{"@type": "Organization", "name": "総務省統計局"},
-                    {"@type": "Organization", "name": "国立社会保障・人口問題研究所"}],
-        "url": SITE_URL + "/population/",
-    }
+    jsonld = dataset_node(
+        "Japan population by municipality, 2025",
+        "2025 Census population, households, age structure and IPSS 2050 projection for 1,719 municipalities.",
+        "/population/",
+        "https://www.e-stat.go.jp/stat-search/files?page=1&layout=datalist&lid=000001491012",
+        [("/data/population.csv", "text/csv")],
+        "2025-10-01/2050-10-01",
+        "Japan",
+        "https://www.e-stat.go.jp/terms-of-use",
+        ["Population", "Households", "Age structure", "2050 IPSS projection"],
+        extra_citations=("https://www.ipss.go.jp/pp-shicyoson/j/shicyoson23/t-page.asp",),
+    )
 
     body = f"""<main id="main" class="pop-page">
 <section class="pop-hero"><div class="wrap pop-hero-in">
-<p class="pop-eyebrow" data-t="pop.eyebrow">{ja('pop.eyebrow')}</p>
-<h1 class="pop-h1" data-t="pop.h1">{ja('pop.h1')}</h1>
-<p class="pop-lede" data-t="pop.lede">{ja('pop.lede')}</p>
+<p class="pop-eyebrow">{tr('pop.eyebrow')}</p>
+<h1 class="pop-h1">{tr('pop.h1')}</h1>
+<p class="pop-lede">{tr('pop.lede')}</p>
 <dl class="pop-strip">{strip_html}</dl>
 </div></section>
 <section class="wrap pop-read">
 <div class="pop-read-head">
-<p class="pop-read-eyebrow" data-t="pop.read.eyebrow">{ja('pop.read.eyebrow')}</p>
-<h2 data-t="pop.read.title">{ja('pop.read.title')}</h2>
-<p data-t="pop.read.lede">{ja('pop.read.lede')}</p>
+<p class="pop-read-eyebrow">{tr('pop.read.eyebrow')}</p>
+<h2>{tr('pop.read.title')}</h2>
+<p>{tr('pop.read.lede')}</p>
 </div>
 <ol class="pop-read-steps">
-<li><span class="pop-read-num">01</span><b data-t="pop.read.s1h">{ja('pop.read.s1h')}</b><p data-t="pop.read.s1p">{ja('pop.read.s1p')}</p></li>
-<li><span class="pop-read-num">02</span><b data-t="pop.read.s2h">{ja('pop.read.s2h')}</b><p data-t="pop.read.s2p">{ja('pop.read.s2p')}</p></li>
-<li><span class="pop-read-num">03</span><b data-t="pop.read.s3h">{ja('pop.read.s3h')}</b><p data-t="pop.read.s3p">{ja('pop.read.s3p')}</p></li>
+<li><span class="pop-read-num">01</span><b>{tr('pop.read.s1h')}</b><p>{tr('pop.read.s1p')}</p></li>
+<li><span class="pop-read-num">02</span><b>{tr('pop.read.s2h')}</b><p>{tr('pop.read.s2p')}</p></li>
+<li><span class="pop-read-num">03</span><b>{tr('pop.read.s3h')}</b><p>{tr('pop.read.s3p')}</p></li>
 </ol>
-<p class="pop-read-note" data-t="pop.read.note">{ja('pop.read.note')}</p>
+<p class="pop-read-note">{tr('pop.read.note')}</p>
 </section>
 <section class="wrap pop-stage-wrap">
 <div class="stage pop-stage" data-live="0" data-stage-auto="population" data-view="population">
 <div class="stage-poster">{HP.population_svg(POP)}</div>
-<p class="stage-caption">1,719市町村 · 2025年国勢調査 · 総務省統計局</p>
+<p class="stage-caption">{tr('pop.caption').format(n=n(POP["meta"]["n"]))}</p>
 <div class="stage-live"></div>
 </div>
 </section>
 <section class="wrap pop-section pop-pyramid">
-<div class="pop-section-head"><h2 data-t="pop.pyramid.title">{ja('pop.pyramid.title')}</h2>
-<p data-t="pop.pyramid.lede">{ja('pop.pyramid.lede')}</p></div>
+<div class="pop-section-head"><h2>{tr('pop.pyramid.title')}</h2>
+<p>{tr('pop.pyramid.lede')}</p></div>
 <div class="pop-pyramid-grid">
 <figure>{pyramid}
-<figcaption class="pop-pyramid-note" data-t="pop.pyramid.note">{ja('pop.pyramid.note')}</figcaption>
+<figcaption class="pop-pyramid-note">{tr('pop.pyramid.note')}</figcaption>
 </figure>
 <dl class="pop-pyramid-stats">
-<div class="pop-pyramid-stat"><dt data-t="pop.pyramid.stat65">{ja('pop.pyramid.stat65')}</dt>
+<div class="pop-pyramid-stat"><dt>{tr('pop.pyramid.stat65')}</dt>
 <dd>{nat['age65Share']}% <span>→</span> <em>{POP_2050_65}%</em></dd></div>
-<div class="pop-pyramid-stat"><dt data-t="pop.pyramid.stat0">{ja('pop.pyramid.stat0')}</dt>
+<div class="pop-pyramid-stat"><dt>{tr('pop.pyramid.stat0')}</dt>
 <dd>{nat['age0Share']}% <span>→</span> <em>{POP_2050_0}%</em></dd></div>
-<div class="pop-pyramid-stat"><dt data-t="pop.pyramid.statpop">{ja('pop.pyramid.statpop')}</dt>
-<dd><b data-t="pop.pyramid.pop2025">{ja('pop.pyramid.pop2025')}</b> <span>→</span> <em data-t="pop.pyramid.pop2050">{ja('pop.pyramid.pop2050')}</em></dd></div>
+<div class="pop-pyramid-stat"><dt>{tr('pop.pyramid.statpop')}</dt>
+<dd><b>{tr('pop.pyramid.pop2025')}</b> <span>→</span> <em>{tr('pop.pyramid.pop2050')}</em></dd></div>
 </dl>
 </div>
 </section>
 <section class="wrap pop-section pop-table">
-<div class="pop-section-head"><h2 data-t="pop.table.title">{ja('pop.table.title')}</h2>
-<p data-t="pop.table.lede">{ja('pop.table.lede')}</p></div>
+<div class="pop-section-head"><h2>{tr('pop.table.title')}</h2>
+<p>{tr('pop.table.lede')}</p></div>
 {table}
-<p class="pop-table-note" data-t="pop.table.note">{ja('pop.table.note')}</p>
+<p class="pop-table-note">{tr('pop.table.note')}</p>
 </section>
 <section class="wrap pop-section pop-method">
-<div class="pop-section-head"><h2 data-t="pop.method.title">{ja('pop.method.title')}</h2>
-<p data-t="pop.method.lede">{ja('pop.method.lede')}</p></div>
+<div class="pop-section-head"><h2>{tr('pop.method.title')}</h2>
+<p>{tr('pop.method.lede')}</p></div>
 <div class="pop-method-grid">
-<section><h3 data-t="pop.method.census.h">{ja('pop.method.census.h')}</h3>
-<p data-t="pop.method.census.p">{ja('pop.method.census.p')}</p></section>
-<section><h3 data-t="pop.method.proj.h">{ja('pop.method.proj.h')}</h3>
-<p data-t="pop.method.proj.p">{ja('pop.method.proj.p')}</p></section>
-<section><h3 data-t="pop.method.def.h">{ja('pop.method.def.h')}</h3>
-<p data-t="pop.method.def.p">{ja('pop.method.def.p')}</p></section>
-<section><h3 data-t="pop.method.src.h">{ja('pop.method.src.h')}</h3>
-<p data-t="pop.method.src.p">{ja('pop.method.src.p')}</p></section>
-<section><h3 data-t="pop.method.lic.h">{ja('pop.method.lic.h')}</h3>
-<p data-t="pop.method.lic.p">{ja('pop.method.lic.p')}</p></section>
+<section><h3>{tr('pop.method.census.h')}</h3>
+<p>{tr('pop.method.census.p')}</p></section>
+<section><h3>{tr('pop.method.proj.h')}</h3>
+<p>{tr('pop.method.proj.p')}</p></section>
+<section><h3>{tr('pop.method.def.h')}</h3>
+<p>{tr('pop.method.def.p')}</p></section>
+<section><h3>{tr('pop.method.src.h')}</h3>
+<p>{tr('pop.method.src.p')}</p></section>
+<section><h3>{tr('pop.method.lic.h')}</h3>
+<p>{tr('pop.method.lic.p')}</p></section>
 </div>
 <p class="pop-method-src">
 <a href="https://www.stat.go.jp/data/kokusei/2025/index.html" rel="noopener">令和7年国勢調査</a> ·
@@ -1618,8 +1865,8 @@ def build_population():
 </main>"""
 
     css = (SRC / "population.css").read_text(encoding="utf-8")
-    return page("/population/", PAGE_META["population"]["ja"][0],
-                PAGE_META["population"]["ja"][1], body, "population", jsonld,
+    return page("/population/", PAGE_META["population"][CUR][0],
+                PAGE_META["population"][CUR][1], body, "population", jsonld,
                 head_extra='<style>\n' + css + '\n</style>')
 
 
@@ -1628,9 +1875,34 @@ def fill_copy(s):
 
 
 # ---------------------------------------------------------------- main
+def og_cards():
+    """把预生成的 1200×630 卡片读进站点产物;缺一张就报错(绝不发半套 og:image)。
+
+    卡片由 tools/make_og_cards.py 从本文件的语言模型生成(见该脚本),是构建输入,
+    不是构建期渲染——线上构建机没有字体源,不该再压一份排版逻辑上去。
+    """
+    out, missing = {}, []
+    for key in ("home", "weather", "quake", "crime", "cabinet", "housing", "population"):
+        for lang in LANGS:
+            f = ROOT / "assets" / "og" / f"{key}-{lang}.png"
+            if not f.is_file():
+                missing.append(f.name)
+                continue
+            out[f"/assets/og/{f.name}"] = f.read_bytes()
+    if missing:
+        raise SystemExit("og: 缺少卡片 " + ", ".join(sorted(missing)) +
+                         " —— 跑 python tools/make_og_cards.py 重新生成")
+    return out
+
+
 def main():
     global CSS_VER, JS_VER, FONT_VER, WEATHER_VER
     files = {}
+
+    # 繁体列由简体列转出:文案出现词表外的字时在这里报错,而不是悄悄漏转。
+    hant.assert_covered([v[1] for v in COPY.values()] +
+                        [PAGE_META[p]["zh-Hans"][i] for p in PAGE_META for i in (0, 1)],
+                        where="COPY / PAGE_META 的简体文案")
 
     weather_files = weather_assets()
     # The stamp is the runtime's content hash, so every release publishes fresh asset
@@ -1640,29 +1912,29 @@ def main():
         "".join(weather_files[k] for k in sorted(weather_files)).encode("utf-8")
     ).hexdigest()[:8]
 
-    # Six chapters: /weather/, /quake/, /crime/, /cabinet/, /housing/, /population/ (plus the cover).
-    # /preview/ remains a tiny redirect for the old preview URL.
-    files["/"] = build_home_preview()
+    # 六章 + 封面,四语各一份真页面:ja 在 /<章>/,其余在 /zh-Hans/<章>/ 等。
+    routes = [
+        ("/", build_home_preview),
+        ("/weather/", lambda: build_weather(WEATHER_VER)),
+        ("/quake/", build_quake),
+        ("/crime/", build_crime),
+        ("/cabinet/", build_cabinet),
+        ("/housing/", build_housing),
+        ("/population/", build_population),
+    ]
+    for lang in LANGS:
+        set_lang(lang)
+        for route, build in routes:
+            files[url_in(lang, route)] = build()
+    set_lang("ja")
+
+    # CF Pages 只认根目录的 404.html:它只有 ja 一份,内部链接也指 ja。
     files["/404.html"] = build_404()
     files["/preview/"] = build_preview_redirect()
-    files["/weather/"] = build_weather(WEATHER_VER)
-    files["/quake/"] = build_quake()
-    files["/crime/"] = build_crime()
-    files["/cabinet/"] = build_cabinet()
-    files["/housing/"] = build_housing()
-    files["/population/"] = build_population()
     for name, content in weather_files.items():
         files[f"/assets/weather/{name}"] = content
-
-    # i18n dictionary (only the three languages; ja already in HTML)
-    dic = {k: {"ja": fill_copy(v[0]), "zh": fill_copy(v[1]), "en": fill_copy(v[2])}
-           for k, v in COPY.items()}
-    for _pk, _pv in PAGE_META.items():
-        dic[f"meta.{_pk}.title"] = {lg: _pv[lg][0] for lg in ("ja", "zh", "en")}
-        dic[f"meta.{_pk}.desc"] = {lg: _pv[lg][1] for lg in ("ja", "zh", "en")}
-    i18n_json = json.dumps(dic, ensure_ascii=False, separators=(",", ":"))
-    i18n_ver = hashlib.sha1(i18n_json.encode("utf-8")).hexdigest()[:8]
-    files["/assets/i18n.json"] = i18n_json
+    for path, content in og_cards().items():
+        files[path] = content
 
     # 主题 token 消费自 sai-assets 的 ouuut-editorial 包(见 design-lock.json assets[]):
     # 包 type.css(字体族/版式刻度)+ 包 all.css(双模配色/和色六景)+ 本站专有覆盖。
@@ -1670,15 +1942,15 @@ def main():
           (PACKS / "ouuut-editorial" / "css" / "all.css").read_text(encoding="utf-8") + "\n" + \
           (SRC / "theme-overrides.css").read_text(encoding="utf-8") + "\n" + \
           (SRC / "app.css").read_text(encoding="utf-8")
-    js = (SRC / "shell.js").read_text(encoding="utf-8").replace("__I18N_VER__", i18n_ver)
+    js = (SRC / "shell.js").read_text(encoding="utf-8")
 
     css_bytes = css.encode("utf-8")
     js_bytes = js.encode("utf-8")
     CSS_VER = hashlib.sha1(css_bytes).hexdigest()[:8]
     # The shell stamps its own ?v= onto every lazy /app/ module URL, so it must
     # change whenever any app code (view/vendor) changes, not just shell.js.
-    # 章节样式表的内容哈希：外壳把 ?v= 打在模块 URL 上，若样式变了而模块字节没变，
-    # 浏览器会拿旧 view.js（旧样式链接）当缓存，所以先把补丁写进参与哈希的字节里。
+    # 章节样式表的内容哈希:外壳把 ?v= 打在模块 URL 上,若样式变了而模块字节没变,
+    # 浏览器会拿旧 view.js(旧样式链接)当缓存,所以先把补丁写进参与哈希的字节里。
     HSG_CSS_VER = hashlib.sha1((ROOT / "app/housing/app.css").read_bytes()).hexdigest()[:8]
     app_code = b""
     for ap in sorted((ROOT / "app").rglob("*")):
@@ -1691,7 +1963,7 @@ def main():
     JS_VER = hashlib.sha1(js_bytes + app_code).hexdigest()[:8]
 
     # fonts first (needs the charset), then CSS can reference the version
-    charset = collect_chars(files, i18n_json)
+    charset = collect_chars(files)
     font_meta = build_fonts(charset)
     FONT_VER = font_meta["ver"]
     css = css.replace("__FONT_VER__", FONT_VER)
@@ -1711,17 +1983,14 @@ def main():
     write_site(files)
     write_data()
     write_meta(font_meta)
-    print("pages:", len([p for p in PAGES]))
-    print("css", CSS_VER, len(css_bytes), "js", JS_VER, len(js_bytes))
-    print("charset", len(charset))
+    print("pages:", len(PAGES), "chars:", len(charset), "css:", CSS_VER, "js:", JS_VER)
 
 
-def collect_chars(files, i18n_json):
+def collect_chars(files):
     chars = set()
     for p, h in files.items():
         if isinstance(h, str):
             chars.update(h)
-    chars.update(i18n_json)
     for m in MUNI:
         chars.update(m["ward"])
     for c in CAB["cabinets"]:
@@ -1790,6 +2059,11 @@ def write_site(files):
         dest.parent.mkdir(parents=True, exist_ok=True)
         enc = content if isinstance(content, bytes) else content.encode("utf-8")
         dest.write_bytes(enc)
+
+    # 退役文件:i18n.json(语言切换改成四语真页面后不再生成)不能跟着部署上去。
+    for stale in (SITE / "assets" / "i18n.json",):
+        if stale.is_file():
+            stale.unlink()
 
     # A rebuild must not leave old routes behind. Keep assets, drop stale HTML.
     expected = set()
@@ -1866,6 +2140,16 @@ def write_data():
         for ym in sorted(MONTH_MEAN):
             vs = [p["value"] for p in POLLS if p["date"][:7] == ym]
             w.writerow([ym, f"{sum(vs) / len(vs):.2f}", len(vs)])
+    with (d / "weather.csv").open("w", encoding="utf-8", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["prefecture_ja", "prefecture_en", "weather_code", "today_high",
+                    "today_low", "precip_prob", "week_start", "week_end", "summary_ja"])
+        for r in WEATHER_REGIONS:
+            week = r.get("week") or []
+            w.writerow([r["nameJa"], r.get("nameEn", ""), r.get("weatherCode", ""),
+                        r.get("today", {}).get("high", ""), r.get("today", {}).get("low", ""),
+                        r.get("pop", ""), week[0]["date"] if week else "",
+                        week[-1]["date"] if week else "", r.get("summaryJa", "")])
     with (d / "population.csv").open("w", encoding="utf-8", newline="") as f:
         w = csv.writer(f)
         w.writerow(["code", "prefecture", "municipality", "pop2025", "pop2020",
@@ -1879,15 +2163,24 @@ def write_data():
 
 
 def write_meta(font_meta):
-    urls = [SITE_URL + p for p, _, _ in PAGES]
+    # 每条路由 4 个 <loc>(四语各一),每条 <loc> 都带四语 xhtml:link + x-default。
+    routes = []
+    for rec in PAGES:
+        if rec["path"] != "/404.html" and rec["path"] not in routes:
+            routes.append(rec["path"])
     sm = ['<?xml version="1.0" encoding="UTF-8"?>',
-          '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
-    for p, _, _ in PAGES:
-        if p == "/404.html":
-            continue
-        pri = "1.0" if p == "/" else ("0.8" if p.count("/") <= 2 else "0.5")
-        sm.append(f"<url><loc>{SITE_URL}{p}</loc><lastmod>{BUILD_DATE}</lastmod>"
-                  f"<changefreq>weekly</changefreq><priority>{pri}</priority></url>")
+          '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"'
+          ' xmlns:xhtml="http://www.w3.org/1999/xhtml">']
+    for route in routes:
+        pri = "1.0" if route == "/" else ("0.8" if route.count("/") <= 2 else "0.5")
+        alts = "".join(f'<xhtml:link rel="alternate" hreflang="{lang}" href="{u}"/>'
+                       for lang, u in alternate_urls(route))
+        alts += (f'<xhtml:link rel="alternate" hreflang="x-default" '
+                 f'href="{SITE_URL + url_in("ja", route)}"/>')
+        for lang in LANGS:
+            sm.append(f"<url><loc>{SITE_URL + url_in(lang, route)}</loc>{alts}"
+                      f"<lastmod>{BUILD_DATE}</lastmod><changefreq>weekly</changefreq>"
+                      f"<priority>{pri}</priority></url>")
     sm.append("</urlset>")
     (SITE / "sitemap.xml").write_text("\n".join(sm), encoding="utf-8")
 
@@ -1930,19 +2223,26 @@ def write_meta(font_meta):
         "/data/*\n"
         "  Cache-Control: public, max-age=86400\n", encoding="utf-8")
 
-    (SITE / "_redirects").write_text(
-        "/weather /weather/ 301\n/quake /quake/ 301\n/crime /crime/ 301\n/cabinet /cabinet/ 301\n/housing /housing/ 301\n/population /population/ 301\n"
-        "/preview / 301\n/preview/ / 301\n", encoding="utf-8")
+    # 尾斜杠 301:四条语言路由各一条,由 LANGS/PREFIX 推出,不再手抄路径。
+    reds = []
+    for route in ("/weather/", "/quake/", "/crime/", "/cabinet/", "/housing/", "/population/"):
+        for lang in LANGS:
+            full = url_in(lang, route)
+            reds.append(f"{full.rstrip('/')} {full} 301")
+    reds += ["/preview / 301", "/preview/ / 301"]
+    (SITE / "_redirects").write_text("\n".join(reds) + "\n", encoding="utf-8")
 
     (SITE / "llms.txt").write_text(f"""# {BRAND}
 
-> 日本を六つの尺度で見る静的データサイト。天気（仰いで見る）、地震（引いて見る）、犯罪（寄って見る）、内閣（通して見る）、住宅（並べて見る）、人口（数えて見る）の六章。
+> 日本を六つの尺度で見る静的データサイト。天気(仰いで見る)、地震(引いて見る)、犯罪(寄って見る)、内閣(通して見る)、住宅(並べて見る)、人口(数えて見る)の六章。
+
+言語: ja(既定,パスは /weather/ など)、zh-Hans(/zh-Hans/…)、zh-Hant(/zh-Hant/…)、en(/en/…)。各ページは四語それぞれ静的生成。
 
 - [天気](/weather/): 気象庁の予報、47都道府県。今日・明日と7日間、気温と降水確率。
 - [地震](/quake/): 2000–{Q_END_DOT}、M4以上の震源{n(Q_N)}点。年別・月別・エネルギー。
 - [犯罪](/crime/): 2025年、東京都内5,234町丁、62区市町村。人口あたりの率。
 - [内閣](/cabinet/): 1998–2026、646調査、331か月、14内閣。
-- [住宅](/housing/): 直近4四半期 2025Q2–2026Q1（2025年4月–2026年3月）、東京、中古マンション成約26,416件を町名（1,237町）ごとに平均した㎡単価の地図。
+- [住宅](/housing/): 直近4四半期 2025Q2–2026Q1(2025年4月–2026年3月)、東京、中古マンション成約26,416件を町名(1,237町)ごとに平均したm2単価の地図。
 - [人口](/population/): 2025年国勢調査、{POP['meta']['n']:,}市町村。91.2%が減少、73.4%が減少市町村に住む。2050年は社人研推計で{POP_N['pop2050']:,}人。CSV: /data/population.csv
 
 Build: {BUILD_STAMP}. Sources: 気象庁, USGS ComCat, 警視庁, NHK, 日経, 朝日, 時事, 読売, JNN, 共同, 総務省統計局, 国立社会保障・人口問題研究所.
