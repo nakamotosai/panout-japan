@@ -287,6 +287,9 @@ CHOME_MAINLAND = sum(1 for p in POINTS
                      if p.get("lng") and 138.9 <= p["lng"] <= 139.96 and 35.46 <= p["lat"] <= 35.92)
 CHOME_NO_RATE = sum(1 for p in POINTS if (p.get("pop") or 0) < 200)
 CHOME_POP_MISSING = sum(1 for p in POINTS if p.get("g") == "*")
+# 率の分母は町丁人口なので、本文に出す合計もその合計に揃える
+# (区市町村別人口の合計とは約 6.7 万人ずれる)。
+CHOME_POP = sum((p.get("pop") or 0) for p in POINTS)
 C_META = json.loads((ROOT / "app/crime/data/meta.json").read_text(encoding="utf-8"))
 
 # cabinet series
@@ -1185,12 +1188,12 @@ COPY = {
         "incidents ÷ population × 1,000, per 1,000 residents."),
     "c.doc.cal.p2": (
         f"令和7年は年計、令和8年は年初からの累計で、期間が違う。二つを直接比べることはできない。"
-        f"データの総数は{n(CHOME_COUNT)}町丁・{len(MUNI)}区市町村、常住人口の合計は{n(TOTAL_POP)}人である。",
+        f"データの総数は{n(CHOME_COUNT)}町丁・{len(MUNI)}区市町村、町丁人口の合計は{n(CHOME_POP)}人である。",
         f"令和 7 年是全年,令和 8 年是年初以来的累计,期间不同,不能直接比较。数据总量为 {n(CHOME_COUNT)} 个町丁、"
-        f"{len(MUNI)} 个区市町村,常住人口合计 {n(TOTAL_POP)} 人。",
+        f"{len(MUNI)} 个区市町村,町丁人口合计 {n(CHOME_POP)} 人。",
         f"Full-year 2025 and the 2026 year-to-date cumulative cover different periods and cannot be compared "
-        f"directly. The dataset holds {n(CHOME_COUNT)} neighbourhoods in {len(MUNI)} wards, with {n(TOTAL_POP)} "
-        f"residents in total."),
+        f"directly. The dataset holds {n(CHOME_COUNT)} neighbourhoods in {len(MUNI)} wards, whose resident "
+        f"populations sum to {n(CHOME_POP)}."),
     "c.doc.cal.p3": (
         f"率を出さない町丁がある。人口200人未満では1件で率が大きく振れるため、率を定義せず、地図では薄く扱い、"
         f"表では件数のみを併記する({n(CHOME_NO_RATE)}町丁)。人口が欠損している{n(CHOME_POP_MISSING)}町丁"
@@ -1214,7 +1217,7 @@ COPY = {
     "c.doc.fact.period": ("期間", "期间", "Period"),
     "c.doc.fact.chome": ("町丁", "町丁", "Neighbourhoods"),
     "c.doc.fact.munis": ("区市町村", "区市町村", "Wards"),
-    "c.doc.fact.pop": ("常住人口", "常住人口", "Residents"),
+    "c.doc.fact.pop": ("町丁人口の合計", "町丁人口合计", "Neighbourhood population"),
     "c.doc.fact.rate": ("率の定義", "率定义", "Rate"),
     "c.doc.fact.norate": ("率を出さない町丁", "不计率的町丁", "No rate"),
     "c.doc.read.h": ("どう読むか", "怎么读", "How to read it"),
@@ -2169,7 +2172,7 @@ def build_crime():
 {chapter_doc("c", [
     ("chome", n(CHOME_COUNT)),
     ("munis", len(MUNI)),
-    ("pop", n(TOTAL_POP)),
+    ("pop", n(CHOME_POP)),
     ("rate", "1 / 1,000"),
     ("norate", n(CHOME_NO_RATE)),
 ])}
