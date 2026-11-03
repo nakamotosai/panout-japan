@@ -4,6 +4,7 @@
 
 > 统计(2026-11-04):接入 GA4(measurement ID `G-5Z2XZ044F6`)。由 `src/build.py` 的 `head()` 在构建期注入标准 gtag 片段(loader + `gtag('config')`),四条语言路由 × 7 页面 = 28 张静态页页页都有;除 `googletagmanager.com/gtag/js` 外不引其它第三方脚本。构建期自检:28 页每页恰好一段 gtag,否则构建直接失败。未部署。
 > 正文(2026-11-04):**四章正文扩写完成**(本地构建 + 仓内自检全绿,未部署)。地震 / 犯罪 / 内阁 / 住宅四章在舞台下各补一条静态正文,固定四节 `h2`:是什么 / 数据口径 / 怎么读 / 常见问题,四语同步(ja 原文、zh-Hans 独立成文、zh-Hant 走 s2tw、en 重写)。章页由「全屏舞台」改为「舞台 + 正文」的一枚文档(舞台仍占一屏,正文接在下面,页脚照常)。正文段可见字数实测:ja 1,270–1,496、zh-Hans/zh-Hant 1,132–1,340、en 3,011–3,375(整页可见字数 ja 1,746–1,990)。顺手修口径 bug:`q.beat1.p` 硬写的 86.7% 改为由 `PCT_2011_E` 推出的 86.2%;`d.year.note` 的「2026年7月15日」改为由数据推出的最终日 2026-08-09。正文只写站内既有数据与「方法与出典」里已列出的来源,数字全部由 `src/build.py` 从 `app/*/data` 推出。唯一 next:把站点语言部件(`app/*/view.js`)补上 zh-Hant 词表。
+> 收尾三项(2026-11-04):**T8 完成**(本地构建 + `verify_local.py` 全绿 211 断言语境,未部署)。①首页内阁卡「最大月変動」由手写的 +20.5 改为数据推出的 **+45.5(2011-09)**——+20.5 的原口径是「同一内阁内部连续两个月的最大涨幅」(菅,2010-08→09),与卡片标签「最大单月变动」不是一回事;数字改由 `MONTH_MEAN` 现算,章页「数据口径」段与事实栏都写明口径。②住宅 `wards.json` 的 `definition.statistic` 由 `"mean"` 改为 **`"median"`**(实现 `unit` = `median()`,还补了 `definition.fields` 字段↔统计量对照表),页面文案原本就写「区是中央值」。③zh-Hant 交互部件不再落回简体:`VIEW_LANG` 直传 `zh-Hant`,章节视图的 zh 列表经 `app/hant.js`(由 `src/hant.py` 的 s2tw 裁剪生成,`tools/gen_view_hant.py` / `src/view_i18n.py` 双闸)在运行期转出;海报 SVG 标注进 `COPY["plate.*"]` 四语;四语海报标注与 `data-view-lang` 都进 `verify_local.py` 断言。
 > 语言(2026-11-04):**四语真静态页**已实现(本地构建 + 本地验证通过,未部署)。ja 保持默认路径,新增简体 `/zh-Hans/...`、繁体 `/zh-Hant/...`、英文 `/en/...`;每页四条互指 hreflang + `x-default`,旧 `?lang=` hreflang 与客户端 `i18n.json` 全部删除;语言切换器改为站内 `<a>`;sitemap 每条路由四个 `<loc>` + 四语 `xhtml:link`;28 张 1200×630 `og:image`;章节页面包屑 + `BreadcrumbList`;章节 `Dataset` 补 `creator`/`citation`/`distribution`/`dateModified`/`isAccessibleForFree`;`Organization.sameAs` 与 `Person` 署名进 JSON-LD。四章扩写要点清单见 `docs/content-gap-japan.md`(2026-11-04 已落地,见上条)。
 > 状态:**六章齐全,人口章已上生产**(2026-11-01)。`/population/` 用 2025 年国势调查(2026-09-29 公布)与社人研 2050 推计,1,719 市町村等面积方格 ↔ 人口加权树图,附年龄金字塔与 47 县表;首页第六块板已从新闻预告换成人口。构建 7 个内容页 × 4 语 = 28 页;新闻占位代码已删除。线上 `https://japan.ouuut.com/population/`(2026-11-01 01:44 JST 部署,`ea896d63`);VPS 06:10 天更任务已同步到含人口章的版本。静态资源缓存 2026-11-03 定稿:浏览器按源站头重验(`max-age=0, must-revalidate`),由 `ouuut.com` zone 上一条 host 级 Cache Rule 覆盖 4 小时 Browser Cache TTL,字体仍 `immutable`;详见 `docs/WEATHER-REFRESH.md` § Asset cache policy。生产根 `F:/projects/panout-japan`,仓 `ouuut/panout-japan`。本地验收见 `C:/Users/sai/ego/population-qa/` 与 `HANDOFF.md`。
 > 命名：**japan.ouuut.com**。域名即品牌，旧字标已退役。
@@ -25,6 +26,7 @@ src/
   build.py      # 唯一构建入口:四语文案表、页面模板、静态图表 SVG、CSV/sitemap/headers
   hant.py       # 简体→繁体(OpenCC s2tw)转换 + 字符集闸(zh-Hant 列由简体列转出)
   hant_data.py  # 生成物:从 OpenCC 词表裁剪的 s2tw 表(tools/gen_hant_tables.py 重生成)
+  view_i18n.py  # app/hant.js 的生成口径 + 闸(章节视图的 zh-Hant 词表:与 hant.py 同一套 s2tw)
   home_plates.py# 总入口六张构建期数据板(天气/地震/犯罪/内阁/住宅/人口)
   home-preview.css # 总入口六块同屏原型(/)
   weather/      # /weather/ 运行时:JMA 快照、47 都道府县地图、app.js、weather CSS
@@ -60,7 +62,7 @@ site/           # 构建产物,gitignore
 - **章节 Dataset**:`creator`/`publisher` 是本站 Organization,官方机构(气象厅/警视厅/NHK/国交省/统计局·社人研)进 `isBasedOn` + `citation`;补 `distribution`(指向 `/data/*.csv` 与 housing 的 `towns.json`)、`dateModified`、`isAccessibleForFree`、`variableMeasured`。
 - **实体**:`Organization` 的 `@id` 与 `url` 同域,`sameAs` = ouuut.com / saaaai.com / X;`Person`(中本蔡 / NAKAMOTO SAI)+ `author` 挂在 WebPage 与 Dataset 上,页脚署名链到 saaaai.com。
 - **繁体怎么来**:不另写一份,由简体列按 OpenCC **s2tw** 规则转换 —— `src/hant.py`(最长匹配 + 台用字表)+ `tools/gen_hant_tables.py` 从本机 OpenCC 词表裁剪生成的 `src/hant_data.py`。上线构建机不装 opencc;文案一旦用到词表字符集外的字,`build.py` 直接报错并要求重跑生成脚本(不会悄悄漏转)。
-- **已知限制**:章节内的交互部件(`app/*/view.js`、海报 SVG 里的日文标注)只有 ja/zh/en 三套词表,zh-Hant 页的部件按简体渲染;四章正文扩写要点见 `docs/content-gap-japan.md`。
+- **zh-Hant 的交互部件与海报标注**:章节视图(`app/<章>/view.js`)的 zh 列是唯一来源,繁体在运行期由 `app/hant.js`(生成物,`src/hant.py` 的 s2tw 裁剪)转出;海报 SVG 标注是 `COPY` 的 `plate.*`(四语,zh-Hant 由简体列转出)。改了文案要跑 `python tools/gen_view_hant.py`,否则 `src/build.py` 与 `.private/verify_local.py` 的闸会拦下。四章正文扩写要点见 `docs/content-gap-japan.md`。
 
 
 ### 当前改版预览
@@ -99,7 +101,7 @@ bash tools/panout_weather_refresh.sh --force        # 手动强制一次
 | 天气 | 47 都道府县；今天/明天 + 未来 7 天；预报值，不是观测值；每日 06:10 JST 刷新 | 気象庁（JMA）予報スナップショット |
 | 地震 | 27 年（2000–2026.08），M4+，40,145 次；2011 年按次数 14.6% / 按能量 86.2% | USGS ComCat |
 | 犯罪 | 2025 全年，5,234 町丁，中位 4.4‰，最高 1,332‰ | 警視庁 町丁目別犯罪統計 |
-| 内阁 | 14 任 331 个月，646 次调查；最大单月变动 +20.5 | 各社世论调查汇总（NHK/日经/共同/时事/朝日/读卖/JNN） |
+| 内阁 | 14 任 331 个月，646 次调查；最大单月变动 +45.5（2011-09;同内阁内最大 +20.5） | 各社世论调查汇总（NHK/日经/共同/时事/朝日/读卖/JNN） |
 | 住宅 | 2025Q2–2026Q1，東京中古マンション成約 26,416 件；按市区町村 + 町名（地区名）汇总的平均㎡単価 | 国土交通省 不动产情报图书馆（PDL 1.0） |
 | 人口 | 2025-10-01，1,719 市町村；人口/世带/年龄/外国人；2050 年为社人研中位推计；5 年一更 | 総務省統計局 令和7年国勢調査（e-Stat 第1-1/2-7/49-1表）＋ 国立社会保障・人口問題研究所 令和5年推計 |
 

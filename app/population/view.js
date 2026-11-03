@@ -6,6 +6,7 @@ const CSS_HREF = "/app/population/app.css";
 const DATA_URL = "/app/population/data/population.json";
 const COLS = 54, ROWS = 32;
 
+import { toHant } from "../hant.js";
 const I18N = {
   ja: {
     metrics: { rate: "増減", pop: "人口", age65: "65+", proj: "2050" },
@@ -131,6 +132,20 @@ const I18N = {
     noData: "—",
   },
 };
+
+/* zh-Hant:四语真页面把 <html data-view-lang> 写成 zh-Hant,章节视图挑自己的词条,不落回
+   zh(简体)。简体词条是唯一来源,繁体由站内 s2tw 规则转出(app/hant.js;规则与
+   src/hant.py 同一份,生成与闸见 tools/gen_view_hant.py / src/view_i18n.py)。 */
+const isZh = (l) => l === "zh" || l === "zh-Hant";
+const zhx = (l, s) => (l === "zh-Hant" ? toHant(String(s)) : s);
+function deepHant(v) {
+  if (typeof v === "string") return toHant(v);
+  if (typeof v === "function") return (...a) => toHant(v(...a));
+  if (Array.isArray(v)) return v.map(deepHant);
+  if (v && typeof v === "object") { const o = {}; for (const k in v) o[k] = deepHant(v[k]); return o; }
+  return v;
+}
+I18N["zh-Hant"] = deepHant(I18N.zh);
 
 const SKELETON = `
 <div id="pop-app" class="pop-app">

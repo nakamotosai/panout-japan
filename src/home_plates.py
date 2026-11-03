@@ -10,6 +10,21 @@ from collections import defaultdict
 
 import svgkit as S
 
+# 海报上的地名:ja/zh 用汉字原样,en 出罗马字。标注文案(T)由构建传进来 —— 单一真相源是
+# src/build.py 的 COPY(四语,zh-Hant 由 zh 列经 src/hant.py 转出),这里不另存一份。
+PLACE_EN = {"千代田": "Chiyoda", "世田谷": "Setagaya", "足立": "Adachi",
+            "札幌": "Sapporo", "東京": "Tokyo", "那覇": "Naha", "秋田": "Akita"}
+
+
+def _t(T, key, **kw):
+    if not T or key not in T:
+        raise SystemExit(f"home_plates: 缺少海报标注文案 {key}(见 src/build.py 的 COPY)")
+    return T[key].format(**kw) if kw else T[key]
+
+
+def _place(name, lang):
+    return PLACE_EN.get(name, name) if lang == "en" else name
+
 
 def _svg(w, h, label, body):
     return (f'<svg class="hp-svg" viewBox="0 0 {w} {h}" role="img" '
@@ -17,7 +32,7 @@ def _svg(w, h, label, body):
             f'<title>{label}</title>{body}</svg>')
 
 
-def quake_svg(quakes, outline, years, w=1000, h=760):
+def quake_svg(quakes, outline, years, w=1000, h=760, T=None, lang="ja"):
     bbox = (121.0, 23.0, 151.0, 48.0)
     proj = S.Proj(bbox, w, h, 10)
 
@@ -80,10 +95,10 @@ def quake_svg(quakes, outline, years, w=1000, h=760):
         out.append(f'<text x="{x:.1f}" y="{base + 30}" text-anchor="{anchor}" '
                    f'class="{cls}">{year}</text>')
 
-    return _svg(w, h, "日本周辺のM4以上震源密度、2000年から2026年", "".join(out))
+    return _svg(w, h, _t(T, "plate.quake.aria", a=years[0], b=years[-1]), "".join(out))
 
 
-def crime_svg(points, muni_poly, ward_rate, w=1000, h=760):
+def crime_svg(points, muni_poly, ward_rate, w=1000, h=760, T=None, lang="ja"):
     from shapely.geometry import shape
     from shapely.validation import make_valid
 
@@ -139,7 +154,7 @@ def crime_svg(points, muni_poly, ward_rate, w=1000, h=760):
                     f'height="12" fill="var(--accent)" opacity="0.9"/>')
     out.append('<g class="hp-lens">' + "".join(lens) + "</g>")
     out.append(f'<text x="{lx:.1f}" y="{ly - 104:.1f}" text-anchor="middle" '
-               f'class="note halo ink">23区 / {chome_n:,}町丁</text>')
+               f'class="note halo ink">{_t(T, "plate.crime.chome", n=f"{chome_n:,}")}</text>')
 
     labels = [
         ("千代田", 139.7536, 35.6938, 8, -10, "start"),
@@ -149,7 +164,7 @@ def crime_svg(points, muni_poly, ward_rate, w=1000, h=760):
     for name, lon, lat, dx, dy, anchor in labels:
         x, y = proj.xy(lon, lat)
         out.append(f'<text x="{x + dx:.1f}" y="{y + dy:.1f}" text-anchor="{anchor}" '
-                   f'class="ward halo ink">{name}</text>')
+                   f'class="ward halo ink">{_place(name, lang)}</text>')
 
     # Rate key, flat blocks only.
     ky = h - 56
@@ -159,12 +174,12 @@ def crime_svg(points, muni_poly, ward_rate, w=1000, h=760):
                    f'fill="var(--accent)" opacity="{op}"/>')
     out.append(f'<text x="{54 + 4 * 24 + 8}" y="{ky + 27}" class="legend">LOW → HIGH</text>')
     out.append(f'<text x="{w - 54}" y="{ky}" text-anchor="end" class="legend">'
-               f'23区 / {chome_n:,} CHOME</text>')
+               f'{_t(T, "plate.crime.chome", n=f"{chome_n:,}")}</text>')
 
-    return _svg(w, h, "東京都心の町丁別犯罪率と認知件数", "".join(out))
+    return _svg(w, h, _t(T, "plate.crime.aria"), "".join(out))
 
 
-def cabinet_svg(months, month_mean, cabinet_data, w=1000, h=760):
+def cabinet_svg(months, month_mean, cabinet_data, w=1000, h=760, T=None, lang="ja"):
     n = len(months)
     index = {ym: i for i, ym in enumerate(months)}
     pad_l, pad_r = 56, 28
@@ -177,7 +192,8 @@ def cabinet_svg(months, month_mean, cabinet_data, w=1000, h=760):
 
     # Cabinet ribbon: width is time served, not an equal-width card row.
     ribbon_y, ribbon_h = 58, 34
-    shortcuts = {"obuchi": "小渕", "koizumi": "小泉", "abe2": "安倍2", "takaichi": "高市"}
+    shortcuts = {"obuchi": _t(T, "plate.cab.obuchi"), "koizumi": _t(T, "plate.cab.koizumi"),
+                 "abe2": _t(T, "plate.cab.abe2"), "takaichi": _t(T, "plate.cab.takaichi")}
     for j, cab in enumerate(cabinet_data["cabinets"]):
         i0 = index.get(cab["start"][:7], 0)
         i1 = index.get(cab["end"][:7], n - 1)
@@ -222,7 +238,7 @@ def cabinet_svg(months, month_mean, cabinet_data, w=1000, h=760):
                    f'stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round"/>')
 
     # One seam worth naming; the ribbon already carries the other cabinets.
-    for ym, label in (("2012-12", "2012 / 安倍2次"),):
+    for ym, label in (("2012-12", "2012 / " + _t(T, "plate.cab.seam")),):
         if ym not in index:
             continue
         x = x_at(index[ym])
@@ -250,10 +266,10 @@ def cabinet_svg(months, month_mean, cabinet_data, w=1000, h=760):
 
     out.append(f'<text x="{x0}" y="{top - 8}" class="micro">APPROVAL / %</text>')
 
-    return _svg(w, h, "1998年から2026年までの内閣支持率、331か月", "".join(out))
+    return _svg(w, h, _t(T, "plate.cab.aria", a=months[0][:4], b=months[-1][:4], n=len(months)), "".join(out))
 
 
-def housing_svg(wards, muni_poly, w=1000, h=760, deals=None, towns=None):
+def housing_svg(wards, muni_poly, w=1000, h=760, deals=None, towns=None, T=None, lang="ja"):
     """23 wards filled by the median price per m² (log scale, single accent)."""
     from shapely.geometry import shape
     from shapely.validation import make_valid
@@ -292,27 +308,28 @@ def housing_svg(wards, muni_poly, w=1000, h=760, deals=None, towns=None):
     for name, lon, lat, dx, dy, anchor in labels:
         x, y = proj.xy(lon, lat)
         out.append(f'<text x="{x + dx:.1f}" y="{y + dy:.1f}" text-anchor="{anchor}" '
-                   f'class="ward halo ink">{name}</text>')
+                   f'class="ward halo ink">{_place(name, lang)}</text>')
 
     if deals:
         tx, ty = proj.xy(139.735, 35.660)
-        # 卡片抬头是「23 WARDS 21,848」，这里必须写明是都全域口径，否则同一张图两个总数
-        label = f'東京全域 {towns:,} 町 / {deals:,} 件' if towns else f'{deals:,} 件'
+        # 卡片抬头是「23 WARDS 21,848」,这里必须写明是都全域口径,否则同一张图两个总数
+        label = (_t(T, "plate.house.deals", t=f"{towns:,}", d=f"{deals:,}")
+                 if towns else f'{deals:,}')
         out.append(f'<text x="{tx:.1f}" y="{ty:.1f}" text-anchor="middle" class="note halo ink">'
                    f'{label}</text>')
 
     ky = h - 56
-    out.append(f'<text x="54" y="{ky}" class="legend">WARD MEDIAN / 万円 per ㎡</text>')
+    out.append(f'<text x="54" y="{ky}" class="legend">{_t(T, "plate.house.legend")}</text>')
     for i, op in enumerate((0.10, 0.22, 0.34, 0.46)):
         out.append(f'<rect x="{54 + i * 24}" y="{ky + 14}" width="16" height="16" '
                    f'fill="var(--accent)" opacity="{op}"/>')
     out.append(f'<text x="{54 + 4 * 24 + 8}" y="{ky + 27}" class="legend">LOW → HIGH</text>')
     out.append(f'<text x="{w - 54}" y="{ky}" text-anchor="end" class="legend">23 WARDS / 2025Q2–2026Q1</text>')
 
-    return _svg(w, h, "東京23区の中古マンション価格、2025年第2四半期から2026年第1四半期", "".join(out))
+    return _svg(w, h, _t(T, "plate.house.aria", per="2025Q2–2026Q1"), "".join(out))
 
 
-def weather_svg(outline, w=1000, h=760, bbox=(121.0, 23.0, 151.0, 48.0)):
+def weather_svg(outline, w=1000, h=760, bbox=(121.0, 23.0, 151.0, 48.0), T=None, lang="ja"):
     """Today's forecast plate — the archipelago, the day's ruler, the plan.
 
     The forecast feed is not connected yet, so nothing here is a reading: the
@@ -349,7 +366,7 @@ def weather_svg(outline, w=1000, h=760, bbox=(121.0, 23.0, 151.0, 48.0)):
                    f'stroke="var(--accent)" stroke-width="1.6"/>')
         out.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="1.6" fill="var(--accent)"/>')
         out.append(f'<text x="{x + dx:.1f}" y="{y + dy:.1f}" text-anchor="{anchor}" '
-                   f'class="ward halo ink">{name}</text>')
+                   f'class="ward halo ink">{_place(name, lang)}</text>')
 
     # The day, ticked hour by hour.
     pad = 54
@@ -367,12 +384,12 @@ def weather_svg(outline, w=1000, h=760, bbox=(121.0, 23.0, 151.0, 48.0)):
                    f'class="micro">{i:02d}</text>')
     out.append(f'<text x="{pad}" y="{base - 34}" class="micro">TODAY / 24H</text>')
     out.append(f'<text x="{w - pad}" y="{base - 34}" text-anchor="end" class="micro">'
-               f'気象庁 予報</text>')
+               f'{_t(T, "plate.weather.source")}</text>')
 
-    return _svg(w, h, "今日の日本天気予報", "".join(out))
+    return _svg(w, h, _t(T, "plate.weather.aria"), "".join(out))
 
 
-def population_svg(doc, w=1000, h=760):
+def population_svg(doc, w=1000, h=760, T=None, lang="ja"):
     """1,719 equal cells, one per municipality, coloured by 2020→2025 change.
 
     The sixth scale is a wall of places, not a map. The thin ribbon above it is
@@ -406,7 +423,7 @@ def population_svg(doc, w=1000, h=760):
     out.append(f'<text x="{gx}" y="40" class="micro">1,719 MUNICIPALITIES</text>')
     out.append(f'<text x="{w - gx}" y="40" text-anchor="end" class="micro">'
                f'2020→2025</text>')
-    out.append(f'<text x="{gx}" y="78" class="note ink">91.2% の市町村が減少</text>')
+    out.append(f'<text x="{gx}" y="78" class="note ink">{_t(T, "plate.pop.head")}</text>')
 
     rows_cells = defaultdict(list)
     for m in munis:
@@ -442,14 +459,14 @@ def population_svg(doc, w=1000, h=760):
         out.append(f'<circle cx="{x:.2f}" cy="{y:.2f}" r="{cell * .85:.2f}" '
                    f'fill="none" stroke="var(--ink)" stroke-width="1.4" opacity="0.8"/>')
         out.append(f'<text x="{x + dx:.2f}" y="{y + dy:.2f}" text-anchor="{anchor}" '
-                   f'class="ward halo ink">{label}</text>')
+                   f'class="ward halo ink">{_place(label, lang)}</text>')
 
     ky = h - 56
     out.append(f'<text x="{gx}" y="{ky}" class="legend">MUNICIPALITY / 2020→2025</text>')
     for i, (fill, op, label) in enumerate((
-            ("var(--ink)", 0.55, "減少"),
-            ("var(--accent)", 0.90, "増加"),
-            ("var(--muted)", 0.30, "横ばい"))):
+            ("var(--ink)", 0.55, _t(T, "plate.pop.down")),
+            ("var(--accent)", 0.90, _t(T, "plate.pop.up")),
+            ("var(--muted)", 0.30, _t(T, "plate.pop.flat")))):
         lx = gx + i * 118
         out.append(f'<rect x="{lx}" y="{ky + 14}" width="16" height="16" rx="1.5" '
                    f'fill="{fill}" opacity="{op}"/>')
@@ -457,4 +474,4 @@ def population_svg(doc, w=1000, h=760):
     out.append(f'<text x="{w - gx}" y="{ky}" text-anchor="end" class="legend">'
                f'54 × 32 / 1,719</text>')
 
-    return _svg(w, h, "1,719市町村の2020→2025年人口増減", "".join(out))
+    return _svg(w, h, _t(T, "plate.pop.aria"), "".join(out))

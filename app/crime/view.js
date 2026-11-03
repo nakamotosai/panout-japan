@@ -31,6 +31,7 @@ const CRM_SKELETON = "\n<div id=\"crm-app-loader\" role=\"progressbar\" aria-lab
 // =====================================================================
 // 0. 三语国际化 (i18n: 日/中/英 · 严格对齐警视厅官方统计原名)
 // =====================================================================
+import { toHant } from "../hant.js";
 const I18N = {
   zh: {
     siteTitleEditorial: "东京都犯罪率地势图",
@@ -238,6 +239,20 @@ const I18N = {
   }
 };
 
+/* zh-Hant:四语真页面把 <html data-view-lang> 写成 zh-Hant,章节视图挑自己的词条,不落回
+   zh(简体)。简体词条是唯一来源,繁体由站内 s2tw 规则转出(app/hant.js;规则与
+   src/hant.py 同一份,生成与闸见 tools/gen_view_hant.py / src/view_i18n.py)。 */
+const isZh = (l) => l === "zh" || l === "zh-Hant";
+const zhx = (l, s) => (l === "zh-Hant" ? toHant(String(s)) : s);
+function deepHant(v) {
+  if (typeof v === "string") return toHant(v);
+  if (typeof v === "function") return (...a) => toHant(v(...a));
+  if (Array.isArray(v)) return v.map(deepHant);
+  if (v && typeof v === "object") { const o = {}; for (const k in v) o[k] = deepHant(v[k]); return o; }
+  return v;
+}
+I18N["zh-Hant"] = deepHant(I18N.zh);
+
 function detectInitialLang() {
   const urlParams = new URLSearchParams(window.location.search);
   const qLang = urlParams.get("lang");
@@ -248,7 +263,8 @@ function detectInitialLang() {
   for (const l of navLangs) {
     const s = l.toLowerCase();
     if (s.startsWith("ja")) return "ja";
-    if (s.startsWith("zh")) return "zh";
+    // 繁体标签(zh-Hant / zh-TW / zh-HK / zh-MO)走 zh-Hant 词表,不再落到 zh(简体)。
+    if (s.startsWith("zh")) return /(hant|[-_](tw|hk|mo))/i.test(s) ? "zh-Hant" : "zh";
     if (s.startsWith("en")) return "en";
   }
   return "zh"; // 默认中文兜底
@@ -391,7 +407,7 @@ function setLanguage(lang) {
   if (!I18N[lang]) return;
   currentLang = lang;
   crmStore.setItem("panout-crime-lang", lang);
-  (function(v){ try { rootEl.setAttribute('lang', v); } catch (e) {} try { document.documentElement.setAttribute('data-panout-crime-lang', v); } catch (e) {} return v; })(lang === "zh" ? "zh-CN" : (lang === "ja" ? "ja-JP" : "en-US"));
+  (function(v){ try { rootEl.setAttribute('lang', v); } catch (e) {} try { document.documentElement.setAttribute('data-panout-crime-lang', v); } catch (e) {} return v; })(lang === "zh-Hant" ? "zh-Hant" : (lang === "zh" ? "zh-CN" : (lang === "ja" ? "ja-JP" : "en-US")));
 
   // 语言按钮高亮
   $qa("[data-crm-lang]").forEach(b => {
@@ -1675,7 +1691,7 @@ export function mountCrimeControls(box, opts) {
   opts = opts || {};
   controlsRoot = box; searchInputEl = opts.searchInput || null;
   const t = I18N[currentLang] || I18N.zh;
-  const label = currentLang === 'zh' ? '筛选' : (currentLang === 'en' ? 'Filter' : '絞り込み');
+  const label = isZh(currentLang) ? zhx(currentLang, '筛选') : (currentLang === 'en' ? 'Filter' : '絞り込み');
   box.innerHTML = '<button type="button" class="crm-ctl-toggle" aria-expanded="false" aria-label="' + label + '">'
     + '<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 4h12M4 8h8M6.5 12h3"/></svg>'
     + '<span>' + label + '</span></button>'

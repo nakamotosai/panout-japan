@@ -98,7 +98,7 @@
   color: var(--ink);
 }
 html[lang="ja"] .hp-verb { font-family: var(--ja-sans); font-weight: 250; letter-spacing: -0.01em; }
-html[lang="zh"] .hp-verb { font-family: var(--zh-sans); font-weight: 250; letter-spacing: -0.01em; }
+html:lang(zh) .hp-verb { font-family: var(--zh-sans); font-weight: 250; letter-spacing: -0.01em; }
 .hp-topic {
   font-family: var(--mono);
   font-size: 11px;
@@ -106,12 +106,12 @@ html[lang="zh"] .hp-verb { font-family: var(--zh-sans); font-weight: 250; letter
   text-transform: uppercase;
   color: var(--muted);
 }
-html[lang="ja"] .hp-topic, html[lang="zh"] .hp-topic {
+html[lang="ja"] .hp-topic, html:lang(zh) .hp-topic {
   font-family: var(--ja-sans);
   font-size: 12px;
   letter-spacing: 0;
 }
-html[lang="zh"] .hp-topic { font-family: var(--zh-sans); }
+html:lang(zh) .hp-topic { font-family: var(--zh-sans); }
 
 .hp-entry-visual {
   position: absolute;
@@ -280,13 +280,13 @@ html[lang="zh"] .hp-topic { font-family: var(--zh-sans); }
   text-transform: uppercase;
   color: var(--muted);
 }
-html[lang="ja"] .hp-count small, html[lang="zh"] .hp-count small {
+html[lang="ja"] .hp-count small, html:lang(zh) .hp-count small {
   font-family: var(--ja-sans);
   font-size: 12px;
   letter-spacing: 0;
   text-transform: none;
 }
-html[lang="zh"] .hp-count small { font-family: var(--zh-sans); }
+html:lang(zh) .hp-count small { font-family: var(--zh-sans); }
 
 .hp-claim {
   min-height: 2.3em;
@@ -297,7 +297,7 @@ html[lang="zh"] .hp-count small { font-family: var(--zh-sans); }
   color: var(--ink);
   max-width: 34ch;
 }
-html[lang="ja"] .hp-claim, html[lang="zh"] .hp-claim { line-height: 1.7; }
+html[lang="ja"] .hp-claim, html:lang(zh) .hp-claim { line-height: 1.7; }
 
 .hp-entry-foot {
   display: flex;
@@ -315,12 +315,12 @@ html[lang="ja"] .hp-claim, html[lang="zh"] .hp-claim { line-height: 1.7; }
   letter-spacing: .02em;
   color: var(--muted);
 }
-html[lang="ja"] .hp-source, html[lang="zh"] .hp-source {
+html[lang="ja"] .hp-source, html:lang(zh) .hp-source {
   font-family: var(--ja-sans);
   font-size: 12px;
   letter-spacing: 0;
 }
-html[lang="zh"] .hp-source { font-family: var(--zh-sans); }
+html:lang(zh) .hp-source { font-family: var(--zh-sans); }
 .hp-enter {
   flex: 0 0 auto;
   font-family: var(--mono);
@@ -339,7 +339,7 @@ html[lang="zh"] .hp-source { font-family: var(--zh-sans); }
   transform: translate(4px, -2px);
   color: var(--accent);
 }
-html[lang="ja"] .hp-enter, html[lang="zh"] .hp-enter {
+html[lang="ja"] .hp-enter, html:lang(zh) .hp-enter {
   font-family: var(--ja-sans);
   font-size: 12px;
   letter-spacing: 0;
@@ -391,12 +391,12 @@ html[lang="ja"] .hp-enter, html[lang="zh"] .hp-enter {
   letter-spacing: -.025em;
 }
 html[lang="ja"] .hp-provenance-intro > h2,
-html[lang="zh"] .hp-provenance-intro > h2 {
+html:lang(zh) .hp-provenance-intro > h2 {
   font-family: var(--ja-sans);
   font-size: clamp(32px, 3.4vw, 48px);
   line-height: 1.35;
 }
-html[lang="zh"] .hp-provenance-intro > h2 { font-family: var(--zh-sans); }
+html:lang(zh) .hp-provenance-intro > h2 { font-family: var(--zh-sans); }
 .hp-provenance-lede {
   max-width: 30ch;
   margin: 0;
@@ -405,7 +405,7 @@ html[lang="zh"] .hp-provenance-intro > h2 { font-family: var(--zh-sans); }
   line-height: 1.8;
 }
 html[lang="ja"] .hp-provenance-lede { font-family: var(--ja-sans); }
-html[lang="zh"] .hp-provenance-lede { font-family: var(--zh-sans); }
+html:lang(zh) .hp-provenance-lede { font-family: var(--zh-sans); }
 .hp-sources summary {
   display: flex;
   align-items: center;
@@ -463,13 +463,13 @@ html[lang="zh"] .hp-provenance-lede { font-family: var(--zh-sans); }
   letter-spacing: -.035em;
   white-space: nowrap;
 }
-html[lang="ja"] .hp-statement h1, html[lang="zh"] .hp-statement h1 {
+html[lang="ja"] .hp-statement h1, html:lang(zh) .hp-statement h1 {
   font-family: var(--ja-sans);
   font-size: clamp(38px, 5vw, 72px);
   line-height: 1.25;
   letter-spacing: -.035em;
 }
-html[lang="zh"] .hp-statement h1 { font-family: var(--zh-sans); }
+html:lang(zh) .hp-statement h1 { font-family: var(--zh-sans); }
 /* The statement's em is painted glyph by glyph in the six chapter colours (build.py paint_chars). */
 .hp-statement h1 em { font-style: normal; }
 
@@ -516,8 +516,8 @@ html[lang="en"] .hp-statement h1,
 html[lang="en"] .hp-provenance-intro > h2 { font-family: var(--serif) !important; font-weight: 400 !important; }
 html[lang="ja"] .hp-statement h1,
 html[lang="ja"] .hp-provenance-intro > h2 { font-family: var(--ja-sans) !important; font-weight: 300 !important; }
-html[lang="zh"] .hp-statement h1,
-html[lang="zh"] .hp-provenance-intro > h2 { font-family: var(--zh-sans) !important; font-weight: 300 !important; }
+html:lang(zh) .hp-statement h1,
+html:lang(zh) .hp-provenance-intro > h2 { font-family: var(--zh-sans) !important; font-weight: 300 !important; }
 
 @media (max-width: 1000px) {
   .hp-author { grid-template-columns: 1fr; gap: 32px; }
@@ -537,13 +537,13 @@ html[lang="zh"] .hp-provenance-intro > h2 { font-family: var(--zh-sans) !importa
   .hp-author-links { gap: 20px 16px; }
   .hp-statement h1 { font-size: clamp(22px, 6.4vw, 38px); }
   html[lang="ja"] .hp-statement h1 { font-size: clamp(20px, 6.7vw, 34px); }
-  html[lang="zh"] .hp-statement h1 { font-size: clamp(24px, 8.2vw, 44px); }
+  html:lang(zh) .hp-statement h1 { font-size: clamp(24px, 8.2vw, 44px); }
   .hp-provenance { padding-top: 48px; }
   .hp-provenance-panel { padding: 24px; }
   .hp-sources-list { grid-template-columns: 1fr; }
   .hp-provenance-intro > h2 { font-size: 40px; }
   html[lang="ja"] .hp-provenance-intro > h2,
-  html[lang="zh"] .hp-provenance-intro > h2 { font-size: 34px; }
+  html:lang(zh) .hp-provenance-intro > h2 { font-size: 34px; }
   .hp-foot { padding-block: 40px 32px; }
   .hp-foot .foot-in { align-items: flex-start; flex-direction: column; gap: 24px; }
   .hp-foot .foot-bottom { justify-content: flex-start; text-align: left; }

@@ -14,7 +14,8 @@
   function get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function put(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
 
-  // 章节视图(app/*/view.js)只认 ja/zh/en 三套词表;构建把 <html data-view-lang> 写好。
+  // 章节视图(app/<章>/view.js)自带 ja/zh/zh-Hant/en 四套词表(zh-Hant 由 zh 经站内 s2tw
+  // 规则转出,见 app/hant.js);构建把 <html data-view-lang> 写好,这里原样传下去。
   function viewLang() { return doc.dataset.viewLang || 'ja'; }
 
   function autoTheme() {
@@ -149,8 +150,10 @@
     }).catch(function (err) {
       console.error(err);
       delete stage.dataset.busy;
-      var msg = { ja: 'データを読み込めませんでした。再読み込みしてください。', zh: '数据加载失败，请刷新重试。', en: 'Could not load the data. Please reload.' };
-      var lbl = { ja: '再読み込み', zh: '刷新', en: 'Reload' };
+      // 数据层失败时的两句文案。zh-Hant 与 zh 各写一份(shell 里没有 s2tw 表),
+      // 且必须等于 src/hant.py 的转换结果 —— 手写笔误由 src/view_i18n.py 的闸拦下。
+      var msg = { ja: 'データを読み込めませんでした。再読み込みしてください。', zh: '数据加载失败,请刷新重试。', 'zh-Hant': '數據加載失敗,請刷新重試。', en: 'Could not load the data. Please reload.' };
+      var lbl = { ja: '再読み込み', zh: '刷新', 'zh-Hant': '刷新', en: 'Reload' };
       var lg = doc.lang || 'ja';
       window.pjStageFailed(stage, msg[lg] || msg.ja, lbl[lg] || lbl.ja);
       try { window.dispatchEvent(new CustomEvent('pj:stage-error', { detail: { ch: ch } })); } catch (e) {}

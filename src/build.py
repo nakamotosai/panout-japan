@@ -6,7 +6,7 @@ Single source of truth:
   app/quake/data/*      USGS hypocentres + coastline
   app/crime/data/*      Tokyo chome counts + polygons + population
   app/cabinet/data.json polls + cabinets
-  app/housing/data/*   Tokyo 23-ward used-flat mean prices (MLIT) + ward polygons
+  app/housing/data/*   Tokyo 23-ward used-flat median prices (MLIT) + ward polygons
   src/*.css, src/shell.js
 
 Output: pre-rendered pages + assets + CSV + sitemap + headers.
@@ -27,6 +27,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 import svgkit as S
 import home_plates as HP
 import hant
+import view_i18n
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
@@ -309,6 +310,15 @@ MONTH_MEAN = {}
 for ym in ALL_MONTHS:
     vs = [p["value"] for p in POLLS if p["date"][:7] == ym]
     MONTH_MEAN[ym] = sum(vs) / len(vs)
+
+# 最大の単月変動 = 連続する**実測月**どうしの月次平均の差の最大(補間しない)。
+# 旧稿は +20.5 を手書きしていたが、それは「一つの内閣の内部で連続する月の最大の上げ幅」
+# (2010年8月→9月・菅内閣)であって、この系列の最大単月変動ではなかった。数字は必ずこの
+# 2 行から出す(カード・章の事実欄・本文が同じ値を見る)。
+_SWING_I = max(range(1, len(ALL_MONTHS)),
+               key=lambda i: MONTH_MEAN[ALL_MONTHS[i]] - MONTH_MEAN[ALL_MONTHS[i - 1]])
+SWING_FROM, SWING_TO = ALL_MONTHS[_SWING_I - 1], ALL_MONTHS[_SWING_I]
+SWING = MONTH_MEAN[SWING_TO] - MONTH_MEAN[SWING_FROM]
 
 CAB_BUCKETS = defaultdict(int)
 for p in POLLS:
@@ -699,9 +709,9 @@ COPY = {
                          "Median 4.4‰."),
     "card.cabinet.unit": ("ヶ月", "个月", "Months"),
     "card.cabinet.title": ("通して見る", "拉长看", "Stretch out"),
-    "card.cabinet.claim": ("最大の月変動は+20.5。",
-                           "最大单月 +20.5。",
-                           "Largest swing +20.5."),
+    "card.cabinet.claim": (f"最大の月変動は{SWING:+.1f}({_ym_ja(SWING_TO)})。",
+                           f"最大单月变动 {SWING:+.1f}({_ym_zh(SWING_TO)})。",
+                           f"Largest monthly swing {SWING:+.1f} ({_ym_en(SWING_TO)})."),
     "card.housing.unit": ("中古マンション", "二手公寓", "Used flats"),
     "card.housing.title": ("並べて見る", "比着看", "Compare"),
     "card.housing.claim": ("町名ごとのm2単価。",
@@ -892,10 +902,6 @@ COPY = {
                          "e-Stat 按政府标准利用规约（可商用、需署名）。社人研需署名。本站文字与图表为 CC BY 4.0。",
                          "e-Stat under the Government Standard Terms (commercial use with attribution). IPSS requires attribution. Text and figures here are CC BY 4.0."),
 
-    "b.stat.polls": ("調査", "调查", "Polls"),
-    "b.stat.months": ("月", "月", "Months"),
-    "b.stat.cabinets": ("内閣", "内阁", "Cabinets"),
-    "b.stat.swing": ("最大月変動", "最大单月变动", "Largest swing"),
     "b.beat1.t": ("月に一度の点", "每月一点", "One point a month"),
     "b.beat1.p": ("同じ月に複数の調査があれば、平均する。線は途切れない。",
                   "同月有多项调查就取平均。线不断。",
@@ -1311,17 +1317,21 @@ COPY = {
         f"「月{n(len(MONTH_MEAN))}」は別の数を数えている。系列の先頭は{_ym_ja(CAB_FIRST['date'][:7])}の"
         f"{CAB_FIRST['source'].replace('世論調査', '')}調査({CAB_FIRST['pm']}・{CAB_FIRST['value']})、"
         f"末尾は{_ym_ja(CAB_LAST['date'][:7])}の{CAB_LAST['source'].replace('世論調査', '')}調査"
-        f"({CAB_LAST['pm']}・{CAB_LAST['value']})。",
+        f"({CAB_LAST['pm']}・{CAB_LAST['value']})。最大の単月変動は{SWING:+.1f}で、"
+        f"{_ym_ja(SWING_FROM)}から{_ym_ja(SWING_TO)}への上げ幅(内閣交代の月も、そのまま1か月の変動として数える)。",
         f"月度值取月内全部调查的算术平均。只连有实测的月份,不做插值。所以「{n(len(POLLS))} 次调查」和"
         f"「{n(len(MONTH_MEAN))} 个月」数的是两个东西。系列开头是 {_ym_zh(CAB_FIRST['date'][:7])} 的"
         f"{CAB_FIRST['source'].replace('世論調査', '')}调查({CAB_FIRST['pm']}、{CAB_FIRST['value']}),"
         f"末尾是 {_ym_zh(CAB_LAST['date'][:7])} 的{CAB_LAST['source'].replace('世論調査', '')}调查"
-        f"({CAB_LAST['pm']}、{CAB_LAST['value']})。",
+        f"({CAB_LAST['pm']}、{CAB_LAST['value']})。最大单月变动是 {SWING:+.1f},"
+        f"从 {_ym_zh(SWING_FROM)} 到 {_ym_zh(SWING_TO)} 的涨幅(内阁交替的那个月,也照样算作一个月的变动)。",
         f"Each monthly value is the arithmetic mean of every poll that month. Only measured months are joined; "
         f"nothing is interpolated. That is why “{n(len(POLLS))} polls” and “{n(len(MONTH_MEAN))} months” count "
         f"different things. The series starts with a {CAB_FIRST['source']} in {_ym_en(CAB_FIRST['date'][:7])} "
         f"({CAB_FIRST['pm']}, {CAB_FIRST['value']}) and ends with a {CAB_LAST['source']} in "
-        f"{_ym_en(CAB_LAST['date'][:7])} ({CAB_LAST['pm']}, {CAB_LAST['value']})."),
+        f"{_ym_en(CAB_LAST['date'][:7])} ({CAB_LAST['pm']}, {CAB_LAST['value']}). The largest single-month swing is "
+        f"{SWING:+.1f}, the rise from {_ym_en(SWING_FROM)} to {_ym_en(SWING_TO)} (a month in which the cabinet "
+        f"changed still counts as one month's move)."),
     "b.doc.cal.p3": (
         f"欠けている月もある。高市内閣は継続中で、内閣の終了日は暫定値。共同通信の2026年7月・8月は値のみが"
         f"報じられ、原表を確認できないため収録していない。内閣と月の組{n(N_BUCKETS)}のうち{n(N_SINGLE)}は、"
@@ -1346,6 +1356,7 @@ COPY = {
     "b.doc.fact.months": ("月", "月", "Months"),
     "b.doc.fact.cabinets": ("内閣", "内阁", "Cabinets"),
     "b.doc.fact.single": ("単一ソースの組", "单一来源组合", "Single-source cells"),
+    "b.doc.fact.swing": ("最大月変動", "最大单月变动", "Largest monthly swing"),
     "b.doc.read.h": ("どう読むか", "怎么读", "How to read it"),
     "b.doc.read.p1": (
         "第一に、線ではなく点の並びとして読む。線は実測月だけを結ぶ。平らな区間は「支持率が動かなかった」のでは"
@@ -1507,7 +1518,52 @@ COPY = {
         "This chapter is a distribution of closed prices, not data about future appreciation. Do not use it to "
         "make an investment decision."),
     "foot.built": ("静的生成", "静态生成", "Statically generated"),
+
+    # 海报 SVG 的标注(六张卡与章节页共用同一张图):随页面语言出文案,ja/zh/en 三列,
+    # zh-Hant 由 zh 列转出(与其他文案同一条路径、同一道字符集闸)。
+    "plate.quake.aria": ("日本周辺のM4以上震源密度、{a}–{b}",
+                         "{a}–{b} 年日本周边 M4 以上震源密度",
+                         "M4+ hypocentre density around Japan, {a}–{b}"),
+    "plate.crime.aria": ("東京都心の町丁別犯罪率と認知件数",
+                         "东京都心町丁犯罪率与认知件数",
+                         "Crime rate and recorded incidents by neighbourhood, central Tokyo"),
+    "plate.crime.chome": ("23区 / {n}町丁", "23区 / {n} 个町丁", "23 wards / {n} chome"),
+    "plate.cab.aria": ("{a}年から{b}年までの内閣支持率、{n}か月",
+                       "{a} 年至 {b} 年的内阁支持率,{n} 个月",
+                       "Cabinet approval {a}–{b}, {n} months"),
+    "plate.cab.seam": ("安倍2次", "安倍第二次", "Abe II"),
+    "plate.cab.obuchi": ("小渕", "小渊", "Obuchi"),
+    "plate.cab.koizumi": ("小泉", "小泉", "Koizumi"),
+    "plate.cab.abe2": ("安倍2", "安倍2", "Abe II"),
+    "plate.cab.takaichi": ("高市", "高市", "Takaichi"),
+    "plate.house.aria": ("東京23区の中古マンション価格、{per}",
+                         "东京 23 区二手公寓价格,{per}",
+                         "Used-flat prices in the 23 wards of Tokyo, {per}"),
+    "plate.house.deals": ("東京全域 {t} 町 / {d} 件", "东京全域 {t} 町 / {d} 笔",
+                          "Tokyo-wide: {t} towns / {d} deals"),
+    "plate.house.legend": ("WARD MEDIAN / 万円 per m2", "WARD MEDIAN / 万日元 per m2",
+                           "WARD MEDIAN / ¥10k per m2"),
+    "plate.pop.aria": ("1,719市町村の2020→2025年人口増減",
+                       "1,719 个市町村 2020→2025 年人口增减",
+                       "Population change 2020→2025 across 1,719 municipalities"),
+    "plate.pop.head": ("91.2% の市町村が減少", "91.2% 的市町村在减少",
+                       "91.2% of municipalities are shrinking"),
+    "plate.pop.down": ("減少", "减少", "Falling"),
+    "plate.pop.up": ("増加", "增加", "Growing"),
+    "plate.pop.flat": ("横ばい", "持平", "Flat"),
+    "plate.weather.aria": ("今日の日本天気予報", "今日日本天气预报",
+                           "Today's Japan weather forecast"),
+    "plate.weather.source": ("気象庁 予報", "气象厅 预报", "JMA forecast"),
 }
+
+# 海报上的地名标注:ja/zh 汉字原样,en 出罗马字(见 home_plates 的 PLACE_EN)。
+PLATE_KEYS = tuple(k for k in COPY if k.startswith("plate."))
+
+
+def plates():
+    """海报标注的当前语言版本(章节页与首页卡共用)。"""
+    return {k: tr(k) for k in PLATE_KEYS}
+
 
 
 # ---------------------------------------------------------------- 语言
@@ -1518,9 +1574,10 @@ LANGS = ("ja", "zh-Hans", "zh-Hant", "en")
 PREFIX = {"ja": "", "zh-Hans": "/zh-Hans", "zh-Hant": "/zh-Hant", "en": "/en"}
 OG_LOCALE = {"ja": "ja_JP", "zh-Hans": "zh_CN", "zh-Hant": "zh_TW", "en": "en_US"}
 LANG_SCHEMA = {"ja": "ja", "zh-Hans": "zh-Hans", "zh-Hant": "zh-Hant", "en": "en"}
-# 章节视图(app/*/view.js)自带 ja/zh/en 三语词表。zh-Hant 页交给它们时按 zh 传,
-# 于是交互部件是简体、静态正文是繁体——已知限制,见交接说明与 docs/content-gap-japan.md。
-VIEW_LANG = {"ja": "ja", "zh-Hans": "zh", "zh-Hant": "zh", "en": "en"}
+# 章节视图(app/<章>/view.js)自带 ja/zh/zh-Hant/en 四套词表:zh-Hant 由 zh 经站内
+# s2tw 规则转出(表在 app/hant.js,生成与闸见 tools/gen_view_hant.py / src/view_i18n.py),
+# 所以四语各自的 data-view-lang 都能落到自己的词条上,不再把 zh-Hant 落到 zh。
+VIEW_LANG = {"ja": "ja", "zh-Hans": "zh", "zh-Hant": "zh-Hant", "en": "en"}
 # COPY 的列序:繁体列不单独维护,由简体列按 OpenCC s2tw 转换(见 src/hant.py)。
 _COPY_IDX = {"ja": 0, "zh-Hans": 1, "en": 2}
 COPY_HANT = {k: hant.convert(v[1]) for k, v in COPY.items()}
@@ -1930,22 +1987,22 @@ def build_home_preview():
     rows = [
         ("weather", "01", "/weather/", "card.weather.title", "card.weather.topic", "47",
          "card.weather.unit", "card.weather.claim", "card.weather.source",
-         HP.weather_svg(OUTLINE)),
+         HP.weather_svg(OUTLINE, T=plates(), lang=CUR)),
         ("quake", "02", "/quake/", "card.quake.title", "nav.quake", n(Q_N),
          "card.quake.unit", "card.quake.claim", "card.quake.source",
-         HP.quake_svg(Q, OUTLINE, YEARS)),
+         HP.quake_svg(Q, OUTLINE, YEARS, T=plates(), lang=CUR)),
         ("crime", "03", "/crime/", "card.crime.title", "nav.crime", "5,234",
          "card.crime.unit", "card.crime.claim", "card.crime.source",
-         HP.crime_svg(POINTS, MUNI_POLY, WARD_RATE)),
+         HP.crime_svg(POINTS, MUNI_POLY, WARD_RATE, T=plates(), lang=CUR)),
         ("cabinet", "04", "/cabinet/", "card.cabinet.title", "nav.cabinet", "331",
          "card.cabinet.unit", "card.cabinet.claim", "card.cabinet.source",
-         HP.cabinet_svg(ALL_MONTHS, MONTH_MEAN, CAB)),
+         HP.cabinet_svg(ALL_MONTHS, MONTH_MEAN, CAB, T=plates(), lang=CUR)),
         ("housing", "05", "/housing/", "card.housing.title", "nav.housing", f"{HOUSE['totals']['trades']:,}",
          "card.housing.unit", "card.housing.claim", "card.housing.source",
-         HP.housing_svg(HOUSE_WARDS, MUNI_POLY, deals=HOUSE_N, towns=HOUSE_TOWNS)),
+         HP.housing_svg(HOUSE_WARDS, MUNI_POLY, deals=HOUSE_N, towns=HOUSE_TOWNS, T=plates(), lang=CUR)),
         ("population", "06", "/population/", "card.population.title", "card.population.topic",
          "", "card.population.unit", "card.population.claim",
-         "card.population.source", HP.population_svg(POP)),
+         "card.population.source", HP.population_svg(POP, T=plates(), lang=CUR)),
     ]
 
     entries = []
@@ -2228,6 +2285,7 @@ def build_cabinet():
     ("months", n(len(MONTH_MEAN))),
     ("cabinets", len(CAB['cabinets'])),
     ("single", f"{n(N_SINGLE)} / {n(N_BUCKETS)}"),
+    ("swing", f"{SWING:+.1f}"),
 ])}
 </main>"""
     jsonld = dataset_node(
@@ -2251,7 +2309,7 @@ def build_housing():
 <h1 class="sr-only">{tr('h.h1')}</h1>
 <p class="sr-only">{tr('h.lede')}</p>
 <div class="stage stage-housing" data-live="0" data-stage-auto="housing" data-view="housing">
-<div class="stage-poster">{HP.housing_svg(HOUSE_WARDS, MUNI_POLY, 1000, 620, deals=HOUSE_N, towns=HOUSE_TOWNS)}</div>
+<div class="stage-poster">{HP.housing_svg(HOUSE_WARDS, MUNI_POLY, 1000, 620, deals=HOUSE_N, towns=HOUSE_TOWNS, T=plates(), lang=CUR)}</div>
 <p class="stage-caption">{tr('h.caption').format(n=f"{HOUSE_N:,}", basis=HOUSE['basis'])}</p>
 <div class="stage-live"></div>
 </div>
@@ -2408,7 +2466,7 @@ def build_population():
 </section>
 <section class="wrap pop-stage-wrap">
 <div class="stage pop-stage" data-live="0" data-stage-auto="population" data-view="population">
-<div class="stage-poster">{HP.population_svg(POP)}</div>
+<div class="stage-poster">{HP.population_svg(POP, T=plates(), lang=CUR)}</div>
 <p class="stage-caption">{tr('pop.caption').format(n=n(POP["meta"]["n"]))}</p>
 <div class="stage-live"></div>
 </div>
@@ -2499,6 +2557,9 @@ def main():
     hant.assert_covered([v[1] for v in COPY.values()] +
                         [PAGE_META[p]["zh-Hans"][i] for p in PAGE_META for i in (0, 1)],
                         where="COPY / PAGE_META 的简体文案")
+
+    # 章节视图的 zh-Hant 词表(app/hant.js):表过期、手改、或文案新增了字,都在这里报错。
+    view_i18n.check_all()
 
     weather_files = weather_assets()
     # The stamp is the runtime's content hash, so every release publishes fresh asset
@@ -2700,6 +2761,21 @@ def write_site(files):
                 shutil.rmtree(dst)
             shutil.copytree(src, dst,
                             ignore=shutil.ignore_patterns("__pycache__", "*.map"))
+
+    # zh-Hant 转换表:view.js 的静态 import。URL 必须带版本(与 housing/app.css 同理),
+    # 否则表改了浏览器还拿旧缓存,页面就退回简体。
+    hantjs = ROOT / "app" / "hant.js"
+    if hantjs.is_file():
+        (SITE / "app").mkdir(parents=True, exist_ok=True)
+        shutil.copy2(hantjs, SITE / "app" / "hant.js")
+        hver = hashlib.sha1(hantjs.read_bytes()).hexdigest()[:8]
+        for ch in ("quake", "crime", "cabinet", "housing", "population"):
+            vp = SITE / "app" / ch / "view.js"
+            if not vp.is_file():
+                continue
+            txt = vp.read_text(encoding="utf-8")
+            txt = txt.replace('from "../hant.js"', f'from "../hant.js?v={hver}"')
+            vp.write_text(txt, encoding="utf-8")
 
     # 章节样式表加内容哈希：Pages/浏览器会缓存无版本号的 URL，改色后仍旧图
     hv = SITE / "app" / "housing" / "view.js"

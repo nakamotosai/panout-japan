@@ -51,7 +51,7 @@ function detectLang() {
       const s = q.toLowerCase();
       if (s.startsWith('ja')) return 'ja';
       if (s.startsWith('en')) return 'en';
-      if (s.startsWith('zh')) return 'zh';
+      if (s.startsWith('zh')) return /(hant|[-_](tw|hk|mo))/i.test(s) ? 'zh-Hant' : 'zh';
     }
     const saved =
       localStorage.getItem('pp-lang') || localStorage.getItem('eq-lang');
@@ -59,7 +59,7 @@ function detectLang() {
       const s = saved.toLowerCase();
       if (s.startsWith('ja')) return 'ja';
       if (s.startsWith('en')) return 'en';
-      if (s.startsWith('zh')) return 'zh';
+      if (s.startsWith('zh')) return /(hant|[-_](tw|hk|mo))/i.test(s) ? 'zh-Hant' : 'zh';
     }
     const nav = (navigator.language || '').toLowerCase();
     if (nav.startsWith('ja')) return 'ja';
@@ -162,6 +162,7 @@ async function boot(token) {
   summary = readSummaryFromDom();
   localizeDock();
   localizeChrome();
+  watchHantDom();
   [600, 1800].forEach(function (ms) {
     setTimeout(function () { if (token === bootToken && mounted) { localizeDock(); localizeChrome(); } }, ms);
   });
@@ -322,6 +323,7 @@ function mountQuake(root, opts) {
 }
 
 function teardownDom() {
+  if (hantObs) { try { hantObs.disconnect(); } catch (e) {} hantObs = null; }
   if (ro) { try { ro.disconnect(); } catch (e) {} ro = null; }
   if (mo) { try { mo.disconnect(); } catch (e) {} mo = null; }
   if (rafKickTimer) { try { clearTimeout(rafKickTimer); } catch (e) {} rafKickTimer = 0; }
@@ -368,13 +370,16 @@ const DOCK_TITLES = {
   'eq-btn-year': { ja: '年範囲', zh: '年份区间', en: 'Year range' },
   'eq-btn-depth': { ja: '深さの強調', zh: '深度夸张', en: 'Depth exaggeration' },
 };
+// zh-Hant 页面用 zh 列(简体)经站内 s2tw 转出(表见 app/hant.js);ja/en 各用自己的列。
+const dockPick = (tab) => zhx(currentLang, tab[isZh(currentLang) ? 'zh' : currentLang] || tab.en);
+
 function localizeDock() {
   if (!viewportEl) return;
   for (const id of Object.keys(DOCK_LABELS)) {
     const el = viewportEl.querySelector('#' + id);
     if (!el) continue;
-    const l = DOCK_LABELS[id][currentLang] || DOCK_LABELS[id].en;
-    const t = DOCK_TITLES[id][currentLang] || DOCK_TITLES[id].en;
+    const l = dockPick(DOCK_LABELS[id]);
+    const t = dockPick(DOCK_TITLES[id]);
     if (el.textContent.trim() !== l) el.textContent = l;
     if (el.title !== t) el.title = t;
   }
@@ -420,6 +425,7 @@ const FAMOUS_FULL = {
   '福岛县冲地震（2022）': { ja: '福島県沖地震（2022）', en: '2022 Fukushima-oki earthquake' },
 };
 
+import { toHant } from "../hant.js";
 const CHROME = {
   'eq-mode-history': { ja: ['履歴', '世界の履歴カタログ（2000年→現在、1970年まで遡及）'], en: ['History', 'Global catalogue (2000→now, back to 1970)'] },
   'eq-mode-live': { ja: ['直近30日', '直近30日の USGS 公開カタログ'], en: ['Live', 'USGS last-30-days catalogue'] },
@@ -436,8 +442,66 @@ const CHROME = {
   'eq-btn-year': { ja: [null, '著名地震モードでは固定の選定イベントを使用'], en: [null, 'Famous mode uses a fixed set of events'] },
 };
 
+/* zh-Hant:四语真页面把 <html data-view-lang> 写成 zh-Hant,章节视图挑自己的词条,不落回
+   zh(简体)。简体词条是唯一来源,繁体由站内 s2tw 规则转出(app/hant.js;规则与
+   src/hant.py 同一份,生成与闸见 tools/gen_view_hant.py / src/view_i18n.py)。 */
+const isZh = (l) => l === "zh" || l === "zh-Hant";
+const zhx = (l, s) => (l === "zh-Hant" ? toHant(String(s)) : s);
+
+// vendor 的工具条/图例/提示/抽屉是简体词条(它只做了 zh 一份),zh-Hant 页面在这里
+// 把可见文本与 title/aria-label 按站内 s2tw 表现场转出,不另抄一份繁体表。
+// 只在值真的变了时才写回:自己的写入不会再触发下一轮写入(表是幂等的)。
+function hantDom(root) {
+  if (!root) return;
+  try {
+    root.querySelectorAll('.eq-famous-item-name, #eq-famous-panel-name').forEach((el) => {
+      if (!el.getAttribute('data-zh')) el.setAttribute('data-zh', el.textContent.trim());
+    });
+    const walk = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    for (let n = walk.nextNode(); n; n = walk.nextNode()) {
+      const v = toHant(n.nodeValue);
+      if (v !== n.nodeValue) n.nodeValue = v;
+    }
+    root.querySelectorAll('[title],[aria-label]').forEach((el) => {
+      for (const a of ['title', 'aria-label']) {
+        const cur = el.getAttribute(a);
+        if (!cur) continue;
+        const v = toHant(cur);
+        if (v !== cur) el.setAttribute(a, v);
+      }
+    });
+  } catch (e) {}
+}
+
+let hantObs = null;
+function watchHantDom() {
+  try { if (hantObs) hantObs.disconnect(); } catch (e) {}
+  hantObs = null;
+  if (!viewportEl || currentLang !== 'zh-Hant' || typeof MutationObserver === 'undefined') return;
+  hantDom(viewportEl);
+  try {
+    hantObs = new MutationObserver((recs) => {
+      for (const r of recs) {
+        if (r.type === 'characterData') {
+          const n = r.target;
+          const v = toHant(n.nodeValue);
+          if (v !== n.nodeValue) n.nodeValue = v;
+        } else {
+          for (const n of r.addedNodes) if (n && n.nodeType === 1) hantDom(n);
+        }
+      }
+    });
+    hantObs.observe(viewportEl, { subtree: true, childList: true, characterData: true });
+  } catch (e) {}
+}
+
 function localizeChrome() {
-  if (!viewportEl || currentLang === 'zh') return;
+  if (!viewportEl) return;
+  if (isZh(currentLang)) {
+    // 简体:vendor 的简体就是最终文案;繁体:交给 hantDom(含后续 DOM 变化)。
+    if (currentLang === 'zh-Hant') hantDom(viewportEl);
+    return;
+  }
   const L = currentLang;
   for (const id of Object.keys(CHROME)) {
     const el = viewportEl.querySelector('#' + id);
@@ -465,7 +529,11 @@ function localizeChrome() {
 }
 
 function patchFamousNames() {
-  if (!viewportEl || currentLang === 'zh') return;
+  if (!viewportEl) return;
+  if (isZh(currentLang)) {
+    if (currentLang === 'zh-Hant') hantDom(viewportEl);
+    return;
+  }
   const L = currentLang;
   viewportEl.querySelectorAll('.eq-famous-item-name').forEach((el) => {
     const zh = el.getAttribute('data-zh') || el.textContent.trim();
@@ -501,12 +569,13 @@ function patchFamousNames() {
 }
 
 function setQuakeLang(l) {
-  if (l !== 'ja' && l !== 'zh' && l !== 'en') return false;
+  if (l !== 'ja' && l !== 'zh' && l !== 'zh-Hant' && l !== 'en') return false;
   currentLang = l;
   try { localStorage.setItem('eq-lang', l); } catch (e) {}
   // Vendor UI is zh-first and frozen; localize the visible labels here.
   localizeDock();
   localizeChrome();
+  watchHantDom();
   return true;
 }
 

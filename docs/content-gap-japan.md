@@ -147,7 +147,7 @@
 7. `_meta.fix_log` は 2 件。2026-10-19 の NHK 2008/2009 の列ずれ修正(`nhk_rows_dropped: 8`、`nhk_rows_added: 10`、`nikkei_twins_flagged: 20`)と、2026-11-01 の 2 件追加。
 8. 既知の誤差は `COPY["m.err.1"]`〜`m.err.4`。NHK 2008/2009 の「9月」と「9月(緊)」の取り違えで 10–12 月が右へ 1 列ずれていた(8 行削除・10 行補填で修正、v8.3)/ 日経の同月 2 値は「定例」と「緊急」の別調査で、両方を残す / 2011 年 3 月の NHK は原表が「-」で時事の 18.9 のみ / 単一ソースの月が `{{B}}` 月中 `{{S}}`。
 9. `m.err.4` の `{{B}}` / `{{S}}` は `fill_copy()` が置換する。値は `CAB_BUCKETS`(内閣と月の組)から **338 と 67**。月数の 331 とは数え方が違う点に注意。
-10. 統計枠は 4 つ(`b.stat.polls` 調査 / `b.stat.months` 月 / `b.stat.cabinets` 内閣 / `b.stat.swing` 最大月変動)。`app/cabinet/view.js` の `overviewTitle` は「14の内閣 · 331か月」。
+10. 統計枠は 5 つ(`b.doc.fact.src/polls/months/cabinets/single`)+ 2026-11-04 に足した `b.doc.fact.swing`(最大月変動 = **+45.5**、2011-08→09。連続する実測月の月次平均の差の最大で、内閣交代月も 1 か月の変動として数える)。`app/cabinet/view.js` の `overviewTitle` は「14の内閣 · 331か月」。
 11. ズームは 6 段(`app/cabinet/view.js` の `ranges`: 3ヶ月 / 1年 / 2年 / 5年 / 10年 / 全期間)。全期間でも 331 か月であり、**すべての月に調査があるわけではない**。
 12. `app/cabinet/view.js` には 14 首相分の `eraNumberJa` / `partyJa` / `originJa` / `bioJa` / `policiesJa` / `crisisJa` / `trendBadgeJa` がある。**これは本サイトの編集であって一次データではない**。本文では注記として区別する。
 13. 出典表記は `app/cabinet/view.js` の `shareSourcesLine()` が「出典:NHK・日経・朝日・時事・読売・JNN・共同 各社世論調査(月次平均)」を持つ。本文の出典欄も同じ文言に揃える。
@@ -159,7 +159,7 @@
 1. 線ではなく点の並びとして読む。線は実測月だけを結ぶ。**平らな月は「支持率が動かなかった」のではなく「その月を測っていない」可能性がある。**
 2. 内閣の切れ目を見る。`b.beat2.t`「内閣の切れ目」/ `b.beat2.p`「一本の線に、14の内閣が連なる。切れ目は、支持率の跳び」。平均で平滑化すると交代時の跳びが消える。
 3. 月に一度の点。`b.beat1.t`「月に一度の点」/ `b.beat1.p`「同じ月に複数の調査があれば、平均する。線は途切れない」。
-4. 水準と変化量を並べる。`b.stat.swing`(最大月変動)は文脈が効く指標。絶対値と変化量を並べて読む。
+4. 水準と変化量を並べる。`b.doc.fact.swing`(最大月変動)は**口径が効く**指標。「同内閣内」(+20.5、2010-08→09 菅)と「全系列」(+45.5、2011-08→09)は別の数。絶対値と変化量を並べて読む。
 5. 在任期間ごとに見る。`d.pm.term`(在任)/ `d.pm.mean`(平均)/ `d.pm.max` / `d.pm.min` / `d.pm.months`(月数)。短い在任は平均が安定しないので、月数と並べて読む。
 6. 「内閣支持率」と書く。支持率は内閣のものであり、一個人の評価として読ませない。
 7. 主語を確かめる。数字の出所は `polls[].source` と `polls[].url` に残っている。**月次平均は単一媒体の主張ではない。**
@@ -207,7 +207,7 @@
 6. 区(市町村)単位は `app/housing/data/wards.json` の `wards` 23 件。`code` / `ward` / `n` / `unit` / `unit_mean` / `total_med` / `total_mean` / `band{...}` / `rank`。`tools/build_housing_data.py` は `unit` を**中央値**(`median()`)、`unit_mean` を平均として出す。`band` は面積 **60–80m2** に絞った層(`definition.band = [60.0, 80.0]`)で、`band.p70` は「帯の中央値 × 70m2」を万円で表した値。
 7. 区レベルの取引数は `totals.trades = 21,848`、`totals.wards = 23`。
 8. **同じページに統計量が三つある。** ①静的ポスターは区の `unit`(= 中央値)で塗り、凡例は「WARD MEDIAN / 万円 per m2」(`src/home_plates.py` の `housing_svg`)。②起動後の町名モードは町の `unit`(= 平均)。③起動後の区モードは `wardVal()` が町の平均を成約件数で加重平均した値。`COPY["h.lede"]`「町名(地区名)ごとの平均m2単価で塗る」と `llms.txt` の「町名ごとに平均した m2 単価の地図」は①②のうち②を指す。**どこで何を塗っているかを本文で書き分ける** `[要確認]`。
-9. `[要確認]` `wards.json` の `definition.statistic` は `"mean"` だが、実装の `unit` は中央値。定義と実装が食い違っている。
+9. `definition.statistic` は 2026-11-04 に `"mean"` → `"median"` へ修正済み(実装の `unit` は `median()`)。同じ日に `definition.fields`(フィールド→統計量の対応)も足し、`tools/build_housing_data.py` と `app/housing/data/wards.json` の両方を揃えた。ページ側(ポスター凡例 `WARD MEDIAN / 万円 per m2`、`h.doc.cal.p3`)は元から「区は中央値」と書いており、食い違いはこのメタデータ 1 フィールドだけだった(`.private/verify_local.py` に `statistic == "median"` の断言を追加)。
 10. `[要確認]` `towns.json` の `municipalities`(= 346)は `ward` フィールドの異なり数で、**東京都の市区町村数ではない**。`ward` には「世田谷区」のような市区町村名(52 種)と「世田谷区中町」のような「市区町村 + 町名」の複合(294 種)が混在している。東京都の市区町村数は 62(`app/crime/data/muni.json` の件数)。本文では 346 を「市区町村数」と書かない。
 11. 位置の粒度は「市区町村 + 地区名(町名)」までで、丁目と座標は含まれない(`app/housing/view.js` の FAQ)。町名の多角形は `app/crime/data/chome_poly.json` の町丁境界を町名単位にマージして生成している(`tools/build_housing_towns.py`)。**地図の境界は国交省データ由来ではない。**
 12. 加工とライセンス。`app/housing/view.js` の `metaL2`「本ページは当サイトが加工して作成したものであり、国が作成・公表したものではありません」。PDL 1.0 の条件に従い、出典明記と加工の旨を本文に載せる。
@@ -255,7 +255,7 @@
 
 1. **四言語を同時に書く。** `LANGS` / `PREFIX` の四本の静的ページに同じ本文が載る。見出しと本文は `COPY` に足す(ja / zh-Hans / en の 3 列 + 繁体は `COPY_HANT`)。
 2. **繁体は `src/hant.py` の s2tw 変換。** 新しい簡体文案に辞書外の字があると `hant.assert_covered()` がビルド時に落ちる。新語を使うときは変換表(`tools/gen_hant_tables.py` / `src/hant_data.py`)側を確認する。
-3. **UI は簡体のまま。** `VIEW_LANG` は `zh-Hant` を `zh` に落とす。**繁体ページの静的本文は繁体、`app/*/view.js` の文言は簡体**という既知の制限がある(`src/build.py` のコメントに本書への言及がある)。
+3. **UI も各言語で出る(2026-11-04 解消)。** `VIEW_LANG` は `zh-Hant` をそのまま各章のビューへ渡す。ビューの語彙(`app/<章>/view.js`)は ja/zh/en の 3 列が唯一の来源で、zh-Hant は**実行時に** `app/hant.js`(生成物 = `src/hant.py` の s2tw を本サイトの文案字符集に裁剪した表)で転出する。海报 SVG の标注は `COPY` の `plate.*`(ja/zh/en 3 列 + zh-Hant は転出)。表が古い/手で書き換えた場合は `src/view_i18n.py`(`view_i18n.check_all()`)がビルドと `verify_local.py` で落ちるので、文案を変えたら `python tools/gen_view_hant.py` を走らせる。
 4. **日本語だけで成立する書き方を避ける。** 呼び名は各 `app/*/view.js` の語彙に合わせる。町丁(zh「町丁」/ en「neighbourhood」)、区市町村(zh「区市町村」/ en「ward」)、認知件数(**届出を含む件数。「犯罪件数」と訳さない**)、成約価格(zh「成交价」)、中古マンション(zh「二手公寓」/ en「used flats」)、内閣支持率(zh「内阁支持率」/ en「approval」)。
 5. **数字は三か所で一致させる。** 40,145 / 5,234 / 62 / 646・331・14 / 26,416・1,237・21,848。本文・`site/data/*.csv`・JSON-LD(`dataset_node()`)を突き合わせる。
 6. **免責は 4 種類あり、四言語で同じ重さにする。** 地震「予報ではない」、犯罪「安全性の評価ではない」、住宅「投資判断ではない」、内閣「単一媒体の主張ではない」。

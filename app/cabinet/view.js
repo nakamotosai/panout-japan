@@ -1402,7 +1402,8 @@ function detectInitialLang() {
   for (const l of navs) {
     const s = (l || '').toLowerCase();
     if (s.startsWith('ja')) return 'ja';
-    if (s.startsWith('zh')) return 'zh';
+    // 繁体标签(zh-Hant / zh-TW / zh-HK / zh-MO)走 zh-Hant 词表,不再落到 zh(简体)。
+    if (s.startsWith('zh')) return /(hant|[-_](tw|hk|mo))/i.test(s) ? 'zh-Hant' : 'zh';
     if (s.startsWith('en')) return 'en';
   }
   return 'ja';
@@ -1416,6 +1417,7 @@ function detectInitialVariant() {
   return 'tactical';
 }
 
+import { toHant } from "../hant.js";
 const I18N = {
   ja: {
     htmlLang: 'ja',
@@ -1484,6 +1486,20 @@ const I18N = {
     hint: 'Drag to pan · Wheel to scroll · Shift+Wheel to zoom · Double-click for all time'
   }
 };
+
+/* zh-Hant:四语真页面把 <html data-view-lang> 写成 zh-Hant,章节视图挑自己的词条,不落回
+   zh(简体)。简体词条是唯一来源,繁体由站内 s2tw 规则转出(app/hant.js;规则与
+   src/hant.py 同一份,生成与闸见 tools/gen_view_hant.py / src/view_i18n.py)。 */
+const isZh = (l) => l === "zh" || l === "zh-Hant";
+const zhx = (l, s) => (l === "zh-Hant" ? toHant(String(s)) : s);
+function deepHant(v) {
+  if (typeof v === "string") return toHant(v);
+  if (typeof v === "function") return (...a) => toHant(v(...a));
+  if (Array.isArray(v)) return v.map(deepHant);
+  if (v && typeof v === "object") { const o = {}; for (const k in v) o[k] = deepHant(v[k]); return o; }
+  return v;
+}
+I18N["zh-Hant"] = deepHant(I18N.zh);
 
 let currentLang = 'ja';
 let currentVariant = 'tactical';
@@ -1620,7 +1636,7 @@ function renderZoomSeg() {
 
 function pmDisplayName(id) {
   const p = CAB_PROFILES[id] || {};
-  if (currentLang === 'zh') return p.nameZh || id;
+  if (isZh(currentLang)) return zhx(currentLang, p.nameZh || id);
   if (currentLang === 'en') return p.nameEn || id;
   return p.nameJa || id;
 }
@@ -1641,16 +1657,16 @@ function renderPanel(targetCabId) {
       <!-- 卡片 1: 全景大盘核心数据卡 -->
       <div class="panel-card">
         <div class="card-head">
-          <span class="card-badge" style="background:var(--accent-soft, rgba(47,107,79,0.12));color:var(--accent);border:1px solid var(--accent-soft, rgba(47,107,79,0.25))">${langKey==='zh'?'大盘总览':langKey==='en'?'OVERVIEW':'政権全体'}</span>
+          <span class="card-badge" style="background:var(--accent-soft, rgba(47,107,79,0.12));color:var(--accent);border:1px solid var(--accent-soft, rgba(47,107,79,0.25))">${isZh(langKey) ? zhx(langKey, '大盘总览'):langKey==='en'?'OVERVIEW':'政権全体'}</span>
           <span class="card-badge" style="background:rgba(0,0,0,0.05);color:var(--muted)">1998 — 2026</span>
         </div>
         <h2 class="card-title" style="margin-top:6px">${t.overviewTitle}</h2>
-        <div class="card-subtitle">14${langKey==='zh'?'届内阁 · 331个月民调脉搏':langKey==='en'?' Cabinets · 331 Months of Polls':'内閣・331ヶ月の世論推移'}</div>
+        <div class="card-subtitle">14${isZh(langKey) ? zhx(langKey, '届内阁 · 331个月民调脉搏'):langKey==='en'?' Cabinets · 331 Months of Polls':'内閣・331ヶ月の世論推移'}</div>
 
         <div class="stat-grid">
           <div class="stat-box">
             <div class="stat-num">${avgAll}<span style="font-size:16px;font-weight:300">%</span></div>
-            <div class="stat-label">${t.meanLabel} (14${langKey==='zh'?' 内阁总均值':langKey==='en'?'-Cabinet Mean':'内閣平均'})</div>
+            <div class="stat-label">${t.meanLabel} (14${isZh(langKey) ? zhx(langKey, ' 内阁总均值'):langKey==='en'?'-Cabinet Mean':'内閣平均'})</div>
           </div>
           <div class="stat-box">
             <div class="stat-num">${totalPolls}</div>
@@ -1667,7 +1683,7 @@ function renderPanel(targetCabId) {
         </div>
 
         <div style="font-size:12.5px;line-height:1.65;color:var(--muted);margin-top:10px">
-          ${langKey==='zh'?'从平成金融危机到后疫情时代，记录日本政权更迭、派阀盛衰与国民信任度起伏的28年一手连续调查轨迹。':langKey==='en'?'28 years of continuous first-hand poll tracking across post-bubble Japan, documenting regime shifts, faction dynamics, and public sentiment.':'平成の金融危機からポストコロナまで、政権交代・派閥抗争・国民の信認を記録した28年間の連続世論調査データ。'}
+          ${isZh(langKey) ? zhx(langKey, '从平成金融危机到后疫情时代，记录日本政权更迭、派阀盛衰与国民信任度起伏的28年一手连续调查轨迹。'):langKey==='en'?'28 years of continuous first-hand poll tracking across post-bubble Japan, documenting regime shifts, faction dynamics, and public sentiment.':'平成の金融危機からポストコロナまで、政権交代・派閥抗争・国民の信認を記録した28年間の連続世論調査データ。'}
         </div>
       </div>
 
@@ -1675,20 +1691,20 @@ function renderPanel(targetCabId) {
       <div class="panel-card">
         <div style="font-size:15px;font-weight:250;letter-spacing:-0.2px;color:var(--ink);margin-bottom:12px;display:flex;align-items:center;gap:6px">
           <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><path d="M2 13h12v1H2zm2-3h2v2H4zm3-4h2v6H7zm3-2h2v8h-2z"/></svg>
-          ${langKey==='zh'?'政权稳定性与在任天数记录':langKey==='en'?'Tenure & Stability Records':'歴代内閣 在職日数記録'}
+          ${isZh(langKey) ? zhx(langKey, '政权稳定性与在任天数记录'):langKey==='en'?'Tenure & Stability Records':'歴代内閣 在職日数記録'}
         </div>
         <div style="display:flex;flex-direction:column;gap:8px;font-size:12px">
           <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px dashed var(--line-main, rgba(0,0,0,0.08))">
-            <span>${langKey==='zh'?'最长政权 · 安倍晋三 (2次)':langKey==='en'?'Longest: Shinzo Abe (2nd)':'最長政権：安倍晋三(2次)'}</span>
-            <span style="font-size:14px;font-weight:250;color:var(--accent)">2,822 ${langKey==='zh'?'天':langKey==='en'?'days':'日'} (93${langKey==='zh'?'个月':langKey==='en'?'mo':'ヶ月'})</span>
+            <span>${isZh(langKey) ? zhx(langKey, '最长政权 · 安倍晋三 (2次)'):langKey==='en'?'Longest: Shinzo Abe (2nd)':'最長政権：安倍晋三(2次)'}</span>
+            <span style="font-size:14px;font-weight:250;color:var(--accent)">2,822 ${isZh(langKey) ? zhx(langKey, '天'):langKey==='en'?'days':'日'} (93${isZh(langKey) ? zhx(langKey, '个月'):langKey==='en'?'mo':'ヶ月'})</span>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px dashed var(--line-main, rgba(0,0,0,0.08))">
-            <span>${langKey==='zh'?'结构改革 · 小泉纯一郎':langKey==='en'?'Structure: Junichiro Koizumi':'構造改革：小泉純一郎'}</span>
-            <span style="font-size:14px;font-weight:250;color:var(--ink)">1,980 ${langKey==='zh'?'天':langKey==='en'?'days':'日'} (65${langKey==='zh'?'个月':langKey==='en'?'mo':'ヶ月'})</span>
+            <span>${isZh(langKey) ? zhx(langKey, '结构改革 · 小泉纯一郎'):langKey==='en'?'Structure: Junichiro Koizumi':'構造改革：小泉純一郎'}</span>
+            <span style="font-size:14px;font-weight:250;color:var(--ink)">1,980 ${isZh(langKey) ? zhx(langKey, '天'):langKey==='en'?'days':'日'} (65${isZh(langKey) ? zhx(langKey, '个月'):langKey==='en'?'mo':'ヶ月'})</span>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px dashed var(--line-main, rgba(0,0,0,0.08))">
-            <span>${langKey==='zh'?'最短短命 · 鸠山由纪夫':langKey==='en'?'Shortest: Yukio Hatoyama':'最短退任：鳩山由紀夫'}</span>
-            <span style="font-size:14px;font-weight:250;color:var(--danger-ink)">266 ${langKey==='zh'?'天':langKey==='en'?'days':'日'} (9${langKey==='zh'?'个月':langKey==='en'?'mo':'ヶ月'})</span>
+            <span>${isZh(langKey) ? zhx(langKey, '最短短命 · 鸠山由纪夫'):langKey==='en'?'Shortest: Yukio Hatoyama':'最短退任：鳩山由紀夫'}</span>
+            <span style="font-size:14px;font-weight:250;color:var(--danger-ink)">266 ${isZh(langKey) ? zhx(langKey, '天'):langKey==='en'?'days':'日'} (9${isZh(langKey) ? zhx(langKey, '个月'):langKey==='en'?'mo':'ヶ月'})</span>
           </div>
         </div>
       </div>
@@ -1697,7 +1713,7 @@ function renderPanel(targetCabId) {
       <div class="panel-card" style="background:transparent;border:1px dashed var(--line-main, rgba(0,0,0,0.15));box-shadow:none">
         <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);line-height:1.5">
           <svg viewBox="0 0 16 16" width="15" height="15" fill="currentColor" style="flex-shrink:0"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 7v4M8 4.5h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-          <span>${langKey==='zh'?'鼠标在左侧图表移动可查看每位首相的详尽生平、政绩与支持率档案；点击可固定锁定。':langKey==='en'?'Hover over the chart to inspect any Prime Minister profile and historical milestones. Click to pin.':'グラフ上にマウスを移動すると、各首相の経歴・主要政策・危機詳細が閲覧できます。クリックで固定。'}</span>
+          <span>${isZh(langKey) ? zhx(langKey, '鼠标在左侧图表移动可查看每位首相的详尽生平、政绩与支持率档案；点击可固定锁定。'):langKey==='en'?'Hover over the chart to inspect any Prime Minister profile and historical milestones. Click to pin.':'グラフ上にマウスを移動すると、各首相の経歴・主要政策・危機詳細が閲覧できます。クリックで固定。'}</span>
         </div>
       </div>
     `;
@@ -1719,18 +1735,18 @@ function renderPanel(targetCabId) {
   const color = s.color || '#3F7DCA';
   const isPinned = focusCabinet === cabId;
 
-  const pmTitle = langKey === 'zh' ? (p.nameZh || s.pm) : (langKey === 'en' ? (p.nameEn || s.pm) : (p.nameJa || s.pm));
-  const eraTitle = langKey === 'zh' ? p.eraNumberZh : (langKey === 'en' ? p.eraNumberEn : p.eraNumberJa);
-  const partyTitle = langKey === 'zh' ? p.partyZh : (langKey === 'en' ? p.partyEn : p.partyJa);
-  const trendTitle = langKey === 'zh' ? p.trendBadgeZh : (langKey === 'en' ? p.trendBadgeEn : p.trendBadgeJa);
-  const originTitle = langKey === 'zh' ? p.originZh : (langKey === 'en' ? p.originEn : p.originJa);
-  const bioTitle = langKey === 'zh' ? p.bioZh : (langKey === 'en' ? p.bioEn : (p.bioJa || p.bioZh));
-  // 档案正文只有中文（bio 已有三语，政策与危机暂无 Ja/En）。
-  // 日/英界面里宁可不显示，也不要把中文段落冒充成日文/英文。
-  const policies = langKey === 'zh'
-    ? (p.policiesZh || [])
+  const pmTitle = isZh(langKey) ? zhx(langKey, p.nameZh || s.pm) : (langKey === 'en' ? (p.nameEn || s.pm) : (p.nameJa || s.pm));
+  const eraTitle = isZh(langKey) ? zhx(langKey, p.eraNumberZh) : (langKey === 'en' ? p.eraNumberEn : p.eraNumberJa);
+  const partyTitle = isZh(langKey) ? zhx(langKey, p.partyZh) : (langKey === 'en' ? p.partyEn : p.partyJa);
+  const trendTitle = isZh(langKey) ? zhx(langKey, p.trendBadgeZh) : (langKey === 'en' ? p.trendBadgeEn : p.trendBadgeJa);
+  const originTitle = isZh(langKey) ? zhx(langKey, p.originZh) : (langKey === 'en' ? p.originEn : p.originJa);
+  const bioTitle = isZh(langKey) ? zhx(langKey, p.bioZh) : (langKey === 'en' ? p.bioEn : (p.bioJa || p.bioZh));
+  // 档案正文只有中文(bio 已有三语,政策与危机暂无 Ja/En)。
+  // 日/英界面里宁可不显示,也不要把中文段落冒充成日文/英文。
+  const policies = isZh(langKey)
+    ? (p.policiesZh || []).map((x) => zhx(langKey, x))
     : (langKey === 'en' ? (p.policiesEn || []) : (p.policiesJa || []));
-  const crisisTitle = langKey === 'zh' ? (p.crisisZh || '') : (langKey === 'en' ? (p.crisisEn || '') : (p.crisisJa || ''));
+  const crisisTitle = isZh(langKey) ? zhx(langKey, p.crisisZh || '') : (langKey === 'en' ? (p.crisisEn || '') : (p.crisisJa || ''));
 
   panelEl.innerHTML = `
     <!-- 卡片 1: 领导人抬头与支持率四宫格 -->
@@ -1741,7 +1757,7 @@ function renderPanel(targetCabId) {
           ${trendTitle ? `<span class="card-badge" style="background:rgba(0,0,0,0.04);color:var(--muted)">${trendTitle}</span>` : ''}
         </div>
         <span class="card-badge" style="background:${isPinned ? 'var(--accent)' : 'rgba(0,0,0,0.05)'};color:${isPinned ? '#fff' : 'var(--muted)'};border:1px solid ${isPinned ? 'var(--accent)' : 'var(--line-main, rgba(0,0,0,0.1))'}">
-          ${isPinned ? (langKey==='zh'?'已锁定':langKey==='en'?'PINNED':'固定中') : (langKey==='zh'?'内阁档案':langKey==='en'?'CABINET':'内閣')}
+          ${isPinned ? (isZh(langKey) ? zhx(langKey, '已锁定'):langKey==='en'?'PINNED':'固定中') : (isZh(langKey) ? zhx(langKey, '内阁档案'):langKey==='en'?'CABINET':'内閣')}
         </span>
       </div>
 
@@ -1751,7 +1767,7 @@ function renderPanel(targetCabId) {
       </div>
       <div class="card-subtitle">${eraTitle} · ${partyTitle}</div>
       <div style="font-size:12px;color:var(--muted);font-family:var(--font-sans);margin-top:4px">
-        ${s.start.slice(0, 7)} — ${s.end.slice(0, 7)} (${s.months}${langKey==='zh'?'个月':langKey==='en'?' months':'ヶ月'} / ${p.days || (s.months * 30)}${langKey==='zh'?'天':langKey==='en'?' days':'日'})
+        ${s.start.slice(0, 7)} — ${s.end.slice(0, 7)} (${s.months}${isZh(langKey) ? zhx(langKey, '个月'):langKey==='en'?' months':'ヶ月'} / ${p.days || (s.months * 30)}${isZh(langKey) ? zhx(langKey, '天'):langKey==='en'?' days':'日'})
       </div>
 
       <!-- 任期内支持率曲线 + 分享按钮(在四个指标上方) -->
@@ -1762,7 +1778,7 @@ function renderPanel(targetCabId) {
         </div>
         ${tenureSparkline(s.points || [], color, cabId)}
         <div class="tenure-foot">
-          <span class="tenure-note">${langKey==='zh'?'月度均值 · 各社民调按月平均':langKey==='en'?'Monthly means across the term':'月次平均・各社調査を月ごとに平均'}</span>
+          <span class="tenure-note">${isZh(langKey) ? zhx(langKey, '月度均值 · 各社民调按月平均'):langKey==='en'?'Monthly means across the term':'月次平均・各社調査を月ごとに平均'}</span>
           <button type="button" class="cab-share" id="cab-btn-share" aria-label="${t.shareLabel}">
             <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 11.2V2.8M8 2.8 5.2 5.6M8 2.8l2.8 2.8"></path><path d="M2.8 9.6v3.6h10.4V9.6"></path></svg>
             <span class="cab-share-label">${t.shareLabel}</span>
@@ -1774,7 +1790,7 @@ function renderPanel(targetCabId) {
       <div class="stat-grid">
         <div class="stat-box">
           <div class="stat-num">${s.mean}<span style="font-size:16px;font-weight:300">%</span></div>
-          <div class="stat-label">${t.meanLabel} (${s.polls}${langKey==='zh'?'次民调':langKey==='en'?' polls':'回'})</div>
+          <div class="stat-label">${t.meanLabel} (${s.polls}${isZh(langKey) ? zhx(langKey, '次民调'):langKey==='en'?' polls':'回'})</div>
         </div>
         <div class="stat-box">
           <div class="stat-num">${s.high}<span style="font-size:16px;font-weight:300">%</span></div>
@@ -1795,7 +1811,7 @@ function renderPanel(targetCabId) {
     <div class="panel-card">
       <div style="font-size:13.5px;font-weight:300;letter-spacing:0.3px;color:var(--accent);margin-bottom:6px;display:flex;align-items:center;gap:6px">
         <svg viewBox="0 0 16 16" width="13" height="13" fill="currentColor"><path d="M8 8a3 3 0 100-6 3 3 0 000 6zm2 1H6a4 4 0 00-4 4v1h12v-1a4 4 0 00-4-4z"/></svg>
-        ${langKey==='zh'?'生平档案与政治派阀':langKey==='en'?'BIOGRAPHY & BACKGROUND':'経歴・政治的出自'}
+        ${isZh(langKey) ? zhx(langKey, '生平档案与政治派阀'):langKey==='en'?'BIOGRAPHY & BACKGROUND':'経歴・政治的出自'}
       </div>
       ${originTitle ? `<div style="font-size:13px;color:var(--ink);font-weight:300;margin-bottom:8px;padding-bottom:6px;border-bottom:1px dashed var(--line-main, rgba(0,0,0,0.08))">${originTitle}</div>` : ''}
       <div style="font-size:13px;line-height:1.7;color:var(--ink);font-weight:350">
@@ -1808,7 +1824,7 @@ function renderPanel(targetCabId) {
       <div class="panel-card">
         <div style="font-size:13.5px;font-weight:300;letter-spacing:0.3px;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:6px">
           <svg viewBox="0 0 16 16" width="13" height="13" fill="currentColor"><path d="M3 2h10v2H3zm0 4h10v2H3zm0 4h7v2H3z"/></svg>
-          ${langKey==='zh'?'核心政策举措与重大战役':langKey==='en'?'SIGNATURE POLICIES':'主要政策と歴史的改革'}
+          ${isZh(langKey) ? zhx(langKey, '核心政策举措与重大战役'):langKey==='en'?'SIGNATURE POLICIES':'主要政策と歴史的改革'}
         </div>
         <div>
           ${policies.map(pol => `
@@ -1826,7 +1842,7 @@ function renderPanel(targetCabId) {
       ${crisisTitle ? `
         <div style="font-size:13.5px;font-weight:300;color:var(--danger-ink);margin-bottom:4px;display:flex;align-items:center;gap:6px">
           <svg viewBox="0 0 16 16" width="13" height="13" fill="currentColor"><path d="M8 2l6 12H2L8 2zm0 3.5a.75.75 0 00-.75.75v3.5a.75.75 0 001.5 0v-3.5A.75.75 0 008 5.5zm0 6a.75.75 0 100-1.5.75.75 0 000 1.5z"/></svg>
-          ${langKey==='zh'?'政权转折与辞任危机':langKey==='en'?'TURNING POINT & EXIT':'退陣・政権交代の契機'}
+          ${isZh(langKey) ? zhx(langKey, '政权转折与辞任危机'):langKey==='en'?'TURNING POINT & EXIT':'退陣・政権交代の契機'}
         </div>
         <div style="font-size:12.5px;line-height:1.6;color:var(--muted);margin-bottom:12px">
           ${crisisTitle}
@@ -1834,7 +1850,7 @@ function renderPanel(targetCabId) {
       ` : ''}
       <button type="button" class="back-btn" id="cab-btn-back">
         <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor"><path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        ${langKey==='zh'?'返回大盘总览':langKey==='en'?'Back to Overview':'大盤全体に戻る'}
+        ${isZh(langKey) ? zhx(langKey, '返回大盘总览'):langKey==='en'?'Back to Overview':'大盤全体に戻る'}
       </button>
     </div>
   `;
@@ -1895,9 +1911,9 @@ const PM_SURNAME = {
 // 靠右侧档案卡与 tooltip 的全名区分,水印本身不带 (1)(2) 尾巴。
 function surnameOf(cabId) {
   const sn = PM_SURNAME[cabId];
-  if (sn) return sn[currentLang === 'zh' ? 1 : currentLang === 'en' ? 2 : 0];
+  if (sn) return zhx(currentLang, sn[isZh(currentLang) ? 1 : currentLang === 'en' ? 2 : 0]);
   const p = CAB_PROFILES[cabId] || {};
-  const full = currentLang === 'zh' ? (p.nameZh || cabId)
+  const full = isZh(currentLang) ? zhx(currentLang, p.nameZh || cabId)
     : currentLang === 'en' ? (p.nameEn || cabId) : (p.nameJa || cabId);
   const base = String(full).replace(/\(.*?\)/g, '').trim();
   return currentLang === 'en' ? base.split(' ').pop() : base.slice(0, 2);
@@ -1967,7 +1983,7 @@ function paintableColor(raw, fallback) {
 }
 
 function shareSourcesLine(langKey) {
-  if (langKey === 'zh') return '来源:NHK・日经・朝日・时事・读卖・JNN・共同 各社民调(月度均值)';
+  if (isZh(langKey)) return zhx(langKey, '来源:NHK・日经・朝日・时事・读卖・JNN・共同 各社民调(月度均值)');
   if (langKey === 'en') return 'Sources: NHK, Nikkei, Asahi, Jiji, Yomiuri, JNN and Kyodo polls (monthly means)';
   return '出典:NHK・日経・朝日・時事・読売・JNN・共同 各社世論調査(月次平均)';
 }
@@ -2005,11 +2021,11 @@ function shareCardCanvas(cabId) {
   g.fillText('japan.ouuut.com/cabinet/', pad, 60);
   g.textAlign = 'right';
   g.fillStyle = muted;
-  g.fillText(langKey === 'zh' ? '内阁支持率 · 月度均值' : (langKey === 'en' ? 'Cabinet approval · monthly means' : '内閣支持率・月次平均'), W - pad, 60);
+  g.fillText(isZh(langKey) ? zhx(langKey, '内阁支持率 · 月度均值') : (langKey === 'en' ? 'Cabinet approval · monthly means' : '内閣支持率・月次平均'), W - pad, 60);
 
-  const pmTitle = langKey === 'zh' ? (p.nameZh || s.pm) : (langKey === 'en' ? (p.nameEn || s.pm) : (p.nameJa || s.pm));
-  const eraTitle = langKey === 'zh' ? p.eraNumberZh : (langKey === 'en' ? p.eraNumberEn : p.eraNumberJa);
-  const partyTitle = langKey === 'zh' ? p.partyZh : (langKey === 'en' ? p.partyEn : p.partyJa);
+  const pmTitle = isZh(langKey) ? zhx(langKey, p.nameZh || s.pm) : (langKey === 'en' ? (p.nameEn || s.pm) : (p.nameJa || s.pm));
+  const eraTitle = isZh(langKey) ? zhx(langKey, p.eraNumberZh) : (langKey === 'en' ? p.eraNumberEn : p.eraNumberJa);
+  const partyTitle = isZh(langKey) ? zhx(langKey, p.partyZh) : (langKey === 'en' ? p.partyEn : p.partyJa);
   const firstYM = s.points[0].ym, lastYM = s.points[s.points.length - 1].ym;
   g.textAlign = 'left';
   g.fillStyle = ink;

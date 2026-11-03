@@ -211,7 +211,15 @@ def main(argv=None):
         "license": "PDL 1.0 (https://www.digital.go.jp/resources/open_data/public_data_license_v1.0)",
         "definition": {
             "type": TYPE_USED, "category": CATEGORY_CLOSED,
-            "band": [BAND_MIN, BAND_MAX], "statistic": "mean",
+            "band": [BAND_MIN, BAND_MAX],
+            # `unit` / `band.*` / `band.p70` は中央値(median)、`*_mean` が平均。
+            # 2026-11-04 まで "mean" と書いてあり、実装(と凡例)と食い違っていた。
+            "statistic": "median",
+            "fields": {"unit": "median", "unit_mean": "mean",
+                       "total_med": "median", "total_mean": "mean",
+                       "band.unit": "median", "band.unit_mean": "mean",
+                       "band.total_med": "median", "band.total_mean": "mean",
+                       "band.p70": "median×70m2"},
         },
         "totals": {"wards": len(wards), "trades": total},
         "wards": wards,

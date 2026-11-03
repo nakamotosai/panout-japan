@@ -15,6 +15,7 @@ const SKELETON = `
 <aside id="hsg-card"></aside>
 <svg id="hsg-lx-svg"></svg><div id="hsg-lx-capsule"></div>`;
 
+import { toHant } from "../hant.js";
 const I18N = {
   ja: {
     loadingTitle: "住宅価格を読み込み中", loadingStatus: "国土交通省 不動産情報ライブラリ", loaderAria: "読み込み中",
@@ -89,6 +90,20 @@ const I18N = {
     siteBy: "japan.ouuut.com", navQuake: "Quakes", navCabinet: "Cabinet", navCrime: "Crime",
   },
 };
+
+/* zh-Hant:四语真页面把 <html data-view-lang> 写成 zh-Hant,章节视图挑自己的词条,不落回
+   zh(简体)。简体词条是唯一来源,繁体由站内 s2tw 规则转出(app/hant.js;规则与
+   src/hant.py 同一份,生成与闸见 tools/gen_view_hant.py / src/view_i18n.py)。 */
+const isZh = (l) => l === "zh" || l === "zh-Hant";
+const zhx = (l, s) => (l === "zh-Hant" ? toHant(String(s)) : s);
+function deepHant(v) {
+  if (typeof v === "string") return toHant(v);
+  if (typeof v === "function") return (...a) => toHant(v(...a));
+  if (Array.isArray(v)) return v.map(deepHant);
+  if (v && typeof v === "object") { const o = {}; for (const k in v) o[k] = deepHant(v[k]); return o; }
+  return v;
+}
+I18N["zh-Hant"] = deepHant(I18N.zh);
 
 const THEME_MAP = { mono: "editorial", sage: "editorial", dark: "tactical", editorial: "editorial", tactical: "tactical" };
 const RAMP = {
@@ -697,7 +712,7 @@ function controlsHtml() {
 }
 
 function mountControls(box) {
-  const label = curLang === "zh" ? "筛选" : curLang === "en" ? "Filter" : "絞り込み";
+  const label = isZh(curLang) ? zhx(curLang, "筛选") : curLang === "en" ? "Filter" : "絞り込み";
   box.innerHTML = `<button type="button" class="hsg-ctl-toggle" aria-expanded="false" aria-label="${label}"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 4h12M4 8h8M6.5 12h3"/></svg><span>${label}</span></button>`
     + `<div class="hsg-ctl">${controlsHtml()}</div>`;
   const tg = box.querySelector(".hsg-ctl-toggle");
