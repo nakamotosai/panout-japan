@@ -93,6 +93,14 @@ def animated_wordmark():
 BUILD_DATE = datetime.now().strftime("%Y-%m-%d")
 BUILD_STAMP = datetime.now().strftime("%Y-%m-%d %H:%M")
 
+# GA4:测量 ID 由项目侧取回(勿在构建脚本里另建属性)。在 head() 里统一注入,
+# 四条语言路由 × 7 页面 = 28 张静态页各一段,除 gtag.js 外不引其它分析脚本。
+GA_ID = "G-5Z2XZ044F6"
+GA_SNIPPET = (
+    f'<script async src="https://www.googletagmanager.com/gtag/js?id={GA_ID}"></script>\n'
+    f'<script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments);}}'
+    f'gtag("js",new Date());gtag("config","{GA_ID}");</script>\n')
+
 # ---------------------------------------------------------------- data
 Q = json.loads((ROOT / "app/quake/data/quakes.json").read_text(encoding="utf-8"))
 OUTLINE = json.loads((ROOT / "app/quake/data/japan-outline.json").read_text(encoding="utf-8"))
@@ -1613,7 +1621,7 @@ def head(title, desc, path, jsonld=None, extra_head="", body_class="", chapter="
 {boot}
 {ld}
 {extra_head}
-</head>
+{GA_SNIPPET}</head>
 <body{body_class}>
 <a class="skip" href="#main">{tr('skip')}</a>
 <div class="grain" aria-hidden="true"></div>
@@ -2564,6 +2572,18 @@ def main():
         if isinstance(v, str) and v.startswith("<!doctype html>"):
             files[k] = v.replace("__CSS_VER__", CSS_VER).replace("__JS_VER__", JS_VER) \
                         .replace("__FONT_VER__", FONT_VER)
+
+    # GA4 闸:四条语言路由 × 7 页面 = 28 张静态页,每页恰好一段 gtag(由 head() 注入)。
+    ga_bad = []
+    for lang in LANGS:
+        for route, _build in routes:
+            path = url_in(lang, route)
+            html = files[path]
+            hits = html.count(f"gtag/js?id={GA_ID}") + html.count(f'gtag("config","{GA_ID}")')
+            if hits != 2:
+                ga_bad.append(f"{path}={hits}")
+    if ga_bad:
+        raise SystemExit(f"GA4: 28 页各须恰好一段 gtag(loader+config),异常:{', '.join(ga_bad)}")
 
     write_site(files)
     write_data()
