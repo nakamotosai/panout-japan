@@ -53,7 +53,7 @@ def _subset(src, dst, text, weight):
     from fontTools.varLib.instancer import instantiateVariableFont
     from fontTools import subset
 
-    f = TTFont(str(src))
+    f = TTFont(str(src), recalcTimestamp=False)
     if "fvar" in f:
         instantiateVariableFont(f, {"wght": weight}, inplace=True, updateFontNames=False)
     opts = subset.Options()
@@ -67,6 +67,11 @@ def _subset(src, dst, text, weight):
     ss.populate(text=text)
     ss.subset(f)
     f.flavor = "woff2"
+    # fontTools rewrites head.modified to "now" on save unless recalcTimestamp is off —
+    # set in the constructor above. Before that, one build after another produced
+    # different bytes for the same input (28096 vs 28144 bytes for one face on
+    # 2026-11-03), so every deploy minted a new FONT_VER and every visitor re-downloaded
+    # ~0.7 MB of fonts although nothing about the fonts had changed.
     f.save(str(dst))
 
 

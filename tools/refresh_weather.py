@@ -120,6 +120,12 @@ def verify_build(data: dict, report: dict) -> None:
     rows = body.count("<tr>")
     if rows != 47:
         raise RuntimeError(f"Expected 47 no-JS rows, got {rows}")
+    css = (SITE / "assets/app.css").read_text("utf-8")
+    if css.count("@font-face") < 10 or "?v=0" in css:
+        raise RuntimeError(
+            "Built CSS has no font faces: the font build was skipped (missing font "
+            "sources), which would deploy a fontless site"
+        )
     built = W.parse_js_object(SITE / "assets/weather/data.js", "WEATHER_DATA")
     if built["generatedAt"] != data["generatedAt"] or len(built["regions"]) != 47:
         raise RuntimeError("Built data.js does not match the validated snapshot")

@@ -65,8 +65,9 @@ manual refresh.
    valid precipitation period; required metadata.
 5. Completeness floors: at most 7 missing `todayHigh`, at most 7 missing
    `todayPop`, at most 2 empty overviews.
-6. Full build: 6 pages, 47 no-JS weather rows, the current `data.js?v=` stamp, no
-   unresolved placeholders.
+6. Full build: 6 pages, 47 no-JS weather rows, the current `data.js?v=` stamp, font
+   faces present (`@font-face` count and no `?v=0`, so a font build that silently fell
+   back to the stub cannot deploy a fontless site), no unresolved placeholders.
 7. Deployment artifact first: the Pages URL `wrangler` just printed must already
    serve the new `generatedAt` (3 tries, 5s apart). The artifact is authoritative
    the moment the upload returns, so a failure here is a real defect.
@@ -105,8 +106,11 @@ and made every retry hopeless.
 
 So the site revalidates by default (`_headers` `/*` rule: `max-age=0,
 must-revalidate`). Only two exceptions exist: `/assets/fonts/*` keeps `immutable`
-because a fingerprinted woff2 is the one URL that fully identifies its bytes, and
-`/data/*` keeps a day because those CSVs are not stamped and change daily.
+because a fingerprinted woff2 is the one URL that fully identifies its bytes — true
+again since `_subset()` stopped letting fontTools stamp `head.modified` with the build
+time, which had been minting a new `FONT_VER` (and a fresh ~0.7 MB font download for
+every visitor) on every deploy — and `/data/*` keeps a day because those CSVs are not
+stamped and change daily.
 
 The weather runtime keeps its content-hash stamp (`?v=<sha1 of the four files>`), so
 every release publishes fresh cache keys and a release can never be answered from an
@@ -124,6 +128,11 @@ hopeless). A bare-path probe the same morning showed the same thing without any 
 (another path or stamp) or a purge clears such an entry, and this token has no Cache
 Purge permission (401 on `purge_cache`). Hence: stamps stay, and nothing is
 long-cached.
+
+The weather runtime is the one place where reuse-without-validation is a correctness
+risk rather than a small win, so it is served `Cache-Control: no-cache` on top of the
+site default: whatever `max-age` the zone appends afterwards, the copy must be validated
+before every use, and unchanged bytes still answer from a 304.
 
 Both the pipeline (`verify_site`) and the hourly probe assert that `data.js` does
 *not* come back long-cached, so a regression fails loudly instead of serving stale

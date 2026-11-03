@@ -1759,11 +1759,20 @@ def collect_chars(files, i18n_json):
 
 
 def build_fonts(charset):
+    """Subset the faces the site needs.
+
+    A failure here is loud on purpose: the typography is part of the design, and a
+    silent skip ships a fontless site (no `@font-face`, `?v=0`) that still prints a
+    successful build — which is what happened on 2026-11-03 when `src/build.py` ran
+    without the `PANOUT_*` font sources in the environment. `verify_build()` in the
+    refresh pipeline refuses to deploy such a build.
+    """
     try:
         import fonts
         return fonts.build(charset, SITE / "assets/fonts", ROOT / ".cache/fonts")
     except Exception as e:
-        print("fonts: skipped", e)
+        print("fonts: SKIPPED — the built site would ship no @font-face and `?v=0`:", e)
+        print("fonts: set PANOUT_LATIN_FONTS / PANOUT_SC_FONTS / PANOUT_OUTFIT_FONT (see src/fonts.py)")
         return {"ver": "0", "faces": ""}
 
 
@@ -1902,6 +1911,14 @@ def write_meta(font_meta):
         "/assets/fonts/*\n"
         "  ! Cache-Control\n"
         "  Cache-Control: public, max-age=31536000, immutable\n"
+        "\n"
+        "# The weather runtime is regenerated hourly, so it is the one place where a copy\n"
+        "# reused without revalidation is a correctness risk rather than a small win.\n"
+        "# `no-cache` forces validation on every use no matter what max-age the zone's\n"
+        "# browser cache TTL adds afterwards (it raised our max-age=0 to 14400 on\n"
+        "# 2026-11-03) and still answers from a 304 when the bytes are unchanged.\n"
+        "/assets/weather/*\n"
+        "  Cache-Control: no-cache\n"
         "\n"
         "/data/*\n"
         "  Cache-Control: public, max-age=86400\n", encoding="utf-8")
