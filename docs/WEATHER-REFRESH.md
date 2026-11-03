@@ -139,15 +139,20 @@ only ever be the release that published it, and the next release publishes a new
 Both the pipeline (`verify_site`) and the hourly probe assert that `data.js` does
 *not* come back long-cached, so a regression fails loudly instead of serving stale
 data quietly. The bar they enforce is "no `immutable`, nothing a day or longer, always
-revalidating", because the production domain does not serve our `max-age=0` verbatim:
-the zone's browser cache TTL raises it, and `/assets/*` comes back as
-`public, max-age=14400, must-revalidate`. So the pinning horizon went from a year to
-four hours rather than to zero — four hours that only ever hold a copy of the current
-release, since the stamps change with the content. This token can neither read nor
-write zone settings (403), so a true `max-age=0` would need the zone's Browser Cache
-TTL set to `Respect Existing Headers` in the dashboard; until then the pipeline's
-production check deliberately reaches past the cache with a unique `&cb=` key, and the
-hourly watchdog is the thing that measures what users actually receive.
+revalidating".
+
+The zone's own Browser Cache TTL (4 hours) used to raise our `max-age=0`, which is why
+`/assets/*` came back as `public, max-age=14400, must-revalidate`. That no longer
+applies to this hostname: a **Cache Rule** on the `ouuut.com` zone matches
+`http.host eq "japan.ouuut.com"` and sets `browser_ttl: respect_origin` (ruleset
+`59f0e3bd2d1f4b2eb390341190a13857`, rule `03d96559182942969c946a84a372fe0f`,
+created 2026-11-03 through the dashboard API), so browsers now receive the origin
+headers verbatim and the four-hour horizon is zero here. The zone-wide setting is
+untouched (`14400`) and the other fifteen hostnames on the zone keep it, which is why
+the rule is scoped rather than the setting changed. Inspect or remove it under
+`Caching → Cache Rules`; the pipeline's production check still reaches past the cache
+with a unique `&cb=` key because it measures the deployment pointer, while the hourly
+watchdog measures what users actually receive.
 
 ## Manual release check
 

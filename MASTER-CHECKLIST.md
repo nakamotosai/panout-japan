@@ -43,7 +43,7 @@
 - [~] **E3** 共享 shell 约 15KB，章节按需加载；天气页额外按需加载 343KB 运行时。首页 Lighthouse TBT 0ms 为上一发布；天气页未重跑 Lighthouse，实测 1 个 133ms long task。
 - [x] **E4** 首页 LCP 2.1s（上一发布）；天气页实测 LCP 240ms，静态直出。
 - [~] **E5** 生产 CLS 0；字标固定舞台，动效只改 opacity。天气页实测 CLS 0。
-- [x] **E6** 静态资源不再长缓存:HTML `max-age=0`、`/assets/*` 实测 `max-age=14400, must-revalidate`(zone 的 browser cache TTL 把我们的 `max-age=0` 抬到 4h)、`immutable` 只剩字体 woff2、`/data/*` 一天;天气运行时保留内容版本戳,所以 4h 里只会是当前那一版。字典独立版本化。
+- [x] **E6** 静态资源不再长缓存:HTML `max-age=0`;`/assets/*` 现在把源头的 `max-age=0, must-revalidate` 原样发给浏览器(2026-11-03 起,靠 `ouuut.com` zone 上一条 host 级 Cache Rule `http.host eq "japan.ouuut.com"` → `browser_ttl: respect_origin` 覆盖 zone 级 4h Browser Cache TTL,只影响本站);`immutable` 只剩字体 woff2(可复现)、`/data/*` 一天。天气运行时保留内容版本戳。字典独立版本化。
 - [~] **E7** 校验分两段:工件(权威)直取发布 URL 判正确性;生产域用唯一 `&cb=` 测部署指针(避免读到切换窗口填进来的旧缓存条目);用户可见那份由小时探针量。生产已正确返回新版,未额外执行全站 purge。
 - [~] **E8** 首页移动端 Lighthouse 97/100/100/100（上一发布）；天气页未重跑 Lighthouse，CLS 0、LCP 240ms、无横向溢出。
 
