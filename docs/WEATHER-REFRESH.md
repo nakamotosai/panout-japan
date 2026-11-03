@@ -70,13 +70,17 @@ manual refresh.
 7. Deployment artifact first: the Pages URL `wrangler` just printed must already
    serve the new `generatedAt` (3 tries, 5s apart). The artifact is authoritative
    the moment the upload returns, so a failure here is a real defect.
-8. Then production: `/weather/` 200, the referenced `data.js` parses,
-   `generatedAt` matches, 47 regions, and the asset must revalidate rather than
-   come back long-cached — retried 10 times, 20s apart. The production domain is
-   only re-pointed at the new deployment *after* the upload, so a short budget
-   measures propagation, not correctness: on 2026-11-03 06:12 JST that lag
-   outlived the old 3x10s budget, a good deployment was rolled back and the day's
-   refresh was lost.
+8. Then production: `/weather/` 200, and the deployment the domain routes to must serve
+   the new `generatedAt` with 47 regions and a `data.js` that is not long-cached. The
+   asset is fetched through a unique cache key so an edge entry filled before the switch
+   cannot make every retry read the same old body; the budget is 10 tries, 20s apart.
+   The production domain is only re-pointed at the new deployment *after* the upload,
+   so this stage measures propagation: on 2026-11-03 06:12 JST that lag outlived the
+   old 3x10s budget, a good deployment was rolled back and the day's refresh was lost
+   (the artifact was already correct while the domain still served the previous body).
+   The unique cache key is what keeps the retries meaningful: an entry filled while the
+   previous deployment was still current would otherwise answer every attempt with the
+   same stale body.
 9. Source: commit `src/weather/data.js` and `src/weather/DATA-NOTES.md`, push to
    GitHub and Gitea, fetch and require `0 ahead / 0 behind`.
 
@@ -123,7 +127,16 @@ long-cached.
 
 Both the pipeline (`verify_site`) and the hourly probe assert that `data.js` does
 *not* come back long-cached, so a regression fails loudly instead of serving stale
-data quietly.
+data quietly. The bar they enforce is "no `immutable`, nothing a day or longer, always
+revalidating", because the production domain does not serve our `max-age=0` verbatim:
+the zone's browser cache TTL raises it, and `/assets/*` comes back as
+`public, max-age=14400, must-revalidate`. So the pinning horizon went from a year to
+four hours rather than to zero — four hours that only ever hold a copy of the current
+release, since the stamps change with the content. This token can neither read nor
+write zone settings (403), so a true `max-age=0` would need the zone's Browser Cache
+TTL set to `Respect Existing Headers` in the dashboard; until then the pipeline's
+production check deliberately reaches past the cache with a unique `&cb=` key, and the
+hourly watchdog is the thing that measures what users actually receive.
 
 ## Manual release check
 

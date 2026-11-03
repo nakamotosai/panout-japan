@@ -136,13 +136,17 @@ def check() -> str | None:
             return f"{rid} week 日期不连续"
         if axis[-1] < base + dt.timedelta(days=6):
             return f"{rid} week 覆盖不足（到 {axis[-1]}）"
-    # 2026-11-03:部署切换不是原子的 —— 边缘还在回上一版时,新 URL 的请求会拿到旧正文,
-    # 长缓存会把它钉在那个 URL 上一整个 max-age(当天天气刷新就是因此被判失败并回滚)。
-    # 判据因此反过来:data.js 必须每次校验。
+    # 2026-11-03:长缓存会把「部署切换窗口里填进来的旧正文」钉在新版 URL 上(当天两次
+    # 事故都是这一类:?v=a1513657 钉住 11-02 快照,裸路径条目钉了 29.6h 且 purge 权限
+    # 为 0)。判据:不得 immutable、不得 ≥1 天、必须每次校验;zone 的 browser cache TTL
+    # 会把我们写的 max-age=0 抬到 4h,所以只卡这两个上界。
     cache = headers.get("cache-control", "")
-    if "immutable" in cache or "max-age=31536000" in cache:
-        return f"data.js 被长缓存钉住(新版 URL 会锁住旧正文): {cache}"
-    if "max-age=0" not in cache and "no-cache" not in cache:
+    if "immutable" in cache:
+        return f"data.js 被 immutable 钉住(新版 URL 会锁住旧正文): {cache}"
+    longest = max((int(m) for m in re.findall(r"max-age=(\d+)", cache)), default=0)
+    if longest >= 86400:
+        return f"data.js 被长缓存 {longest}s(切换窗口的旧正文会被钉住): {cache}"
+    if not any(w in cache for w in ("must-revalidate", "no-cache", "no-store")):
         return f"data.js 不是每次校验: {cache}"
     return None
 

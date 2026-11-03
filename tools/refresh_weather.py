@@ -204,8 +204,33 @@ def deploy() -> tuple[str | None, str | None]:
     return deployment_id, deployment_url
 
 
-def verify_site(base_url: str, expected: str) -> str:
-    """Fetch one base URL and check it serves the new snapshot. Returns the cache policy."""
+def assert_cache_policy(base_url: str, cache_control: str) -> None:
+    """The asset must not be reusable without revalidation for long.
+
+    A year-long `immutable` cache is what pinned the previous deployment's body to a
+    freshly published stamp (2026-11-03). The zone's browser cache TTL raises our
+    `max-age=0` to four hours on the production domain, so the bar here is: never
+    `immutable`, never a day or more, always revalidating.
+    """
+    if "immutable" in cache_control:
+        raise RuntimeError(f"{base_url} data.js is immutable: {cache_control!r}")
+    longest = max((int(m) for m in re.findall(r"max-age=(\d+)", cache_control)), default=0)
+    if longest >= 86400:
+        raise RuntimeError(f"{base_url} data.js is long-cached for {longest}s: {cache_control!r}")
+    if not any(w in cache_control for w in ("must-revalidate", "no-cache", "no-store")):
+        raise RuntimeError(f"{base_url} data.js does not revalidate: {cache_control!r}")
+
+
+def verify_site(base_url: str, expected: str, pointer_only: bool = False) -> str:
+    """Fetch one base URL and check it serves the new snapshot. Returns the cache policy.
+
+    ``pointer_only`` adds a unique cache key, so the check measures *which deployment the
+    domain routes to* rather than whatever an edge cache entry holds. That matters on the
+    production domain: the zone's browser cache TTL raises our ``max-age=0`` to four
+    hours, so an entry filled while the previous deployment was still current would make
+    every retry read the same stale body (2026-11-03). Which copy users actually get is
+    the hourly watchdog's job, not this check's.
+    """
     status, _headers, raw = http_get(base_url + "/weather/")
     if status != 200:
         raise RuntimeError(f"{base_url} /weather/ HTTP {status}")
@@ -213,12 +238,10 @@ def verify_site(base_url: str, expected: str) -> str:
     match = re.search(r'src="(/assets/weather/data\.js(?:\?v=[^"]+)?)"', html)
     if not match:
         raise RuntimeError(f"{base_url} weather HTML does not reference data.js")
-    # Fetch exactly the URL the page publishes. That is only safe because the asset
-    # revalidates: while a deployment switch is in flight the edge can answer from the
-    # previous deployment, and under a long cache that body would then be pinned to the
-    # URL the new page just started advertising (2026-11-03). The policy is asserted
-    # below, and the hourly watchdog asserts it again on the user-facing side.
-    status, headers, raw = http_get(base_url + match.group(1))
+    asset_url = base_url + match.group(1)
+    if pointer_only:
+        asset_url += ("&" if "?" in asset_url else "?") + "cb=" + os.urandom(4).hex()
+    status, headers, raw = http_get(asset_url)
     if status != 200:
         raise RuntimeError(f"{base_url} data.js HTTP {status}")
     live = parse_js_text(raw.decode("utf-8"), "WEATHER_DATA")
@@ -227,13 +250,7 @@ def verify_site(base_url: str, expected: str) -> str:
     if len(live.get("regions", [])) != 47:
         raise RuntimeError(f"{base_url} live data does not contain 47 regions")
     cache_control = headers.get("Cache-Control", "")
-    if "immutable" in cache_control or "max-age=31536000" in cache_control:
-        raise RuntimeError(
-            f"{base_url} data.js is long-cached, which pins a stale body to a fresh URL: "
-            f"{cache_control!r}"
-        )
-    if "max-age=0" not in cache_control and "no-cache" not in cache_control:
-        raise RuntimeError(f"{base_url} data.js does not revalidate: {cache_control!r}")
+    assert_cache_policy(base_url, cache_control)
     return cache_control
 
 
@@ -241,12 +258,14 @@ def verify_production(data: dict, deployment_url: str | None = None) -> None:
     """Two stages, because the two failures mean different things.
 
     The Pages artifact is authoritative and stable the moment ``wrangler`` returns, so a
-    failure there is a real defect. The production domain is only re-pointed at the new
-    deployment *after* the upload: on 2026-11-03 06:12 JST that lag outlived the old
-    3x10s budget (the artifact was already correct at v=a1513657 while japan.ouuut.com
-    still served v=6e0b6e42), so a good deployment got rolled back and the refresh was
-    lost. Hence: artifact first with a short budget, then the production domain with a
-    budget sized for propagation.
+    failure there is a real defect — and it is fetched as published, with no cache key of
+    our own. The production domain is only re-pointed at the new deployment *after* the
+    upload: on 2026-11-03 06:12 JST that lag outlived the old 3x10s budget (the artifact
+    was already correct while japan.ouuut.com still served the previous body), so a good
+    deployment got rolled back and the refresh was lost. Hence: artifact first with a
+    short budget, then the production domain with a propagation-sized budget, checked
+    through a unique cache key so a stale edge entry cannot make every retry read the
+    same old body.
     """
     expected = data["generatedAt"]
     if deployment_url:
@@ -266,7 +285,7 @@ def verify_production(data: dict, deployment_url: str | None = None) -> None:
     last_error = None
     for attempt in range(attempts):
         try:
-            cache_control = verify_site(SITE_URL, expected)
+            cache_control = verify_site(SITE_URL, expected, pointer_only=True)
             log(f"Production verified: {expected}, data.js {cache_control}")
             return
         except Exception as exc:
