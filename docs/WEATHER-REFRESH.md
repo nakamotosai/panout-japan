@@ -112,6 +112,13 @@ time, which had been minting a new `FONT_VER` (and a fresh ~0.7 MB font download
 every visitor) on every deploy — and `/data/*` keeps a day because those CSVs are not
 stamped and change daily.
 
+An exception rule must start with `! Cache-Control` (Pages *appends* when two `_headers`
+rules match the same path, it does not override). Without it, `/data/crime.csv` came
+back as `public, max-age=0, must-revalidate, public, max-age=86400` — two layers in one
+malformed value, measured 2026-11-04. The generator in `write_meta()` keeps the `!`
+line in every overriding rule; `.private/verify_local.py` asserts it, and
+`wrangler pages dev site` reproduces the same headers locally.
+
 The weather runtime keeps its content-hash stamp (`?v=<sha1 of the four files>`), so
 every release publishes fresh cache keys and a release can never be answered from an
 entry an older deployment filled — and because the assets revalidate, a stamp can

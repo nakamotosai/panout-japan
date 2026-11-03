@@ -16,10 +16,13 @@
 .weather-lab button { color: inherit; }
 .weather-lab button:focus-visible, .weather-lab a:focus-visible, .weather-lab input:focus-visible,
 .weather-lab select:focus-visible, .weather-lab summary:focus-visible, .weather-lab [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
-.weather-lab h1, .weather-lab h2, .weather-lab h3, .weather-lab p { margin: 0; }
-.weather-lab h1 { font-family: var(--sans); font-size: clamp(30px,3.6vw,48px); line-height: 1.25; font-weight: 350; letter-spacing: -.035em; }
-.weather-lab h2 { font-size: 22px; font-weight: 400; line-height: 1.45; }
-.weather-lab h3 { font-size: 15px; font-weight: 500; }
+/* /weather/ 自 2026-11-04 起也有四段式章正文(.ch-doc)。下面几条元素规则与全站 .ch-doc 的
+   规则特异性相同、且 weather.css 后加载,所以把它们收进 app 与 noscript 两个子树里 ——
+   章正文的标题与段落排版交回 app.css。 */
+.weather-lab :is(#weather-app, .weather-static-fallback) :is(h1, h2, h3, p) { margin: 0; }
+.weather-lab :is(#weather-app, .weather-static-fallback) h1 { font-family: var(--sans); font-size: clamp(30px,3.6vw,48px); line-height: 1.25; font-weight: 350; letter-spacing: -.035em; }
+.weather-lab :is(#weather-app, .weather-static-fallback) h2 { font-size: 22px; font-weight: 400; line-height: 1.45; }
+.weather-lab :is(#weather-app, .weather-static-fallback) h3 { font-size: 15px; font-weight: 500; }
 .weather-lab .muted { color: var(--muted); }
 .weather-lab .micro { font-family: var(--mono); font-size: 12px; line-height: 1.7; color: var(--muted); }
 .weather-lab a { text-underline-offset: 4px; }

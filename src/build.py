@@ -1043,6 +1043,99 @@ COPY = {
     "w.th.temp": ("最高 / 最低", "最高 / 最低", "High / Low"),
     "w.th.pop": ("降水確率", "降水概率", "Precip. probability"),
 
+    # 天気章の静的正文(2026-11-04:他四章と同じ四段式にする。それまで章で唯一 h2 が 0 だった)
+    "w.doc.eyebrow": ("この章の読み方", "本章怎么看", "How to read this chapter"),
+    "w.doc.what.h": ("この章で見るもの", "这一章看的是什么", "What this chapter shows"),
+    "w.doc.what.p1": (
+        f"気象庁の予報を、{len(WEATHER_REGIONS)}都道府県それぞれの代表予報区について一枚の地図にまとめた章。"
+        f"予報の対象は今日・明日と、{len(WEATHER_REGIONS[0]['week'])}日分の週間予報。"
+        f"地図の色は天気、週間の並びは日付ごとの天気・最高/最低気温・降水確率・信頼度である。",
+        f"把气象厅的预报按 {len(WEATHER_REGIONS)} 个都道府县各自的代表预报区收进一张地图。"
+        f"预报对象是今天、明天,以及 {len(WEATHER_REGIONS[0]['week'])} 天的周预报。"
+        f"地图的颜色是天气,周预报一行是每天的天气、最高/最低气温、降水概率与信度。",
+        f"A chapter that lays the JMA forecast out on one map, one representative forecast area per "
+        f"prefecture: {len(WEATHER_REGIONS)} of them. It covers today, tomorrow and a "
+        f"{len(WEATHER_REGIONS[0]['week'])}-day outlook. Colour is the weather; the week strip carries each "
+        f"day’s weather, high and low, chance of precipitation and reliability."),
+    "w.doc.what.p2": (
+        "値はビルド時に静的に取り込まれている。ページを開いたときに気象庁へ問い合わせることはないので、"
+        "表示されているのは「その時点で取得した予報」であり、いま現在の予報ではない。",
+        "数值在构建时就静态取入。打开页面时不会去问气象厅,所以看到的是「当时取到的那份预报」,不是此刻的最新预报。",
+        "The numbers are baked in at build time. Opening the page never calls the JMA, so what you see is the "
+        "forecast as fetched then — not the forecast as of right now."),
+    "w.doc.cal.h": ("データの口径", "数据口径", "Data and definitions"),
+    "w.doc.cal.p1": (
+        "出典は気象庁の予報データ(府県予報区の短期予報・週間予報と、地方の概況)。観測値ではなく予報値である。"
+        "気温は最高と最低、降水確率は%、週間予報の信頼度は気象庁の区分(A/B/C)をそのまま持ってきている。",
+        "来源是气象厅的预报数据(府县预报区的短期预报、周预报,以及地方概况)。是预报值,不是观测值。"
+        "气温取最高与最低,降水概率用 %,周预报的信度直接沿用气象厅的 A/B/C 分级。",
+        "Source: JMA forecast products — short-range and weekly forecasts for the prefectural forecast areas, "
+        "plus the regional overview. These are forecasts, not observations. Temperature is the daily high and low, "
+        "precipitation chance is in per cent, and the weekly reliability figure is the JMA’s own A/B/C grade."),
+    "w.doc.cal.p2": (
+        "気象庁は地域ごとに発表時刻が異なるため、同じページに載る発表時刻も地域ごとに違う。"
+        "また取得元のプロダクト(05:00–06:00 JST)には今朝の最低気温が含まれないことが多く、"
+        "その場合は「—」になる。これは公式データの欠落であって、取得の失敗ではない。",
+        "气象厅各地的发布时间不同,所以同一页面上各地的发布时间也各不相同。另外,取数用的那批产品(05:00–06:00 JST)"
+        "往往不含当天早晨的最低气温,那时会显示「—」。这是官方数据的缺口,不是抓取失败。",
+        "The JMA issues each area at its own time, so the issue time shown for each prefecture differs. And the "
+        "product this site fetches (05:00–06:00 JST) usually carries no morning minimum, which is why that cell "
+        "reads “—”. That is a gap in the official product, not a failed fetch."),
+    "w.doc.cal.p3": (
+        "取り込みは vps-jp の日次ジョブ(06:10 JST)が行い、47都道府県分の予報と概況を取得して静的ファイルに固め、"
+        "そのままビルド・配信する。取得に失敗した日は前日の内容が残る(取得時刻の欄が動いていないことで分かる)。",
+        "取数由 vps-jp 的日更任务(06:10 JST)完成:抓取 47 个都道府县的预报与概况,固化成静态文件,再构建与发布。"
+        "抓取失败的日子会留着前一天的内容(看「抓取」时刻没动就能发现)。",
+        "A daily job on the VPS (06:10 JST) fetches all 47 prefectures plus the regional overviews, freezes them "
+        "into a static file, and the site is built and published from that. If a run fails, the previous day’s "
+        "contents stay in place — visible as a retrieval timestamp that has not moved."),
+    "w.doc.fact.src": ("出典", "来源", "Source"),
+    "w.doc.fact.period": ("週間予報の期間", "周预报期间", "Outlook window"),
+    "w.doc.fact.regions": ("都道府県", "都道府县", "Prefectures"),
+    "w.doc.fact.issued": ("気象庁の発表", "气象厅发布", "Issued by JMA"),
+    "w.doc.fact.gen": ("取得", "抓取", "Retrieved"),
+    "w.doc.read.h": ("どう読むか", "怎么读", "How to read it"),
+    "w.doc.read.p1": (
+        "第一に、予報と観測を混ぜない。この章の数字はすべて予報で、実際に観測された気温や降水量ではない。"
+        "第二に、地点は1都道府県に1つ。同じ県でも日本海側と太平洋側で予報が分かれる場合は、"
+        "代表予報区の値だけが地図に載る。",
+        "第一,别把预报和观测混在一起。本章的数字全是预报,不是实测的气温或降水量。第二,每个都道府县只有一个点;"
+        "同一个县里日本海侧与太平洋侧的预报不同时,地图上只放代表预报区的值。",
+        "First, keep forecast and observation apart: every number here is a forecast, not a measured temperature "
+        "or rainfall. Second, there is one point per prefecture — when a prefecture is split between Sea of Japan "
+        "and Pacific sides, only the representative area’s numbers reach the map."),
+    "w.doc.read.p2": (
+        "第三に、週間予報の信頼度を読む。A が最も高く、B、C の順に下がり、欄が空の日は信頼度が付いていない。"
+        "第四に、地図の色は天気の種類であって、良し悪しではない。晴れが良い日という意味はない。",
+        "第三,读周预报的信度:A 最高,B、C 依次下降,空白的日子表示气象厅没有给出信度。"
+        "第四,地图的颜色只是天气的种类,不是好坏——晴天并不意味着好日子。",
+        "Third, read the weekly reliability: A is the strongest, then B, then C, and a blank cell means the JMA "
+        "issued no grade. Fourth, colour is a kind of weather, not a verdict — a sunny day is not a good day."),
+    "w.doc.faq.h": ("よくある質問", "常见问题", "Frequently asked questions"),
+    "w.doc.faq.q1": ("観測値ですか。", "这是观测值吗?", "Are these observations?"),
+    "w.doc.faq.a1": (
+        "予報値です。気象庁の短期予報と週間予報をそのまま取り込んでいます。実際の気温や降水量は、"
+        "気象庁の観測データを見てください。",
+        "是预报值。直接取用气象厅的短期预报与周预报。想知道实测的气温与降水量,请去看气象厅的观测数据。",
+        "They are forecasts: the JMA’s short-range and weekly products, taken as published. For measured "
+        "temperatures and rainfall, read the JMA’s observation data instead."),
+    "w.doc.faq.q2": ("いつ更新されますか。", "多久更新一次?", "How often is it updated?"),
+    "w.doc.faq.a2": (
+        f"毎日 06:10 JST に vps-jp のジョブが気象庁のデータを取り直し、ビルドして配信します。"
+        f"このページの取得時刻は {WEATHER_DOC['generatedAt']} です。",
+        f"每天 06:10 JST,vps-jp 上的任务重新抓取气象厅数据,再构建与发布。本页的抓取时刻是 {WEATHER_DOC['generatedAt']}。",
+        f"A job on the VPS refetches the JMA data at 06:10 JST every day, then builds and publishes. This page "
+        f"was retrieved at {WEATHER_DOC['generatedAt']}."),
+    "w.doc.faq.q3": ("なぜ都道府県に1地点なのですか。", "为什么每个都道府县只有一个点?", "Why one point per prefecture?"),
+    "w.doc.faq.a3": (
+        "気象庁の予報は府県予報区ごとに発表されるためです。ここでは各都道府県の代表予報区を1つ選んで載せ、"
+        "同じ都道府県の中で分かれる予報は地図には出していません。",
+        "因为气象厅的预报是按府县预报区发布的。这里给每个都道府县挑一个代表预报区放上地图,"
+        "同一个都道府县内部有分歧的预报不在图上展开。",
+        "Because the JMA publishes per prefectural forecast area. This page picks one representative area per "
+        "prefecture; where a prefecture splits into several forecast areas, the map does not show them separately."),
+
+
     # ---- 四章の静的正文(ja が原文、zh-Hans と en はそれぞれの言葉で書き起こす)----
     # 見出しは各章 4 本(h2): 是什么 / 数据口径 / 怎么读 / 常见问题。
     # 数値はすべて build.py が読み込んだデータから f-string で差し込む(直書きしない)。
@@ -1937,7 +2030,8 @@ def pager(prev_href, prev_label, next_href, next_label):
 # 四章(地震・犯罪・内閣・住宅)は舞台(ポスター→起動)の下に、同じ四つの節を置く:
 # 是什么(この章で見るもの)/ 数据口径(データの口径)/ 怎么读(どう読むか)/ 常见问题。
 # 見出しは h2 を四本だけ、四言語で同じ並び。本文の数値はすべてデータから差し込む。
-DOC_SHAPE = {"q": (2, 3, 3, 3), "c": (2, 4, 3, 4), "b": (2, 4, 2, 4), "h": (2, 4, 2, 4)}
+DOC_SHAPE = {"q": (2, 3, 3, 3), "c": (2, 4, 3, 4), "b": (2, 4, 2, 4), "h": (2, 4, 2, 4),
+             "w": (2, 3, 2, 3)}
 
 
 def doc_para(prefix, key, count):
@@ -2174,6 +2268,13 @@ def build_weather(ver):
 <p class="muted">{tr('w.noscript.p')}</p>
 <div class="table-scroll"><table><thead><tr><th>{tr('w.th.pref')}</th><th>{tr('w.th.summary')}</th><th>{tr('w.th.temp')}</th><th>{tr('w.th.pop')}</th></tr></thead><tbody>{rows}</tbody></table></div>
 </section></noscript>
+{chapter_doc("w", [
+    ("src", "気象庁 (JMA)"),
+    ("period", f"{week[0]['date']} – {week[-1]['date']}"),
+    ("regions", f"{len(WEATHER_REGIONS)} (代表予報区)"),
+    ("issued", f"{WEATHER_REGIONS[0]['reportDatetime'][:16].replace('T', ' ')} JST"),
+    ("gen", WEATHER_DOC["generatedAt"]),
+])}
 </main>
 <script src="/assets/weather/data.js?v={ver}" defer></script>
 <script src="/assets/weather/geo.js?v={ver}" defer></script>
@@ -2901,10 +3002,14 @@ def write_meta(font_meta):
         "# `public, max-age=14400, must-revalidate`, no-cache dropped, measured 2026-11-03),\n"
         "# and only the dashboard's Browser Cache TTL can change that. What keeps such a copy\n"
         "# honest is the ?v= stamp instead: it can only ever be the release that published it.\n"
+        "# `! Cache-Control` 先清掉 `/*` 那条继承来的值:两层都命中时 Pages 是**追加**而不是覆盖,\n"
+        "# 不写这一行线上会拿到 `public, max-age=0, must-revalidate, public, max-age=0, must-revalidate`。\n"
         "/assets/weather/*\n"
+        "  ! Cache-Control\n"
         "  Cache-Control: public, max-age=0, must-revalidate\n"
         "\n"
         "/data/*\n"
+        "  ! Cache-Control\n"
         "  Cache-Control: public, max-age=86400\n", encoding="utf-8")
 
     # 尾斜杠 301:四条语言路由各一条,由 LANGS/PREFIX 推出,不再手抄路径。
@@ -2915,6 +3020,14 @@ def write_meta(font_meta):
             reds.append(f"{full.rstrip('/')} {full} 301")
     reds += ["/preview / 301", "/preview/ / 301"]
     (SITE / "_redirects").write_text("\n".join(reds) + "\n", encoding="utf-8")
+
+    # 退役 `?lang=` 变体的 301 中间件:wrangler 认的是 **仓库根** 的 `functions/`
+    # (不是 site/ 里的 —— Functions 目录按 cwd 解析,部署命令 `wrangler pages deploy site`
+    # 从仓库根跑),所以它既不是 site/ 的产物,也不会被每次构建覆盖。这里只做存在性闸:
+    # 文件被删掉时,`?lang=` 变体会静悄悄回到 200。
+    mw = ROOT / "functions" / "_middleware.js"
+    if not mw.is_file() or "Response.redirect(" not in mw.read_text(encoding="utf-8"):
+        raise SystemExit("functions/_middleware.js 缺失或不完整 —— 退役 ?lang= 变体的 301 会失效")
 
     (SITE / "llms.txt").write_text(f"""# {BRAND}
 
