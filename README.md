@@ -2,11 +2,11 @@
 
 `japan.ouuut.com` —— 抬头看天气，拉远看地震，凑近看犯罪，拉长看内阁，比着看住宅，数着看人口。同一片国土，六种尺度。
 
-> 状态：**六章齐全，人口章已上生产**（2026-11-01）。`/population/` 用 2025 年国势调查（2026-09-29 公布）与社人研 2050 推计，1,719 市町村等面积方格 ↔ 人口加权树图，附年龄金字塔与 47 县表；首页第六块板已从新闻预告换成人口。构建 7 个内容页；新闻占位代码已删除。线上 `https://japan.ouuut.com/population/`（2026-11-01 01:44 JST 部署，`ea896d63`）；VPS 06:10 天更任务已同步到含人口章的版本。生产根 `F:/projects/panout-japan`，仓 `ouuut/panout-japan`。本地验收见 `C:/Users/sai/ego/population-qa/` 与 `HANDOFF.md`。
+> 状态：**六章齐全，人口章已上生产**（2026-11-01）。`/population/` 用 2025 年国势调查（2026-09-29 公布）与社人研 2050 推计，1,719 市町村等面积方格 ↔ 人口加权树图，附年龄金字塔与 47 县表；首页第六块板已从新闻预告换成人口。构建 7 个内容页；新闻占位代码已删除。线上 `https://japan.ouuut.com/population/`（2026-11-01 01:44 JST 部署，`ea896d63`）；VPS 06:10 天更任务已同步到含人口章的版本。静态资源缓存 2026-11-03 定稿:浏览器按源站头重验(`max-age=0, must-revalidate`),由 `ouuut.com` zone 上一条 host 级 Cache Rule 覆盖 4 小时 Browser Cache TTL,字体仍 `immutable`;详见 `docs/WEATHER-REFRESH.md` § Asset cache policy。生产根 `F:/projects/panout-japan`，仓 `ouuut/panout-japan`。本地验收见 `C:/Users/sai/ego/population-qa/` 与 `HANDOFF.md`。
 > 命名：**japan.ouuut.com**。域名即品牌，旧字标已退役。
 > 封面:**六块数据板,三列两行**——天气 / 地震 / 犯罪 / 内阁 / 住宅 / 人口(2026-10-31)。六块全部是链接;第六块不再是「予告」预告板。六卡以下是 **C＋A** 收尾:先为「方法与出典」面板(六个真实章节来源、计算口径,原生展开/收起、无 JS 可读),后为单行大字「六种尺度看日本。」——只有「六种尺度」使用主题重点色,日/英也保留同一单行收尾。大字同一节内接作者落款:中本蔡 / NAKAMOTO SAI、三语简介,以及 ouuut.com(独立项目)、saaaai.com(主站)、邮件与 X。页脚精简为字标、CC BY 4.0、静态生成与日期。
 > 顶栏字标每 12 秒一轮:`japan.ouuut.com` 逐字从左出现,完整后停约 3 秒再渐隐;随后按界面语言换成对应 LOGO——日文「六つの尺度で日本を見る」、中文「六种尺度看日本」、英文「Six scales of Japan」——同样显隐并停约 3 秒,再回域名。日/中字标与卡片「抬头看」同为 250 字重;纯 CSS,宽度固定不推挤右侧按钮,减少动态效果与无 JS 时固定显示域名。
-> 线上：`https://japan.ouuut.com`（Cloudflare Pages `panout-site`，天气数据 commit `6d37d1b`，部署 `e16a2b8e`）。
+> 线上:`https://japan.ouuut.com`(Cloudflare Pages `panout-site`,天气数据 commit `82494ba`,部署 `506b8c3b`;这两个值由日更流水线写进 VPS 的 `~/.cache/panout-weather/state.json`,以那里为准)。
 > 本地预览：`http://127.0.0.1:8900/`（构建后 `cd site && python -m http.server 8900`）；旧 `/preview/` 自动跳到 `/`。
 > 天气：`/weather/` 把気象庁（JMA）的 47 都道府县预报快照做成可交互地图；今日/明日 + 未来 7 天，未发布气温留空，预报值不冒充观测值。数据与运行时在 `src/weather/`，构建产物在 `/assets/weather/`。VPS 每天 **06:10 JST** 抓取 95 个 JMA 资源、校验 47 县、重建并部署；失败保留上一快照。Kuma id 54 与每小时 :45 的外部探针双重对账 `state.json` / 线上 `data.js`，06:40 JST 未成功即告警。运行手册见 `docs/WEATHER-REFRESH.md`。
 > 住宅：`/housing/` 用国土交通省不动产情报图书馆（PDL 1.0）2025Q2–2026Q1 的成約明细，按官方最小定位单位「市区町村 + 町名（地区名）」汇总平均㎡単価：東京全域 1,237 个町上色（1,614 个町多边形，无成交的留白）。数据期间取官方已公布的最新滚动四个季度（2026-10 时为 2025Q2–2026Q1，即 2025 年 4 月–2026 年 3 月），页内工具条徽标、数据卡与 FAQ 均明示。界面与犯罪率章同一套模板（工具栏 / 右侧卡片 / 左下分布仪 / 竖向缩放条）；点选任一区域会平滑飞入该区域（区级 12 级、町级 14 级，手机各降一级）。不筛面积、不算中位数、不做 70㎡ 换算。首页第五块数据板同步上屏。

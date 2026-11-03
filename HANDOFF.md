@@ -50,7 +50,7 @@
 
 ## Not verified
 
-- The automatic 06:10 JST run has not been observed yet; the manual runs were at 13:36, 13:57 and 14:07 JST and used the 11:00 JMA product. The timer is enabled and next fires 2026-10-27 06:10 JST. The external weather probe was run manually and Kuma id 54 is UP; its :45 cron has not fired on its own yet.
+- The automatic 06:10 JST run has now been observed: 2026-10-31 and 2026-11-01 succeeded, but **2026-11-03 06:10 JST failed its production-verification step** (Kuma id 54 DOWN at 06:12:29 JST, unit exit 1; the unit's journald output had already rotated away). The same-day fixes (`1af919f`, `d40bbf8`, `82494ba`) made the manual `--force` run and the :45 probe pass, so 2026-11-04 06:10 is the proof. The unit now appends to `~/.cache/panout-weather/refresh.log` (systemd drop-in `panout-weather-refresh.service.d/override.conf`), so a repeat failure is diagnosable. The external probe's :45 cron does fire on its own (Kuma beats at :45 daily).
 - No Lighthouse rerun for `/weather/` (no local Chrome installation). Live PerformanceObserver on 390px gave LCP 240ms, CLS 0 and one 133ms long task; that is not a substitute for Lighthouse.
 - No full cross-browser matrix or full-site axe audit; this release used headed Chromium and targeted contrast/focus/reduced-motion checks. Contrast readings during a theme transition are not stable endpoints; final sage navigation is 4.9:1, dark 7.76:1.
 - No Search Console/Bing submission, Facebook/LinkedIn/Telegram share-preview validation, custom OG image, analytics/event tracking, enforced CSP, or domain-registrar renewal check. Pages supplies its own Web Analytics beacon; that was not independently audited.
@@ -59,16 +59,16 @@
 
 ## Next safe action
 
-- Population release: review the local screenshots in `C:/Users/sai/ego/population-qa/`, then `npx wrangler pages deploy site --project-name=panout-site --branch=main`; verify `/population/` 200, six nav links, six home cards, sitemap 7, llms six chapters, `/population` 301, and the home’s sixth card reaches `/population/`. Record the new deployment id as the next rollback point.
-- Observe the weather refresh on 06:10 JST: check `state.json`, `journalctl --user -u panout-weather-refresh.service`, production `generatedAt`, Kuma id 54, and the external probe log at 06:45. No news feed remains: the sixth card is population.
+- Observe the automatic 06:10 JST run on 2026-11-04: read `~/.cache/panout-weather/refresh.log` (new), `~/.cache/panout-weather/state.json`, production `generatedAt` and Kuma id 54. The 2026-11-03 run failed its production verification, so this run is the proof that the same-day fixes hold.
+- Then close the web-audit gate: `.audit/config.json` is missing, so `web_audit.py report` counts every item as unrun (the 2026-11-01 report was `FAIL`, `65 项 / 实跑 0`). Write `audit_scope` + `not_applicable`, run `check` + the ego probe, `ingest`/`record`, then `report`; exit 0 is the bar.
 
 ## Rollback
 
-- Current production deployment: `6ad91e99-69a2-43f6-bf2f-52043e800d58`. Previous production deployment: `08619b2f-7888-4e5a-ac6f-f3529e9757b3` (the first weather refresh), saved in `state.json` as `previous_deployment_id`; older release metadata is in `F:/archive/20261026-125659-panout-weather/`.
-- Restore through the Cloudflare dashboard “Rollback to this deployment”, or POST `https://api.cloudflare.com/client/v4/accounts/{account_id}/pages/projects/panout-site/deployments/ca2cf008-5a36-4f16-a213-e921e3564d5b/rollback` using the existing ouuut account token. Do not deploy an unverified directory as a rollback.
-- Daily source data commit is `6d37d1b` (`weather: refresh 2026-10-26`). To revert data, `git revert 6d37d1b` or restore `src/weather/data.js` from `b8e45d6`, rebuild, verify, and deploy. Reverting source alone does not change production.
+- Current production deployment: `506b8c3b-7b8e-42c2-90ed-f21dc0256665` (2026-11-03 15:09 JST, weather snapshot `2026-11-03T06:08:05Z`, source commit `82494ba`). Previous production deployment: `de9d5303-374d-468a-813a-10f29e7b46f0`. The pipeline keeps both in `~/.cache/panout-weather/state.json` (`deployment_id` / `previous_deployment_id`) — read it there rather than trusting this line; older release metadata is in `F:/archive/20261026-125659-panout-weather/`.
+- Restore through the Cloudflare dashboard “Rollback to this deployment”, or POST `https://api.cloudflare.com/client/v4/accounts/{account_id}/pages/projects/panout-site/deployments/<deployment_id>/rollback` using the existing ouuut account token. Do not deploy an unverified directory as a rollback.
+- Daily source data commit is `82494ba` (`weather: refresh 2026-11-03`, 2026-11-03 15:09 JST; the pipeline commits and pushes it itself). To revert data, `git revert <commit>` or restore `src/weather/data.js` from the previous refresh commit, rebuild, verify and deploy — reverting source alone does not change production.
 - Older pre-weather source and deployment metadata remain in `F:/archive/20261026-125659-panout-weather/` (`build.py`, `shell.js`, docs, old `site/index.html`, headers/redirects/sitemap/llms).
 
 ## Confidence
 
-4/5 — production content, five existing chapters, weather page, daily refresh (manual, idempotent, systemd service), localized layouts, real 404, headers/cache and Kuma wiring were exercised. The population chapter is locally verified (desktop/EN/mobile/no-JS) but not yet deployed. The first automatic 06:10 run, Lighthouse for the new page, external platform registrations, full browser matrix and a live timed rollback remain unverified.
+4/5 — production content, all six chapters (population went live 2026-11-01, deployment `ea896d63`; production serves `/population/` 200, sitemap 7, six nav links), weather page, daily refresh (systemd timer, idempotent, `--force` and skip paths exercised), localized layouts, real 404, headers/cache (host-scoped Cache Rule verified: `/assets/*` now returns the origin `max-age=0, must-revalidate`, fonts stay `immutable`, the other zone hostnames untouched) and Kuma wiring were exercised. Still unverified: whether the 06:10 JST run recovers after today's production-verification failure, the 2026-11-01 web-audit red items (no `.audit/config.json`), Lighthouse for the new pages, external platform registrations, a full browser matrix and a live timed rollback.

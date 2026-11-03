@@ -130,10 +130,12 @@ Purge permission (401 on `purge_cache`). Hence: stamps stay, and nothing is
 long-cached.
 
 The weather runtime is the one place where a copy reused without revalidation would
-matter, so `Cache-Control: no-cache` is what it *wants* — and it is exactly what the
-zone will not deliver: the artifact serves `no-cache` but the production domain comes
-back `public, max-age=14400, must-revalidate` with `no-cache` dropped (measured
-2026-11-03 on deployment `de9d5303`). What keeps such a copy honest is the stamp: it can
+matter, so `Cache-Control: no-cache` is what it *wants* — and on 2026-11-03 it was
+exactly what the production domain would not deliver: the artifact served `no-cache`
+but the custom domain came back `public, max-age=14400, must-revalidate` with `no-cache`
+dropped (measured on deployment `de9d5303`). That is the zone's Browser Cache TTL
+rewriting the browser-facing header, and it is now overridden for this hostname by a
+Cache Rule (§ below). What keeps such a copy honest regardless is the stamp: it can
 only ever be the release that published it, and the next release publishes a new one.
 
 Both the pipeline (`verify_site`) and the hourly probe assert that `data.js` does
