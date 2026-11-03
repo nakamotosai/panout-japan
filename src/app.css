@@ -103,20 +103,23 @@ html::-webkit-scrollbar { display: none; }
   border: 0;
 }
 
-body.chapter-app { height: 100dvh; overflow: hidden; }
+/* 四章 =「舞台 + 静的正文」1 枚の文書。舞台は従来どおり一画面ぶんの高さを取り、
+   正文はその下に続く(内部スクロールを作らないので、面包屑・页脚・爬虫が普通に読める)。 */
+body.chapter-app { min-height: 100dvh; }
 .chapter-app-page {
-  height: calc(100vh - var(--nav-h) - var(--crumb-h));
-  height: calc(100dvh - var(--nav-h) - var(--crumb-h));
   margin: 0;
   padding: 0;
   width: 100%;
-  overflow: hidden;
 }
-.chapter-app-page .stage {
-  height: 100%;
+/* z-index:0 で舞台が積層文脈を作る:Leaflet/WebGL の内側 z-index が
+   固定ヘッダ(z-index:100)を追い越さないようにする。 */
+.chapter-app-page > .stage {
+  height: calc(100vh - var(--nav-h) - var(--crumb-h));
+  height: calc(100dvh - var(--nav-h) - var(--crumb-h));
   width: 100%;
   margin: 0;
   border-radius: 0;
+  z-index: 0;
 }
 .chapter-app-page .stage-live {
   position: absolute !important;
@@ -133,6 +136,67 @@ body.chapter-app { height: 100dvh; overflow: hidden; }
 .chapter-app-page .stage-live .leaflet-container {
   height: 100% !important;
 }
+
+/* ---------------- 四章の静的正文(是什么 / 数据口径 / 怎么读 / 常见问题)---------------- */
+/* 見出しは h2 を四本。本文は一続きの文書として舞台の下に置く(JS なしでも読める)。 */
+.ch-doc {
+  padding-block: clamp(36px, 5vw, 64px);
+  border-top: 1px solid color-mix(in srgb, var(--ink) 9%, transparent);
+}
+.ch-doc-head { max-width: 46em; margin: 0 0 clamp(16px, 2vw, 24px); }
+.ch-doc-eyebrow {
+  margin: 0 0 10px;
+  font-size: 11px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.ch-doc h2 {
+  margin: 0;
+  font-family: var(--ja-serif);
+  font-weight: 500;
+  font-size: clamp(1.35rem, 2.4vw, 1.9rem);
+  line-height: 1.3;
+  letter-spacing: .01em;
+}
+html[lang^="zh"] .ch-doc h2 { font-family: var(--zh-serif); }
+.ch-doc p {
+  max-width: 44em;
+  margin: 0 0 1.05em;
+  font-size: var(--fs-body);
+  line-height: 1.95;
+}
+.ch-doc p:last-child { margin-bottom: 0; }
+.ch-doc a { border-bottom: 1px solid color-mix(in srgb, var(--ink) 25%, transparent); }
+.ch-doc a:hover { color: var(--accent-ink); border-bottom-color: var(--accent); }
+.ch-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px 28px;
+  max-width: 46em;
+  margin: clamp(20px, 2.4vw, 30px) 0 0;
+  padding: clamp(16px, 2vw, 22px) 0 0;
+  border-top: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+}
+.ch-facts > div { min-width: 0; }
+.ch-facts dt {
+  margin: 0 0 4px;
+  font-size: 10.5px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.ch-facts dd { margin: 0; font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums; }
+.ch-faq { max-width: 44em; margin: 0; }
+.ch-faq dt { margin: 0 0 6px; font-size: var(--fs-body); font-weight: 500; line-height: 1.7; }
+.ch-faq dd {
+  margin: 0 0 clamp(16px, 2vw, 22px);
+  color: var(--muted);
+  font-size: var(--fs-small);
+  line-height: 1.9;
+}
+.ch-faq dd:last-child { margin-bottom: 0; }
+
 /* 内阁全屏舞台布局与高质感平滑入场遮罩 */
 .chapter-app-page .stage-cabinet {
   height: 100% !important;

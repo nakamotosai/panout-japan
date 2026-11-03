@@ -107,6 +107,37 @@ Q_END_DAY_JA = f"{Q_END[0:4]}年{int(Q_END[5:7])}月{int(Q_END[8:10])}日"
 _Q_E = sum(10 ** (1.5 * e["mag"]) for e in Q)
 PCT_2011_N = round(100 * sum(1 for e in Q if e["time"][:4] == "2011") / Q_N, 1)
 PCT_2011_E = round(100 * sum(10 ** (1.5 * e["mag"]) for e in Q if e["time"][:4] == "2011") / _Q_E, 1)
+# 正文里出现的两个数字也从同一份目录算,和统计枠一样不直写:
+# M6 以上の点数と、カタログ全体の最大マグニチュード。
+Q_M6_N = sum(1 for e in Q if e["mag"] >= 6)
+Q_MAX = max(e["mag"] for e in Q)
+Q_MAX_DAY = max(Q, key=lambda e: e["mag"])["time"][:10]
+_MONTHS_EN = ("January", "February", "March", "April", "May", "June", "July",
+              "August", "September", "October", "November", "December")
+
+
+def _day_ja(d):
+    return f"{d[0:4]}年{int(d[5:7])}月{int(d[8:10])}日"
+
+
+def _day_zh(d):
+    return f"{d[0:4]} 年 {int(d[5:7])} 月 {int(d[8:10])} 日"
+
+
+def _day_en(d):
+    return f"{int(d[8:10])} {_MONTHS_EN[int(d[5:7]) - 1]} {d[0:4]}"
+
+
+def _ym_ja(ym):
+    return f"{ym[0:4]}年{int(ym[5:7])}月"
+
+
+def _ym_zh(ym):
+    return f"{ym[0:4]} 年 {int(ym[5:7])} 月"
+
+
+def _ym_en(ym):
+    return f"{_MONTHS_EN[int(ym[5:7]) - 1]} {ym[0:4]}"
 
 # 每页三语 title/description：静态 HTML 里只有 ja，shell 在切语言时替换 head
 PAGE_META = {
@@ -174,6 +205,8 @@ HOUSE_WARDS = HOUSE["wards"]
 HOUSE_TOWNS_DOC = json.loads((ROOT / "app" / "housing" / "data" / "towns.json").read_text(encoding="utf-8"))
 HOUSE_N = HOUSE_TOWNS_DOC["n"]
 HOUSE_TOWNS = sum(1 for x in HOUSE_TOWNS_DOC["towns"] if x["n"])
+HOUSE_TOWNS_ALL = len(HOUSE_TOWNS_DOC["towns"])
+HOUSE_TOWNS_ZERO = HOUSE_TOWNS_ALL - HOUSE_TOWNS
 POP = json.loads((ROOT / "app/population/data/population.json").read_text(encoding="utf-8"))
 POP_N = POP["meta"]["national"]
 _POP50_M = POP["age"]["y2050"]["male"]
@@ -241,6 +274,12 @@ CHOME_MEDIAN = CHOME_RATES[len(CHOME_RATES) // 2]
 CHOME_MAX = CHOME_RATES[-1]
 TOTAL_POP = sum((m.get("pop") or 0) for m in MUNI)
 CHOME_COUNT = len(POINTS)
+# 地図の枠は本土だけ(島嶼部は枠外)。率を出さない町丁の数もデータから数える。
+CHOME_MAINLAND = sum(1 for p in POINTS
+                     if p.get("lng") and 138.9 <= p["lng"] <= 139.96 and 35.46 <= p["lat"] <= 35.92)
+CHOME_NO_RATE = sum(1 for p in POINTS if (p.get("pop") or 0) < 200)
+CHOME_POP_MISSING = sum(1 for p in POINTS if p.get("g") == "*")
+C_META = json.loads((ROOT / "app/crime/data/meta.json").read_text(encoding="utf-8"))
 
 # cabinet series
 CAB_MONTHS = {}
@@ -265,6 +304,12 @@ for p in POLLS:
     CAB_BUCKETS[(p["pm"], p["date"][:7])] += 1
 N_BUCKETS = len(CAB_BUCKETS)
 N_SINGLE = sum(1 for v in CAB_BUCKETS.values() if v == 1)
+# 系列の両端は polls から導出(本文の「先頭/末尾」はここを見る)。
+CAB_FIRST = min(POLLS, key=lambda p: p["date"])
+CAB_LAST = max(POLLS, key=lambda p: p["date"])
+POLL_SRC = defaultdict(int)
+for _p in POLLS:
+    POLL_SRC[_p["source"]] += 1
 
 # ---------------------------------------------------------------- helpers
 
@@ -687,9 +732,9 @@ COPY = {
     "q.stat.max": ("最大", "最大", "Largest"),
     "q.stat.energy": ("2011年のエネルギー", "2011年能量占比", "2011 energy share"),
     "q.beat1.t": ("回数より、エネルギー", "比起次数，更看能量", "Energy, not counts"),
-    "q.beat1.p": ("2011年は件数で14.6%、エネルギーでは86.7%。同じ年でも、数える尺度を変えると景色が変わる。",
-                  "2011年按件数占14.6%，按能量占86.7%。同一年，换一种计量，风景就变了。",
-                  "2011 holds 14.6% of events and 86.7% of energy. Change the measure and the picture changes."),
+"q.beat1.p": (f"2011年は件数で{PCT_2011_N}%、エネルギーでは{PCT_2011_E}%。同じ年でも、数える尺度を変えると景色が変わる。",
+                  f"2011年按件数占{PCT_2011_N}%,按能量占{PCT_2011_E}%。同一年,换一种计量,风景就变了。",
+                  f"2011 holds {PCT_2011_N}% of events and {PCT_2011_E}% of energy. Change the measure and the picture changes."),
     "q.beat2.t": ("深さは、色", "深度即颜色", "Depth is colour"),
     "q.beat2.p": ("七段の深さ階調。赤い点ほど浅く、海溝の形が浮かぶ。",
                   "七级深度色阶。越红越浅，海沟的形状浮出来。",
@@ -861,9 +906,9 @@ COPY = {
     "d.year.top": ("主な地震", "主要地震", "Notable events"),
     "d.year.energy": ("エネルギー", "能量", "Energy"),
     "d.year.share": ("年間シェア", "年度占比", "Share of all"),
-    "d.year.note": ("USGS ComCat、M4以上、日本周辺。2026年は7月15日まで。",
-                    "USGS ComCat，M4以上，日本周边。2026年截至7月15日。",
-                    "USGS ComCat, M4+, Japan region. 2026 through 15 July."),
+"d.year.note": (f"USGS ComCat、M4以上、日本周辺。{_day_ja(Q_END)}まで。",
+                    f"USGS ComCat,M4 以上,日本周边。{_day_zh(Q_END)}止。",
+                    f"USGS ComCat, M4+, Japan region. Through {_day_en(Q_END)}."),
     "d.col.date": ("日付", "日期", "Date"),
     "d.col.place": ("場所", "地点", "Place"),
     "d.col.mag": ("M", "M", "M"),
@@ -981,6 +1026,475 @@ COPY = {
     "w.th.temp": ("最高 / 最低", "最高 / 最低", "High / Low"),
     "w.th.pop": ("降水確率", "降水概率", "Precip. probability"),
 
+    # ---- 四章の静的正文(ja が原文、zh-Hans と en はそれぞれの言葉で書き起こす)----
+    # 見出しは各章 4 本(h2): 是什么 / 数据口径 / 怎么读 / 常见问题。
+    # 数値はすべて build.py が読み込んだデータから f-string で差し込む(直書きしない)。
+    "q.doc.eyebrow": ("この章の読み方", "本章怎么看", "How to read this chapter"),
+    "q.doc.what.h": ("この章で見るもの", "这一章看的是什么", "What this chapter shows"),
+    "q.doc.what.p1": (
+        f"ページを開くと、まず静止ポスターが出る。日本列島の周りに置かれた点のひとつひとつが、"
+        f"2000年1月1日から{_day_ja(Q_END)}までに記録されたM4.0以上の震源で、総数は{n(Q_N)}点。"
+        f"ポスターは{_day_ja(Q_MAX_DAY)}のM{Q_MAX}を一点だけ強調している。代表の一点であって、"
+        f"平均でも予測でもない。「起動する」を押すとWebGLの地球儀が読み込まれ、回す・拡大する・年を切る、"
+        f"という操作ができるようになる。",
+        f"打开页面,先看到的是一张静态海报。日本列岛周围的每一个点,都是 2000 年 1 月 1 日至 {_day_zh(Q_END)} "
+        f"记录的 M4.0 以上震源,共 {n(Q_N)} 个。海报只强调一个点:{_day_zh(Q_MAX_DAY)} 的 M{Q_MAX}。"
+        f"它是代表性的一点,不是平均值,也不是预测。点「启动」会加载 WebGL 地球仪,可以旋转、放大、按年切片。",
+        f"Open the page and the first thing you see is a still poster. Every dot around the archipelago is one "
+        f"hypocentre recorded between 1 January 2000 and {_day_en(Q_END)}, magnitude 4.0 or above: {n(Q_N)} of them. "
+        f"The poster singles out one point, the M{Q_MAX} of {_day_en(Q_MAX_DAY)}. That is one representative event, "
+        f"not an average and not a forecast. Press launch and a WebGL globe loads: rotate it, zoom in, cut it by year."),
+    "q.doc.what.p2": (
+        "この章が見せるのは、地震の回数ではなく、どこで・どの深さで・どれだけのエネルギーが解放されたか。"
+        "点の位置は震源の水平位置、色は深さを表す。太平洋側の帯状の密集は「よく揺れる場所」であって、"
+        "危険度の順位表ではない。同じデータを年ごとに切り出すと、同じ海が毎年違う顔を見せる。",
+        "这一章呈现的不是地震的次数,而是能量在哪里、在什么深度、释放了多少。点的位置是震源的水平位置,"
+        "颜色代表深度。太平洋一侧的带状密集处表示「记录到的地震多」,不是危险度排行榜。"
+        "把同一份数据按年切开,同一片海每年换个表情。",
+        "What the chapter measures is not how many earthquakes happened but where, at what depth, and how much "
+        "energy was released. Position is the horizontal location of the hypocentre; colour is depth. A dense band "
+        "off the Pacific coast means a place that is recorded often, not a ranking of danger. Cut the same data by "
+        "year and the same sea changes face."),
+    "q.doc.cal.h": ("データの口径", "数据口径", "Data and definitions"),
+    "q.doc.cal.p1": (
+        f"出典はUSGSのANSS Comprehensive Catalog(ComCat)。期間は2000年1月1日から{_day_ja(Q_END)}(UTC)、"
+        f"範囲は東経120–150度・北緯20–50度、規模はM4.0以上。残した項目は位置・深さ・マグニチュード・時刻・"
+        f"地名だけで、件数は{n(Q_N)}点。カタログ全体の最大は{_day_ja(Q_MAX_DAY)}のM{Q_MAX}、"
+        f"M6以上は{n(Q_M6_N)}点。",
+        f"来源是 USGS 的 ANSS Comprehensive Catalog(ComCat)。期间为 2000 年 1 月 1 日至 {_day_zh(Q_END)}(UTC),"
+        f"范围为东经 120–150 度、北纬 20–50 度,规模为 M4.0 以上。只保留位置、深度、震级、时刻、地名五项,"
+        f"共 {n(Q_N)} 个。全目录最大为 {_day_zh(Q_MAX_DAY)} 的 M{Q_MAX},M6 以上 {n(Q_M6_N)} 个。",
+        f"The source is the USGS ANSS Comprehensive Catalog (ComCat). The window is 1 January 2000 to "
+        f"{_day_en(Q_END)} (UTC), the region is 120–150°E and 20–50°N, and the threshold is magnitude 4.0. Only "
+        f"position, depth, magnitude, time and place name are kept: {n(Q_N)} events. The largest event in the "
+        f"catalogue is M{Q_MAX} on {_day_en(Q_MAX_DAY)}, and {n(Q_M6_N)} hypocentres reach M6 or above."),
+    "q.doc.cal.p2": (
+        f"エネルギーは log10E = 1.5M + 4.8(ジュール)で換算し、年の合計は単純和とした。2011年は件数で"
+        f"{n(len(QY['2011']))}点・全体の{PCT_2011_N}%だが、エネルギーでは{PCT_2011_E}%を占める。",
+        f"能量按 log10E = 1.5M + 4.8(焦耳)换算,年度合计为简单相加。2011 年按件数是 {n(len(QY['2011']))} 个、"
+        f"占全体的 {PCT_2011_N}%,但按能量占到 {PCT_2011_E}%。",
+        f"Energy follows log10E = 1.5M + 4.8 (joules), and yearly totals are simple sums. In 2011 the count is "
+        f"{n(len(QY['2011']))} events, {PCT_2011_N}% of the whole, but the energy share is {PCT_2011_E}%."),
+    "q.doc.cal.p3": (
+        "偏りが二つある。ひとつは、カタログの検知能力が時代で変わること。2000年代初頭は"
+        "小さな地震の取りこぼしがある。もうひとつは、年次モードが1970年まで遡れること。"
+        "本文と統計枠の値はすべて2000年以降のカタログに揃えてあり、1970年代と2000年代を同じ密度で"
+        "比べることはできない。",
+        "有两处偏差需要知道。一是目录的检测能力随年代变化,2000 年代初会漏掉小震。二是年次模式可回溯到 1970 年"
+        "(20 度为一块,共 9 块瓦片)。正文与统计框的数值统一以 2000 年以后的目录为准,1970 年代与 2000 年代"
+        "不能按同样的密度比较。",
+        "Two biases are worth knowing. Catalogue completeness changes with the era: small events are "
+        "under-recorded in the early 2000s. And the yearly mode reaches back to 1970 (nine 20-degree tiles). "
+        "Every figure in this text and in the stat rail comes from the 2000-onward catalogue, so the 1970s and "
+        "the 2000s cannot be compared at the same density."),
+    "q.doc.fact.src": ("出典", "来源", "Source"),
+    "q.doc.fact.period": ("期間", "期间", "Period"),
+    "q.doc.fact.n": ("件数", "件数", "Events"),
+    "q.doc.fact.max": ("最大", "最大", "Largest"),
+    "q.doc.fact.m6": ("M6以上", "M6 以上", "M6+"),
+    "q.doc.fact.share": ("2011年のエネルギー", "2011 年能量占比", "2011 energy share"),
+    "q.doc.read.h": ("どう読むか", "怎么读", "How to read it"),
+    "q.doc.read.p1": (
+        "第一に、回数とエネルギーを混ぜない。震源数の多い年が、放出エネルギーの大きい年とは限らない。"
+        "章の主題は後者である。第二に、色は深さ。七段の階調で、赤い点ほど浅い。多さでも、深刻さでもない。",
+        "第一,不要把次数和能量混在一起。震源数多的年份,未必是释放能量大的年份。本章的主题是后者。"
+        "第二,颜色是深度。七级色阶,越红的点越浅。既不表示多,也不表示严重。",
+        "First, do not mix counts with energy. A year with many hypocentres is not necessarily a year with much "
+        "released energy, and energy is the subject here. Second, colour is depth: a seven-stop ramp, redder "
+        "means shallower. It is not volume and not severity."),
+    "q.doc.read.p2": (
+        "第三に、点は1970年ではなく2000年から始まる。年次モードの収録範囲と、本文の統計の範囲は違う。"
+        "第四に「著名」モードは予報ではない。既知の地震を読み物として再演するモードで、外部リンクは"
+        "百科事典の解説である。",
+        "第三,点从 2000 年开始,不是 1970 年。年次模式的收录范围与正文统计的范围不同。"
+        "第四,「著名」模式不是预报,而是把已知地震当作读物重演,外部链接是百科全书的解说。",
+        "Third, the dots start in 2000, not 1970: the yearly mode covers a wider window than the statistics here. "
+        "Fourth, the notable-events mode is not a forecast. It replays known earthquakes as reading, and its "
+        "outbound links go to encyclopaedia articles."),
+    "q.doc.read.p3": (
+        f"数字の出所はひとつ。{n(Q_N)}、{n(len(QY['2011']))}、{PCT_2011_N}%、{PCT_2011_E}%、{n(Q_M6_N)}、"
+        f"M{Q_MAX}は、いずれも同じカタログ(quakes.json)から数え直せる。タイルから作り直す手順は "
+        f"tools/rebuild_quake_catalog.py にある。",
+        f"数字只有一个出处。{n(Q_N)}、{n(len(QY['2011']))}、{PCT_2011_N}%、{PCT_2011_E}%、{n(Q_M6_N)}、"
+        f"M{Q_MAX},都可以从同一份目录(quakes.json)重算。从瓦片重建的步骤写在 tools/rebuild_quake_catalog.py。",
+        f"There is one source for every number. {n(Q_N)}, {n(len(QY['2011']))}, {PCT_2011_N}%, {PCT_2011_E}%, "
+        f"{n(Q_M6_N)} and M{Q_MAX} can all be recounted from the same catalogue (quakes.json); the rebuild from "
+        f"tiles is documented in tools/rebuild_quake_catalog.py."),
+    "q.doc.faq.h": ("よくある質問", "常见问题", "Frequently asked questions"),
+    "q.doc.faq.q1": ("気象庁の地震情報と同じものか。", "和气象厅的地震信息是同一回事吗?", "Is this the same as the JMA earthquake reports?"),
+    "q.doc.faq.a1": (
+        "別系統である。気象庁は国内で検知した地震の実況と情報発表、この章はUSGS ComCatを日本周辺の矩形から"
+        "切り出したもの。検知網も規模の決め方も発表の時点も違い、震源数の一致は期待できない。",
+        "不是同一系统。气象厅发布的是国内检测到的地震实况与信息,本章是把 USGS ComCat 从日本周边的矩形中切出来。"
+        "检测网、震级判定与发布时间都不同,震源数不会一致。",
+        "No. The JMA reports earthquakes detected in Japan; this chapter cuts the USGS ComCat to a rectangle around "
+        "Japan. Detection networks, magnitude scales and publication times differ, so the counts need not agree."),
+    "q.doc.faq.q2": ("M4未満の地震はなぜ載らないのか。", "为什么看不到 M4 以下的地震?", "Why are earthquakes below M4 missing?"),
+    "q.doc.faq.a2": (
+        "抽出条件がM4.0以上のため。図は「記録されたM4以上の分布」であり、「地震の全体分布」ではない。",
+        "因为抽取条件是 M4.0 以上。图上是「记录到的 M4 以上分布」,不是「地震的全部分布」。",
+        "Because the extraction threshold is magnitude 4.0. The map shows the recorded M4+ distribution, not the "
+        "whole distribution of earthquakes."),
+    "q.doc.faq.q3": ("2011年が目立つのは件数が多いからか。", "2011 年显眼是因为件数多吗?", "Does 2011 stand out because of its event count?"),
+    "q.doc.faq.a3": (
+        f"件数は全体の{PCT_2011_N}%でしかない。エネルギーでは{PCT_2011_E}%を占める。件数とエネルギーは別の尺度で、"
+        f"この章が強調するのは後者である。",
+        f"按件数只占全体的 {PCT_2011_N}%,按能量占到 {PCT_2011_E}%。件数与能量是两把不同的尺子,本章强调后者。",
+        f"The count is only {PCT_2011_N}% of the total; the energy share is {PCT_2011_E}%. Counts and energy are "
+        f"different rulers, and this chapter leans on the second."),
+
+    "c.doc.eyebrow": ("この章の読み方", "本章怎么看", "How to read this chapter"),
+    "c.doc.what.h": ("この章で見るもの", "这一章看的是什么", "What this chapter shows"),
+    "c.doc.what.p1": (
+        f"2025年の刑法犯認知件数を、東京都内{n(CHOME_COUNT)}の町丁と{len(MUNI)}の区市町村について、"
+        f"人口あたりの率で並べた地図。1点が1町丁にあたる。開いた直後のポスターは東京本土の矩形"
+        f"(東経138.9–139.96度、北緯35.46–35.92度)だけを写しており、この枠に入るのは{n(CHOME_MAINLAND)}町丁。"
+        f"島嶼部は枠の外にある。",
+        f"把 2025 年刑法犯认知件数,按东京都内 {n(CHOME_COUNT)} 个町丁与 {len(MUNI)} 个区市町村,换算成人均率排列的地图。"
+        f"1 个点 = 1 个町丁。打开时的海报只画东京本土的矩形(东经 138.9–139.96 度、北纬 35.46–35.92 度),"
+        f"落在这个框里的是 {n(CHOME_MAINLAND)} 个町丁,岛屿部分在框外。",
+        f"A map of recorded criminal incidents for 2025, ranked per capita across {n(CHOME_COUNT)} Tokyo "
+        f"neighbourhoods and {len(MUNI)} wards. One dot is one neighbourhood. The opening poster covers only the "
+        f"mainland rectangle (138.9–139.96°E, 35.46–35.92°N): {n(CHOME_MAINLAND)} neighbourhoods fall inside it, and "
+        f"the islands lie outside the frame."),
+    "c.doc.what.p2": (
+        "「起動する」を押すとLeafletの地図が読み込まれ、町丁の境界と件数を重ね、罪種別に切り替え、"
+        "区市町村別の表も引ける。この章が見せるのは「どこで何件起きたか」という分布であり、"
+        "地域の安全性の評価ではない。",
+        "点「启动」会加载 Leaflet 地图,叠加町丁边界与件数,可切换罪种,也能拉出区市町村表。"
+        "本章呈现的是「哪里发生了多少件」的分布,不是对地区安全性的评价。",
+        "Press launch and a Leaflet map loads with neighbourhood boundaries and counts, a switch between offence "
+        "types, and a ward table. What it shows is a distribution of where incidents were recorded; it is not an "
+        "assessment of how safe a neighbourhood is."),
+    "c.doc.cal.h": ("データの口径", "数据口径", "Data and definitions"),
+    "c.doc.cal.p1": (
+        "出典は警視庁「区市町村の町丁別、罪種別及び手口別認知件数」の令和7年(2025)年計と令和8年の月次累計。"
+        "人口は東京都の住民基本台帳(令和8年1月1日)による。率は件数÷人口×1,000で、単位は人口1,000人あたり。",
+        "来源是警视厅《区市町村町丁别、罪种别及手口别认知件数》令和 7 年(2025)全年与令和 8 年月度累计。"
+        "人口取自东京都住民基本台帐(令和 8 年 1 月 1 日)。率 = 件数 ÷ 人口 × 1,000,单位是每千人。",
+        "Sources: Tokyo Metropolitan Police, incidents by neighbourhood and offence type, full-year 2025 plus the "
+        "2026 monthly cumulative; population from the Basic Resident Register (1 January 2026). The rate is "
+        "incidents ÷ population × 1,000, per 1,000 residents."),
+    "c.doc.cal.p2": (
+        f"令和7年は年計、令和8年は年初からの累計で、期間が違う。二つを直接比べることはできない。"
+        f"データの総数は{n(CHOME_COUNT)}町丁・{len(MUNI)}区市町村、常住人口の合計は{n(TOTAL_POP)}人である。",
+        f"令和 7 年是全年,令和 8 年是年初以来的累计,期间不同,不能直接比较。数据总量为 {n(CHOME_COUNT)} 个町丁、"
+        f"{len(MUNI)} 个区市町村,常住人口合计 {n(TOTAL_POP)} 人。",
+        f"Full-year 2025 and the 2026 year-to-date cumulative cover different periods and cannot be compared "
+        f"directly. The dataset holds {n(CHOME_COUNT)} neighbourhoods in {len(MUNI)} wards, with {n(TOTAL_POP)} "
+        f"residents in total."),
+    "c.doc.cal.p3": (
+        f"率を出さない町丁がある。人口200人未満では1件で率が大きく振れるため、率を定義せず、地図では薄く扱い、"
+        f"表では件数のみを併記する({n(CHOME_NO_RATE)}町丁)。人口が欠損している{n(CHOME_POP_MISSING)}町丁"
+        f"(「以下不詳」「中央防波堤」など)は分档の対象外である。",
+        f"有些町丁不给出率。人口不足 200 人时,1 件就能让率大幅跳动,因此不定义率,地图上淡化处理,"
+        f"表里只列件数({n(CHOME_NO_RATE)} 个町丁)。人口缺失的 {n(CHOME_POP_MISSING)} 个町丁"
+        f"(「以下不详」「中央防波堤」等)不参与分档。",
+        f"Some neighbourhoods get no rate. Below 200 residents a single incident swings the figure wildly, so no "
+        f"rate is defined, the dot is dimmed on the map and the table keeps the count alongside "
+        f"({n(CHOME_NO_RATE)} neighbourhoods). The {n(CHOME_POP_MISSING)} neighbourhoods with missing population "
+        f"(“below unknown”, the Central Breakwater) are excluded from the ranking bands."),
+    "c.doc.cal.p4": (
+        "この図に含まれないものも口径のうち。声かけ・前兆事案は町丁別の集計がないため含まず、交通事故も"
+        "含まない。認知件数は届出を経た件数で、発案件数とは一致しない。",
+        "图上没有的东西也属于口径。声かけ・前兆事案没有町丁别汇总,因此不含;交通事故也不含。"
+        "认知件数是经过报案的件数,与发案件数并不一致。",
+        "What the map leaves out is part of the definition too. Street-approach and precursor incidents have no "
+        "neighbourhood tabulation and are excluded; traffic accidents are excluded. Recorded incidents are "
+        "reported incidents and do not equal offences committed."),
+    "c.doc.fact.src": ("出典", "来源", "Source"),
+    "c.doc.fact.period": ("期間", "期间", "Period"),
+    "c.doc.fact.chome": ("町丁", "町丁", "Neighbourhoods"),
+    "c.doc.fact.munis": ("区市町村", "区市町村", "Wards"),
+    "c.doc.fact.pop": ("常住人口", "常住人口", "Residents"),
+    "c.doc.fact.rate": ("率の定義", "率定义", "Rate"),
+    "c.doc.fact.norate": ("率を出さない町丁", "不计率的町丁", "No rate"),
+    "c.doc.read.h": ("どう読むか", "怎么读", "How to read it"),
+    "c.doc.read.p1": (
+        "第一に、件数と率を分ける。件数は人口に比例する。人口1,000人あたりに直すと、町丁の性格が見える。"
+        "第二に、小さい分母を信じない。人口200人未満の町丁には率がない。灰色は「率なし」であって、"
+        "「安全」でも「危険」でもない。",
+        "第一,把件数和率分开。件数随人口走,换算成每千人,町丁的性格才显出来。第二,不要相信小分母。"
+        "人口不足 200 人的町丁没有率。灰色是「无率」,既不是「安全」,也不是「危险」。",
+        "First, separate counts from rates. Counts follow population; per 1,000 residents, the character of a "
+        "neighbourhood appears. Second, do not trust a small denominator. Neighbourhoods under 200 residents have "
+        "no rate at all, and grey means “no rate”, not safe and not dangerous."),
+    "c.doc.read.p2": (
+        "第三に、昼間人口の歪みを念頭に置く。駅前や繁華街は分母が常住人口なので率が押し上げられる。"
+        "居住の安全性を示す数字ではない。第四に、総数は窃盗も粗暴犯も混ぜた数である。罪種別に分けてから読む。",
+        "第三,要记住白天人口的偏移。车站前与繁华街的分母是常住人口,率因此被抬高,这不是居住安全性的数字。"
+        "第四,总数把盗窃与粗暴犯混在一起,先按罪种拆开再读。",
+        "Third, keep daytime population in mind. Around stations and entertainment districts the denominator is "
+        "the resident population, so the rate is pushed up; it is not a measure of residential safety. Fourth, the "
+        "total mixes theft with violent offences — split it by offence type before reading."),
+    "c.doc.read.p3": (
+        "地図に無いことは、ゼロではない。本土の枠に入らない島嶼部と、人口が欠損した町丁は、地図に現れない"
+        "だけで統計には存在する。表と地図を突き合わせて読む。",
+        "地图上没有,不等于零。不落进本土框的岛屿部分,以及人口缺失的町丁,只是不出现在地图上,统计里是存在的。"
+        "把表和地图对着读。",
+        "Absent from the map is not zero. The islands outside the mainland frame and the neighbourhoods with "
+        "missing population exist in the statistics; they simply do not appear on the map. Read the table against "
+        "the map."),
+    "c.doc.faq.h": ("よくある質問", "常见问题", "Frequently asked questions"),
+    "c.doc.faq.q1": ("認知件数と発案件数は同じか。", "认知件数和发案件数是同一回事吗?", "Are recorded incidents the same as offences committed?"),
+    "c.doc.faq.a1": (
+        "違う。認知件数は届出を経た件数であり、届出率の影響を受ける。実際の被害規模とは一致しない。",
+        "不是。认知件数是经过报案的件数,受报案率影响,与实际被害规模并不一致。",
+        "No. Recorded incidents have gone through a report, so they carry the reporting rate with them. They do "
+        "not equal the real volume of harm."),
+    "c.doc.faq.q2": ("人口200人未満の町丁はなぜ灰色なのか。", "为什么人口不足 200 人的町丁是灰色?", "Why are neighbourhoods under 200 residents grey?"),
+    "c.doc.faq.a2": (
+        "小さい分母では1件で率が跳ね、順位が安定しない。率を出さず、件数のみ併記する。",
+        "分母太小,1 件就能让率跳起来,排名不稳定。因此不计率,只列件数。",
+        "With so small a denominator one incident makes the rate jump and the ranking becomes unstable. No rate "
+        "is given and only the count is listed."),
+    "c.doc.faq.q3": ("2025年と2026年の数字は比べられるか。", "2025 年和 2026 年的数字能比吗?", "Can the 2025 and 2026 figures be compared?"),
+    "c.doc.faq.a3": (
+        "2025年は年計、2026年は月次累計で期間が違う。直接比較せず、年初来の推移として読む。",
+        "2025 年是全年,2026 年是月度累计,期间不同。不要直接比较,按年初以来的推移来读。",
+        "2025 is a full year; 2026 is a monthly cumulative. The periods differ, so read it as a year-to-date "
+        "trend rather than a comparison."),
+    "c.doc.faq.q4": ("この地図は「安全な町丁」を示すのか。", "这张地图能说明哪个町丁安全吗?", "Does this map show which neighbourhoods are safe?"),
+    "c.doc.faq.a4": (
+        "示さない。分档は都内の相対で、安全性の評価・保証ではない。単独の判断材料にしないでほしい。",
+        "不能。分档是都内的相对位置,既不是安全性评价,也不是保证。请勿作为单一判断依据。",
+        "It does not. The bands are relative to the rest of Tokyo; they are neither an assessment nor a guarantee "
+        "of safety. Do not use them on their own to decide anything."),
+    "b.doc.eyebrow": ("この章の読み方", "本章怎么看", "How to read this chapter"),
+    "b.doc.what.h": ("この章で見るもの", "这一章看的是什么", "What this chapter shows"),
+    "b.doc.what.p1": (
+        f"{_ym_ja(CAB_FIRST['date'][:7])}から{_ym_ja(CAB_LAST['date'][:7])}までの内閣支持率を、月ごとに"
+        f"一点へまとめた線。点の総数は{n(len(POLLS))}、月の数は{n(len(MONTH_MEAN))}、内閣は{len(CAB['cabinets'])}。"
+        f"同じ月に複数の調査があれば算術平均して一つの点にする。",
+        f"把 {_ym_zh(CAB_FIRST['date'][:7])} 到 {_ym_zh(CAB_LAST['date'][:7])} 的内阁支持率按月归成一点,连成一条线。"
+        f"点共 {n(len(POLLS))} 个,月 {n(len(MONTH_MEAN))} 个,内阁 {len(CAB['cabinets'])} 届。同月有多项调查就取算术平均,合成一点。",
+        f"A single line of cabinet approval from {_ym_en(CAB_FIRST['date'][:7])} to {_ym_en(CAB_LAST['date'][:7])}, "
+        f"collapsed to one point per month: {n(len(POLLS))} polls, {n(len(MONTH_MEAN))} months, "
+        f"{len(CAB['cabinets'])} cabinets. Several polls in a month become their arithmetic mean, one point."),
+    "b.doc.what.p2": (
+        "起動すると、線ではなく年表になる。内閣を選ぶとその月だけを拡大し、六段のズーム(3か月から全期間まで)で"
+        "見られる。この章が見せるのは世論の水準であり、内閣の評価そのものではない。",
+        "启动后不是线,而是年表。选中一届内阁就放大那一段,可在六档缩放(3 个月到全期间)之间切换。"
+        "本章呈现的是舆论的水平,不是对内阁的评价本身。",
+        "Press launch and the line becomes a timeline. Pick a cabinet and the chart expands to its months, with six "
+        "zoom steps from three months to the whole span. What it shows is the level of public opinion, not a "
+        "verdict on a cabinet."),
+    "b.doc.cal.h": ("データの口径", "数据口径", "Data and definitions"),
+    "b.doc.cal.p1": (
+        f"出典はNHK放送文化研究所の月例政治意識調査(2000–2017)、NHK選挙WEB(2018–2026)、および日経・朝日・時事・"
+        f"読売・JNN・共同の各社世論調査。{n(len(POLLS))}点の内訳はNHK{n(POLL_SRC['NHK世論調査'])}、"
+        f"日経{n(POLL_SRC['日経世論調査'])}、朝日{n(POLL_SRC['朝日新聞世論調査'])}、時事{n(POLL_SRC['時事世論調査'])}、"
+        f"読売{n(POLL_SRC['読売新聞世論調査'])}、JNN{n(POLL_SRC['JNN世論調査'])}、共同{n(POLL_SRC['共同通信世論調査'])}。",
+        f"来源是 NHK 放送文化研究所的月度政治意识调查(2000–2017)、NHK 选举 WEB(2018–2026),以及日经、朝日、时事、"
+        f"读卖、JNN、共同各社舆论调查。{n(len(POLLS))} 个点的构成:NHK {n(POLL_SRC['NHK世論調査'])}、"
+        f"日经 {n(POLL_SRC['日経世論調査'])}、朝日 {n(POLL_SRC['朝日新聞世論調査'])}、时事 {n(POLL_SRC['時事世論調査'])}、"
+        f"读卖 {n(POLL_SRC['読売新聞世論調査'])}、JNN {n(POLL_SRC['JNN世論調査'])}、共同 {n(POLL_SRC['共同通信世論調査'])}。",
+        f"Sources: NHK Broadcasting Culture Research Institute monthly surveys (2000–2017), NHK election web "
+        f"(2018–2026), plus polls by Nikkei, Asahi, Jiji, Yomiuri, JNN and Kyodo. The {n(len(POLLS))} points break "
+        f"down as NHK {n(POLL_SRC['NHK世論調査'])}, Nikkei {n(POLL_SRC['日経世論調査'])}, "
+        f"Asahi {n(POLL_SRC['朝日新聞世論調査'])}, Jiji {n(POLL_SRC['時事世論調査'])}, "
+        f"Yomiuri {n(POLL_SRC['読売新聞世論調査'])}, JNN {n(POLL_SRC['JNN世論調査'])} and "
+        f"Kyodo {n(POLL_SRC['共同通信世論調査'])}."),
+    "b.doc.cal.p2": (
+        f"月次値は月内の全調査の算術平均。実測のある月だけを結び、補間しない。したがって「調査{n(len(POLLS))}」と"
+        f"「月{n(len(MONTH_MEAN))}」は別の数を数えている。系列の先頭は{_ym_ja(CAB_FIRST['date'][:7])}の"
+        f"{CAB_FIRST['source'].replace('世論調査', '')}調査({CAB_FIRST['pm']}・{CAB_FIRST['value']})、"
+        f"末尾は{_ym_ja(CAB_LAST['date'][:7])}の{CAB_LAST['source'].replace('世論調査', '')}調査"
+        f"({CAB_LAST['pm']}・{CAB_LAST['value']})。",
+        f"月度值取月内全部调查的算术平均。只连有实测的月份,不做插值。所以「{n(len(POLLS))} 次调查」和"
+        f"「{n(len(MONTH_MEAN))} 个月」数的是两个东西。系列开头是 {_ym_zh(CAB_FIRST['date'][:7])} 的"
+        f"{CAB_FIRST['source'].replace('世論調査', '')}调查({CAB_FIRST['pm']}、{CAB_FIRST['value']}),"
+        f"末尾是 {_ym_zh(CAB_LAST['date'][:7])} 的{CAB_LAST['source'].replace('世論調査', '')}调查"
+        f"({CAB_LAST['pm']}、{CAB_LAST['value']})。",
+        f"Each monthly value is the arithmetic mean of every poll that month. Only measured months are joined; "
+        f"nothing is interpolated. That is why “{n(len(POLLS))} polls” and “{n(len(MONTH_MEAN))} months” count "
+        f"different things. The series starts with a {CAB_FIRST['source']} in {_ym_en(CAB_FIRST['date'][:7])} "
+        f"({CAB_FIRST['pm']}, {CAB_FIRST['value']}) and ends with a {CAB_LAST['source']} in "
+        f"{_ym_en(CAB_LAST['date'][:7])} ({CAB_LAST['pm']}, {CAB_LAST['value']})."),
+    "b.doc.cal.p3": (
+        f"欠けている月もある。高市内閣は継続中で、内閣の終了日は暫定値。共同通信の2026年7月・8月は値のみが"
+        f"報じられ、原表を確認できないため収録していない。内閣と月の組{n(N_BUCKETS)}のうち{n(N_SINGLE)}は、"
+        f"単一の媒体の調査しかない。",
+        f"也有缺月。高市内阁仍在任,内阁结束日是暂定值。共同社 2026 年 7 月、8 月只有数值见报,原表无法确认,"
+        f"因此未收录。内阁与月的组合共 {n(N_BUCKETS)} 个,其中 {n(N_SINGLE)} 个只有单一媒体的调查。",
+        f"Some months are missing. The Takaichi cabinet is still in office, so its end date is provisional. Kyodo’s "
+        f"July and August 2026 figures were reported as numbers only, with no source table to verify, so they are "
+        f"not included. Of the {n(N_BUCKETS)} cabinet-month cells, {n(N_SINGLE)} rest on a single outlet."),
+    "b.doc.cal.p4": (
+        "既知の誤差も明記しておく。NHKの2008年・2009年は年度表の「9月」と「9月(緊)」を取り違え、10–12月が"
+        "一列ずれていた(8行を削除し10行を補って修正)。日経の同じ月の二つの値は重複ではなく、定例調査と"
+        "緊急調査という別々の調査である。",
+        "已知误差也写明。NHK 2008、2009 年度的「9月」与「9月(緊)」两列被错取,10–12 月整体右移一格(已删 8 行、"
+        "补 10 行修正)。日经同月的两个数值不是重复,而是定例调查与紧急调查两场不同的调查。",
+        "Known errors are stated too. For NHK 2008 and 2009 the annual table’s September and September "
+        "(emergency) columns were swapped, shifting October–December one column right (fixed by dropping 8 rows "
+        "and adding 10). The two Nikkei values in one month are not duplicates: they are separate regular and "
+        "emergency surveys."),
+    "b.doc.fact.src": ("出典", "来源", "Source"),
+    "b.doc.fact.polls": ("調査", "调查", "Polls"),
+    "b.doc.fact.months": ("月", "月", "Months"),
+    "b.doc.fact.cabinets": ("内閣", "内阁", "Cabinets"),
+    "b.doc.fact.single": ("単一ソースの組", "单一来源组合", "Single-source cells"),
+    "b.doc.read.h": ("どう読むか", "怎么读", "How to read it"),
+    "b.doc.read.p1": (
+        "第一に、線ではなく点の並びとして読む。線は実測月だけを結ぶ。平らな区間は「支持率が動かなかった」のでは"
+        "なく、「その月に測っていない」かもしれない。第二に、内閣の切れ目を見る。一本の線に"
+        f"{len(CAB['cabinets'])}の内閣が連なり、切れ目は支持率の跳びとして現れる。平均でならすと、この跳びが消える。",
+        f"第一,把它当成点的排列,而不是线。线只连实测月。平坦的一段,未必是「支持率没动」,也可能是「那个月没测」。"
+        f"第二,看内阁的接缝。一条线串起 {len(CAB['cabinets'])} 届内阁,接缝表现为支持率的跳变。一取平均,跳变就没了。",
+        f"First, read it as a row of points rather than a line. The line joins measured months only, so a flat "
+        f"stretch may mean “nothing was measured that month”, not “approval held steady”. Second, look at the "
+        f"seams: {len(CAB['cabinets'])} cabinets run along one line, and each seam shows up as a jump. Smooth it "
+        f"away and the jump disappears."),
+    "b.doc.read.p2": (
+        "第三に、水準と変化量を混ぜない。「高かった月」と「大きく動いた月」は別の問いである。第四に、短い"
+        "在任期間の平均は安定しない。月数を並べて読む。数字の主語は内閣であり、個人の評価として読ませない。",
+        "第三,不要把水平和变化量混为一谈。「最高的月份」与「变动最大的月份」是两个不同的问题。第四,任期短的均值不稳定,"
+        "要连着月数一起读。数字的主语是内阁,不要当成某个人的评价来读。",
+        "Third, do not mix level with change. “The highest month” and “the largest move” answer different "
+        "questions. Fourth, the mean over a short term in office is unstable; read it next to the month count. "
+        "The subject of the number is a cabinet, never a person."),
+    "b.doc.faq.h": ("よくある質問", "常见问题", "Frequently asked questions"),
+    "b.doc.faq.q1": (
+        f"{len(MONTH_MEAN)}か月と{n(len(POLLS))}調査の違いは何か。",
+        f"{len(MONTH_MEAN)} 个月和 {n(len(POLLS))} 次调查有什么区别?",
+        f"What is the difference between {n(len(MONTH_MEAN))} months and {n(len(POLLS))} polls?"),
+    "b.doc.faq.a1": (
+        "月数と回数の違い。同じ月の複数の調査をすべて入れて平均するので、調査の数が月の数になる。",
+        "一个是月数,一个是次数。同月的多项调查全部计入再取平均,所以调查数被压成月数。",
+        "Months versus poll count. Every poll in a month is averaged together, so the polls collapse into months."),
+    "b.doc.faq.q2": ("支持率が動かない月は、安定していたのか。", "支持率不动的月份,是稳定吗?", "If approval does not move for a month, was it stable?"),
+    "b.doc.faq.a2": (
+        "わからない。その月に調査がなかった可能性がある。線は実測月だけを結び、補間しない。",
+        "不一定。可能那个月根本没有调查。线只连实测月,不做插值。",
+        "Unknown. There may have been no poll that month. The line joins measured months only and never "
+        "interpolates."),
+    "b.doc.faq.q3": ("直近は何月までか。", "最新到几月?", "How recent is the data?"),
+    "b.doc.faq.a3": (
+        f"月次平均は{_ym_ja(CAB_LAST['date'][:7])}まで。高市内閣は継続中なので、内閣の終了日は暫定値である。",
+        f"月度平均到 {_ym_zh(CAB_LAST['date'][:7])}。高市内阁仍在任,内阁结束日是暂定值。",
+        f"Monthly means run to {_ym_en(CAB_LAST['date'][:7])}. The Takaichi cabinet is still in office, so its end "
+        f"date is provisional."),
+    "b.doc.faq.q4": ("媒体ごとの偏りはないのか。", "不同媒体会有偏差吗?", "Do the outlets bias the line?"),
+    "b.doc.faq.a4": (
+        "この章は媒体を横断した月次平均であり、単一媒体の系列ではない。個別の値は媒体とURLつきで残っている。",
+        "本章是跨媒体的月度平均,不是某一家媒体的系列。每个具体数值都带着媒体与 URL。",
+        "The line is a cross-outlet monthly mean, not one outlet’s series. Each individual value keeps its outlet "
+        "and URL."),
+
+    "h.doc.eyebrow": ("この章の読み方", "本章怎么看", "How to read this chapter"),
+    "h.doc.what.h": ("この章で見るもの", "这一章看的是什么", "What this chapter shows"),
+    "h.doc.what.p1": (
+        f"中古マンション等の成約価格を、町名(地区名)ごとにまとめた地図。対象は{HOUSE['basis']}"
+        f"(2025年4月–2026年3月)の直近4四半期。東京都全域の成約は{n(HOUSE_N)}件、このうち23区の"
+        f"{n(HOUSE['totals']['trades'])}件が区と町名の価格表示に使われている。町名は{n(HOUSE_TOWNS_ALL)}あり、"
+        f"実際に成約があるのは{n(HOUSE_TOWNS)}町名。残る{n(HOUSE_TOWNS_ZERO)}町名は成約0件で、価格は空欄になる。",
+        f"把二手公寓等的成交价按町名(地区名)汇总的地图。对象是 {HOUSE['basis']}(2025 年 4 月–2026 年 3 月)的最近四个季度。"
+        f"东京全域成交 {n(HOUSE_N)} 笔,其中 23 区的 {n(HOUSE['totals']['trades'])} 笔用于区与町名的价格显示。"
+        f"町名共 {n(HOUSE_TOWNS_ALL)} 个,实际有成交的是 {n(HOUSE_TOWNS)} 个,其余 {n(HOUSE_TOWNS_ZERO)} 个成交 0 笔,价格留空。",
+        f"A map of used-flat closed prices by town. The window is the latest four quarters, {HOUSE['basis']} "
+        f"(April 2025 – March 2026). Tokyo-wide there are {n(HOUSE_N)} transactions, of which "
+        f"{n(HOUSE['totals']['trades'])} in the 23 wards carry ward and town prices. There are "
+        f"{n(HOUSE_TOWNS_ALL)} towns; {n(HOUSE_TOWNS)} of them have at least one deal, and the other "
+        f"{n(HOUSE_TOWNS_ZERO)} are blank."),
+    "h.doc.what.p2": (
+        "同じページに三つの塗り分けがある。開いた直後のポスターは区の中央値で塗り、起動後の町名モードは"
+        "町の平均m2単価、区モードは町の平均を成約件数で加重平均した値を使う。どの基準で塗っているかを"
+        "確かめてから読む。",
+        "同一页上有三种上色口径。打开时的海报按区的中央值上色,启动后的町名模式用町的平均 m2 单价,"
+        "区模式用町平均按成交笔数加权平均的值。先确认用的是哪一种口径,再往下读。",
+        "The same page shades three different quantities. The opening poster shades the ward median; the town mode "
+        "after launch uses each town’s mean price per m2; the ward mode uses the town means weighted by "
+        "transaction count. Check which one you are looking at before reading."),
+    "h.doc.cal.h": ("データの口径", "数据口径", "Data and definitions"),
+    "h.doc.cal.p1": (
+        "出典は国土交通省「不動産情報ライブラリ」の不動産取引価格情報・成約価格情報(中古マンション等・"
+        "成約価格情報)。ライセンスはPDL 1.0。",
+        "来源是国土交通省「不动产信息图书馆」的不动产交易价格信息・成交价格信息(二手公寓等・成交价格信息)。"
+        "许可为 PDL 1.0。",
+        "Source: the MLIT Real Estate Information Library — transaction price information and closed price "
+        "information (used flats, closed prices). Licensed under PDL 1.0."),
+    "h.doc.cal.p2": (
+        f"対象期間は{HOUSE['basis']}(2025年4月–2026年3月)の4四半期。国の公表は約1四半期遅れるため、"
+        f"それより新しい四半期はまだ出ていない。データの生成日は{_day_ja(HOUSE['generated'])}。",
+        f"对象期间是 {HOUSE['basis']}(2025 年 4 月–2026 年 3 月)的四个季度。国家公布约滞后一个季度,"
+        f"更新的季度尚未公布。数据生成日为 {_day_zh(HOUSE['generated'])}。",
+        f"The window is four quarters, {HOUSE['basis']} (April 2025 – March 2026). Publication lags by about one "
+        f"quarter, so newer quarters do not exist yet. The data was generated on "
+        f"{_day_en(HOUSE['generated'])}."),
+    "h.doc.cal.p3": (
+        "町名の値は、成約1件ごとの「総額÷面積」を単純平均したm2単価。面積での絞り込みもしない。区の値は"
+        "中央値で、平均も併記される。区の帯の統計は面積60–80m2に絞った層である。同じページに複数の"
+        "統計量が並ぶ。",
+        "町名的数值,是每笔成交「总额 ÷ 面积」的简单平均 m2 单价,也不按面积筛选。区的数值是中央值,同时并列平均值。"
+        "区的区间统计是面积 60–80m2 的筛选层。同一页上并排放着多个统计量。",
+        "A town’s figure is the simple mean of price ÷ area over individual deals, with no area filter. A ward’s "
+        "figure is the median, with the mean shown alongside. The ward band statistics come from a layer filtered "
+        "to 60–80 m². Several different statistics sit on one page."),
+    "h.doc.cal.p4": (
+        "位置の粒度は「市区町村+地区名」までで、丁目と座標は含まれない。地図の町名の形は、町丁境界を"
+        "町名単位にまとめて作ったもので、国土交通省のデータから作った境界ではない。集計・地図化・本文は"
+        "当サイトが加工して作成したもので、国が作成・公表したものではない。",
+        "位置精度只到「市区町村 + 地区名」,不含丁目与坐标。地图上町名的形状,是把町丁边界按町名合并而成的,"
+        "不是从国土交通省数据生成的边界。汇总、地图化与正文由本站加工制作,并非国家制作公布。",
+        "Location granularity stops at municipality plus district name; block numbers and coordinates are not "
+        "included. The town shapes on the map were merged from neighbourhood boundaries, not taken from MLIT "
+        "geometry. The aggregation, the map and this text are compiled by this site; they are not produced or "
+        "published by the government."),
+    "h.doc.fact.src": ("出典", "来源", "Source"),
+    "h.doc.fact.period": ("期間", "期间", "Period"),
+    "h.doc.fact.n": ("成約(都全域)", "成交(都全域)", "Deals (Tokyo-wide)"),
+    "h.doc.fact.trades": ("成約(23区)", "成交(23 区)", "Deals (23 wards)"),
+    "h.doc.fact.towns": ("町名", "町名", "Towns"),
+    "h.doc.fact.gen": ("生成日", "生成日", "Generated"),
+    "h.doc.read.h": ("どう読むか", "怎么读", "How to read it"),
+    "h.doc.read.p1": (
+        "第一に、平均と中央値を分ける。分布は右に裾を引くので、都心ほど平均が高く出る。区のカードには"
+        "両方が並ぶ。第二に、単価と総額を分ける。単価は面積を吸収して町同士を比べられる。総額は「その町で"
+        "成約した物件がいくらだったか」で、戸数と面積の構成に依存する。",
+        "第一,把平均值和中央值分开。分布向右拖尾,越靠都心平均值越高。区的卡片上两者并排。"
+        "第二,把单价和总额分开。单价吸收了面积,町与町之间可比;总额是「那个町成交的房子是多少钱」,"
+        "取决于户数与面积构成。",
+        "First, separate mean from median. The distribution has a long right tail, so central wards read higher on "
+        "the mean; the ward card shows both. Second, separate price per m2 from total price. Per-m2 absorbs area "
+        "and makes towns comparable; the total is what the deals in that town actually cost, and it depends on the "
+        "mix of unit sizes."),
+    "h.doc.read.p2": (
+        f"第三に、件数を同時に読む。成約1件の町と成約300件の町を同じ重みで読ませない。第四に、4四半期を"
+        f"ひとつの窓として読む。単四半期は振れが大きい。高いことは、将来の値上がり率や投資価値を意味しない。",
+        f"第三,连着件数一起读。不要用一个成约 1 笔的町和一个成约 300 笔的町做等权比较。第四,把四个季度当成一个窗口来读,"
+        f"单个季度波动很大。价格高,并不意味着未来涨幅或投资价值。",
+        f"Third, always read the count with it: never weigh a town with one deal the same as a town with three "
+        f"hundred. Fourth, read the four quarters as one window; a single quarter is noisy. And a high price is "
+        f"not a future rate of return."),
+    "h.doc.faq.h": ("よくある質問", "常见问题", "Frequently asked questions"),
+    "h.doc.faq.q1": ("対象期間はいつか。", "对象期间是什么时候?", "What period does this cover?"),
+    "h.doc.faq.a1": (
+        f"{HOUSE['basis']}(2025年4月–2026年3月)の直近4四半期。公表は約1四半期遅れるため、"
+        f"それより新しい四半期はまだ出ていない。",
+        f"{HOUSE['basis']}(2025 年 4 月–2026 年 3 月)的最近四个季度。公布约滞后一个季度,更新的季度还没有。",
+        f"The latest four quarters, {HOUSE['basis']} (April 2025 – March 2026). Publication lags by about a "
+        f"quarter, so nothing newer exists yet."),
+    "h.doc.faq.q2": ("平均はどう計算しているのか。", "平均值是怎么算的?", "How is the average calculated?"),
+    "h.doc.faq.a2": (
+        "町名は成約1件ごとのm2単価の単純平均で、面積の絞り込みはない。区は中央値と60–80m2帯の統計。"
+        "同じページに複数の口径があることを注記しておく。",
+        "町名是每笔成交 m2 单价的简单平均,不按面积筛选。区是中央值与 60–80m2 区间的统计。请注意同一页上有多种口径。",
+        "For a town it is the simple mean of the per-m2 price of each deal, with no area filter. For a ward it is "
+        "the median plus the 60–80 m² band. Note that several definitions share one page."),
+    "h.doc.faq.q3": ("なぜ町名までしか分かれないのか。", "为什么只分到町名?", "Why does it stop at town level?"),
+    "h.doc.faq.a3": (
+        "公式データの位置が「市区町村+地区名」までで、丁目や座標がないため。地図の町名の形は、町丁境界を"
+        "別途まとめたものである。",
+        "因为官方数据的位置只到「市区町村 + 地区名」,没有丁目和坐标。地图上的町名形状是另行合并町丁边界得到的。",
+        "Because the official data locates a deal only to municipality plus district name; block numbers and "
+        "coordinates are absent. The town shapes on the map were merged separately from neighbourhood boundaries."),
+    "h.doc.faq.q4": ("価格の高い町は投資に有利か。", "价格高的町是否更适合投资?", "Does a pricier town mean a better investment?"),
+    "h.doc.faq.a4": (
+        "この章は成約価格の分布であり、将来の値上がり率を語るデータではない。投資判断の材料にしないでほしい。",
+        "本章是成交价格的分布,不是讲未来涨幅的数据。请勿作为投资判断依据。",
+        "This chapter is a distribution of closed prices, not data about future appreciation. Do not use it to "
+        "make an investment decision."),
     "foot.built": ("静的生成", "静态生成", "Statically generated"),
 }
 
@@ -1328,7 +1842,8 @@ def page(path, title, desc, body, active="", node=None, register=True, head_extr
     html_doc = head(title, desc, path, page_graph(path, title, desc, node),
                     head_extra, body_class, active)
     html_doc += mast(active, path) + breadcrumbs(path) + body
-    html_doc += shell_tail() if fullscreen else foot()
+    # 四章も正文を持つ一枚の文書になったので、他章と同じ页脚で閉じる(旧: 全屏舞台は shell だけ)。
+    html_doc += foot()
     if register:
         PAGES.append({"path": path, "lang": CUR, "title": title, "desc": desc})
     return html_doc
@@ -1348,6 +1863,46 @@ def pager(prev_href, prev_label, next_href, next_label):
     a = f'<a href="{prev_href}">← {esc(prev_label)}</a>' if prev_href else "<span></span>"
     b = f'<a href="{next_href}">{esc(next_label)} →</a>' if next_href else "<span></span>"
     return f'<nav class="pager">{a}<span class="spacer"></span>{b}</nav>'
+
+
+# ---------------------------------------------------------------- 四章の静的正文
+# 四章(地震・犯罪・内閣・住宅)は舞台(ポスター→起動)の下に、同じ四つの節を置く:
+# 是什么(この章で見るもの)/ 数据口径(データの口径)/ 怎么读(どう読むか)/ 常见问题。
+# 見出しは h2 を四本だけ、四言語で同じ並び。本文の数値はすべてデータから差し込む。
+DOC_SHAPE = {"q": (2, 3, 3, 3), "c": (2, 4, 3, 4), "b": (2, 4, 2, 4), "h": (2, 4, 2, 4)}
+
+
+def doc_para(prefix, key, count):
+    return "".join(f"<p>{tr(f'{prefix}.doc.{key}.p{i}')}</p>" for i in range(1, count + 1))
+
+
+def doc_section(prefix, key, inner, eyebrow=""):
+    head = f'<p class="ch-doc-eyebrow">{tr(eyebrow)}</p>' if eyebrow else ""
+    return (f'<section class="wrap ch-doc">\n'
+            f'<header class="ch-doc-head">{head}<h2>{tr(f"{prefix}.doc.{key}.h")}</h2></header>\n'
+            f'{inner}\n</section>')
+
+
+def doc_facts(prefix, items):
+    rows = "".join(f"<div><dt>{tr(f'{prefix}.doc.fact.{k}')}</dt><dd>{esc(str(v))}</dd></div>"
+                   for k, v in items)
+    return f'<dl class="ch-facts">{rows}</dl>'
+
+
+def doc_faq(prefix, count):
+    rows = "".join(f'<dt>{tr(f"{prefix}.doc.faq.q{i}")}</dt><dd>{tr(f"{prefix}.doc.faq.a{i}")}</dd>'
+                   for i in range(1, count + 1))
+    return f'<dl class="ch-faq">{rows}</dl>'
+
+
+def chapter_doc(prefix, facts):
+    n_what, n_cal, n_read, n_faq = DOC_SHAPE[prefix]
+    return (
+        doc_section(prefix, "what", doc_para(prefix, "what", n_what), eyebrow=f"{prefix}.doc.eyebrow")
+        + doc_section(prefix, "cal", doc_para(prefix, "cal", n_cal) + doc_facts(prefix, facts))
+        + doc_section(prefix, "read", doc_para(prefix, "read", n_read))
+        + doc_section(prefix, "faq", doc_faq(prefix, n_faq))
+    )
 
 
 # ---------------------------------------------------------------- pages
@@ -1569,6 +2124,14 @@ def build_quake():
 <p class="stage-caption">{tr('q.caption').format(n=n(Q_N), end=Q_END_DOT)}</p>
 <div class="stage-live" id="v-quake-viewport"></div>
 </div>
+{chapter_doc("q", [
+    ("src", "USGS ComCat"),
+    ("period", f"2000-01-01 – {Q_END[:10]}"),
+    ("n", f"{n(Q_N)} (M4.0+)"),
+    ("max", f"M{Q_MAX} ({Q_MAX_DAY})"),
+    ("m6", n(Q_M6_N)),
+    ("share", f"{PCT_2011_E}%"),
+])}
 </main>"""
     jsonld = dataset_node(
         "Japan M4+ hypocentres 2000–2026",
@@ -1595,6 +2158,13 @@ def build_crime():
 <p class="stage-caption">{tr('c.caption').format(n=n(len([p for p in POINTS if p.get("lng") and 138.9 <= p["lng"] <= 139.96 and 35.46 <= p["lat"] <= 35.92])))}</p>
 <div class="stage-live"></div>
 </div>
+{chapter_doc("c", [
+    ("chome", n(CHOME_COUNT)),
+    ("munis", len(MUNI)),
+    ("pop", n(TOTAL_POP)),
+    ("rate", "1 / 1,000"),
+    ("norate", n(CHOME_NO_RATE)),
+])}
 </main>"""
     jsonld = dataset_node(
         "Tokyo crime by neighbourhood, 2025",
@@ -1641,6 +2211,13 @@ def build_cabinet():
 </noscript>
 <div class="stage-live"></div>
 </div>
+{chapter_doc("b", [
+    ("src", "NHK · Nikkei · Asahi · Jiji · Yomiuri · JNN · Kyodo"),
+    ("polls", n(len(POLLS))),
+    ("months", n(len(MONTH_MEAN))),
+    ("cabinets", len(CAB['cabinets'])),
+    ("single", f"{n(N_SINGLE)} / {n(N_BUCKETS)}"),
+])}
 </main>"""
     jsonld = dataset_node(
         "Japanese cabinet approval, 1998–2026",
@@ -1667,6 +2244,14 @@ def build_housing():
 <p class="stage-caption">{tr('h.caption').format(n=f"{HOUSE_N:,}", basis=HOUSE['basis'])}</p>
 <div class="stage-live"></div>
 </div>
+{chapter_doc("h", [
+    ("src", "MLIT · PDL 1.0"),
+    ("period", HOUSE['basis']),
+    ("n", n(HOUSE_N)),
+    ("trades", n(HOUSE['totals']['trades'])),
+    ("towns", f"{n(HOUSE_TOWNS)} / {n(HOUSE_TOWNS_ALL)}"),
+    ("gen", HOUSE['generated']),
+])}
 </main>"""
     jsonld = dataset_node(
         f"Tokyo — used flat mean prices by town, {HOUSE['basis']}",
