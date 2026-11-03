@@ -212,7 +212,16 @@ def verify_site(base_url: str, expected: str) -> str:
     match = re.search(r'src="(/assets/weather/data\.js\?v=[^"]+)"', html)
     if not match:
         raise RuntimeError(f"{base_url} weather HTML does not reference data.js")
-    status, headers, raw = http_get(base_url + match.group(1))
+    # Fetch the versioned asset through a unique cache key. `/assets/*` is served
+    # immutable, and for a few seconds after wrangler returns the production domain
+    # can still be routing assets to the previous deployment: a plain request would
+    # then both read a stale body *and* pin it to that version's URL for a year.
+    # 2026-11-03 evidence: the entry `/assets/weather/data.js?v=a1513657`
+    # held the previous snapshot (age 5.4h, cf-cache-status HIT), so the first
+    # attempt failed and every retry was hopeless. Verifying the deployment pointer
+    # is the pipeline's job; whether users' cached copy is fresh is the probe's.
+    asset_url = base_url + match.group(1) + "&cb=" + os.urandom(4).hex()
+    status, headers, raw = http_get(asset_url)
     if status != 200:
         raise RuntimeError(f"{base_url} data.js HTTP {status}")
     live = parse_js_text(raw.decode("utf-8"), "WEATHER_DATA")

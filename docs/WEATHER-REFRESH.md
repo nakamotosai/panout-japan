@@ -89,6 +89,25 @@ rolled back...", which is all the watchdog could see. If source push fails after
 a verified deployment, the production snapshot is kept and the monitor goes red;
 the next run retries the source update.
 
+## Asset cache pitfalls
+
+`/assets/*` is served `immutable` for a year, and Pages resolves a path while
+ignoring its query string. So a request for `data.js?v=<new>` that arrives while
+the edge still serves the previous deployment returns — and pins for a year — the
+**previous** body under the new version's URL. 2026-11-03: that entry is what
+failed the first verification attempt, `?v=a1513657` holding the 11-02 snapshot
+(`cf-cache-status: HIT`, `age: 19642`), and every retry kept reading it.
+
+- The pipeline now fetches the asset through a unique `&cb=` key, so verification
+  measures the deployment pointer rather than a cache entry, and cannot pin one
+  itself.
+- The hourly probe still fetches exactly like a browser does: staleness that
+  actually reaches users is what it reports.
+- The Pages token has no Cache Purge permission (401 on `purge_cache`), so an
+  operator cannot clear such an entry without minting a token that has it. The
+  durable fix is to name the asset after its content (`data.<version>.js`) instead
+  of versioning it with a query string, which a stale path can never shadow.
+
 ## Manual release check
 
 Automated data checks do not see the rendered dates. After a forced refresh, open
