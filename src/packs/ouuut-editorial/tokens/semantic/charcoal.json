@@ -1,0 +1,32 @@
+{
+  "id": "charcoal",
+  "name": "炭黑",
+  "mode": "dark",
+  "colors": {
+    "bg": "#0E0E0C",
+    "ink": "#EDEBE4",
+    "muted": "#A3A199",
+    "surface": "rgba(237, 235, 228, .055)",
+    "accent": "#CD5545",
+    "accentInkTarget": "#FFFDF5",
+    "accentInkMix": "86%",
+    "accentSoftMix": "14%",
+    "link": "#CD5545",
+    "danger": "#CD5545",
+    "red": "#CD5545",
+    "green": "#678618",
+    "aqua": "#0C8B7A",
+    "blue": "#3F7DCA",
+    "purple": "#A165AE",
+    "chapters": { "weather": "#0C8B7A", "quake": "#A77109", "crime": "#CD5545", "cabinet": "#3F7DCA", "housing": "#678618", "population": "#A165AE" }
+  },
+  "fonts": {
+    "serif": "'Instrument Serif', 'Serif Fallback', 'Noto Serif SC', 'Noto Serif JP', Georgia, 'Times New Roman', serif",
+    "sans": "'Geist', 'Noto Sans SC', 'Noto Sans JP', system-ui, -apple-system, 'Segoe UI', sans-serif",
+    "mono": "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace",
+    "zhSerif": "'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif",
+    "jaMincho": "'Noto Serif JP', 'Source Han Serif JP', 'Yu Mincho', 'Hiragino Mincho ProN', serif"
+  },
+  "radius": "4px",
+  "notes": "强调色与纸白模完全相同,只换中性斜坡;章节色块可直接用在炭黑底上(全部 ≥4.57:1)"
+}

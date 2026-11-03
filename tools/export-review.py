@@ -34,7 +34,9 @@ PACKS: list[tuple[str, str, list[str]]] = [
         "C_CSS.txt",
         "全站样式表",
         [
-            "src/tokens.css",
+            "src/packs/ouuut-editorial/css/type.css",
+            "src/packs/ouuut-editorial/css/all.css",
+            "src/theme-overrides.css",
             "src/app.css",
             "src/home-preview.css",
         ],

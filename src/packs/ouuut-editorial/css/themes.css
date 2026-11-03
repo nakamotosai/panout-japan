@@ -1,0 +1,94 @@
+/* ouuut-editorial · 共存版:只出 [data-theme] / [data-palette] / [data-chapter] 作用域,不含 :root
+   多主题应用(站点自带主题切换器)用这一份;单主题直接应用请用 css/default.css。
+   适用范围:与项目自己的 token 体系并存 —— 项目里用 `<html data-theme="paper">` 决定何时生效。 */
+
+[data-theme="paper"] {
+  color-scheme: light;
+  --bg: #F5F3ED;
+  --ink: #1A1A16;
+  --muted: #5B5A53;
+  --surface: rgba(26, 26, 22, .045);
+  --accent-ink-mix: 85%;
+  --accent-ink-target: #14140F;
+  --accent-soft-mix: 10%;
+}
+
+[data-theme="charcoal"],
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0E0E0C;
+  --ink: #EDEBE4;
+  --muted: #A3A199;
+  --surface: rgba(237, 235, 228, .055);
+  --accent-ink-mix: 86%;
+  --accent-ink-target: #FFFDF5;
+  --accent-soft-mix: 14%;
+}
+
+[data-palette="a"] {
+  --c-weather: #0C8B7A;
+  --c-quake: #A77109;
+  --c-crime: #CD5545;
+  --c-cabinet: #3F7DCA;
+  --c-housing: #678618;
+  --c-population: #A165AE;
+}
+
+[data-palette="b"] {
+  --c-weather: #378697;
+  --c-quake: #A07244;
+  --c-crime: #A96B66;
+  --c-cabinet: #8873A2;
+  --c-housing: #53885E;
+  --c-population: #867C42;
+}
+
+[data-palette="c"] {
+  --c-weather: #3F7DCA;
+  --c-quake: #CF5343;
+  --c-crime: #3F7DCA;
+  --c-cabinet: #CF5343;
+  --c-housing: #3F7DCA;
+  --c-population: #CF5343;
+}
+
+[data-palette="d"] {
+  --c-weather: #688527;
+  --c-quake: #688527;
+  --c-crime: #CB5848;
+  --c-cabinet: #CB5848;
+  --c-housing: #427DC7;
+  --c-population: #427DC7;
+}
+
+[data-theme] {
+  --accent-base: var(--c-crime);
+  --accent: var(--accent-base);
+  --accent-ink-base: color-mix(in oklab, var(--accent-base) var(--accent-ink-mix), var(--accent-ink-target));
+  --accent-ink: var(--accent-ink-base);
+  --accent-soft-base: color-mix(in srgb, var(--accent-base) var(--accent-soft-mix), transparent);
+  --accent-soft: var(--accent-soft-base);
+  --theme-bg: var(--bg);
+  --theme-ink: var(--ink);
+  --theme-muted: var(--muted);
+  --theme-surface: var(--surface);
+  --theme-accent: var(--accent);
+  --theme-accent-ink: var(--accent-ink);
+  --link: var(--accent-ink);
+  --danger: var(--c-crime);
+  --danger-ink: color-mix(in oklab, var(--c-crime) var(--accent-ink-mix), var(--accent-ink-target));
+  --red: var(--c-crime);
+  --green: var(--c-housing);
+  --aqua: var(--c-weather);
+  --blue: var(--c-cabinet);
+  --purple: var(--c-population);
+  --radius: 4px;
+  --btn-radius: 2px;
+}
+
+[data-chapter="weather"]    { --accent-base: var(--c-weather); }
+[data-chapter="quake"]      { --accent-base: var(--c-quake); }
+[data-chapter="crime"]      { --accent-base: var(--c-crime); }
+[data-chapter="cabinet"]    { --accent-base: var(--c-cabinet); }
+[data-chapter="housing"]    { --accent-base: var(--c-housing); }
+[data-chapter="population"] { --accent-base: var(--c-population); }

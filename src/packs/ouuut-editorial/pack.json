@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "id": "ouuut-editorial",
+  "title": "ouuut Editorial · 和色六景(纸白 / 炭黑)",
+  "kind": "theme",
+  "category": "themes",
+  "version": "1.0.0",
+  "license": "MIT",
+  "attribution": [
+    {
+      "name": "Pan Out Japan(ouuut Tokyo Expedition Magazine)",
+      "url": "https://japan.ouuut.com",
+      "license": "MIT",
+      "what": "色值与双模逻辑的参考实现(src/tokens.css)"
+    },
+    {
+      "name": "sai design-system §2.5",
+      "license": "internal",
+      "what": "六色与双模规则定稿 2026-11-02:深浅只翻中性色,强调色两模共用,全部落在 Y≈0.20"
+    }
+  ],
+  "origin": {
+    "project": "panout-japan",
+    "path": "src/tokens.css",
+    "derived_from": null
+  },
+  "entry": "SKILL.md",
+  "files": {
+    "tokens": [
+      "tokens/absolute.json",
+      "tokens/index.json",
+      "tokens/semantic/paper.json",
+      "tokens/semantic/charcoal.json"
+    ],
+    "css": [
+      "css/default.css",
+      "css/all.css",
+      "css/themes.css",
+      "css/type.css"
+    ],
+    "usage": "docs/usage.md",
+    "assert": "scripts/assert_tokens.py",
+    "preview": "preview/index.html"
+  },
+  "tags": [
+    "editorial",
+    "japanese-colors",
+    "light",
+    "dark",
+    "dual-theme",
+    "minimal",
+    "serif"
+  ],
+  "when": "内容型 / 杂志型站点:纸白与炭黑双模、六色章节体系、零结构线(层级靠留白与字号)、需要 AA 安全的小字强调色",
+  "not_for": "霓虹 / 赛博、密集数据工具面板、依赖强渐变与厚阴影的营销页",
+  "default_variant": "paper",
+  "verified": {
+    "date": "2026-11-03",
+    "how": "python packs/ouuut-editorial/scripts/assert_tokens.py",
+    "evidence": "PASS assert_tokens ouuut-editorial / 17 强调色 Y=0.199-0.203 · 深底 ≥4.57 · 浅底 ≥3.75 · ink 15.73/16.20 · muted 6.24/7.47"
+  },
+  "canonical_home": null
+}

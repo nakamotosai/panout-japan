@@ -39,3 +39,6 @@ site/
 mcp.json
 
 .audit/
+
+# 本地取证目录(build 产物基线副本、截图),不入库
+.private/

@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="paper" data-palette="a" data-chapter="crime">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ouuut-editorial · 和色六景(纸白 / 炭黑)</title>
+<link rel="stylesheet" href="../css/type.css">
+<link rel="stylesheet" href="../css/all.css">
+<style>
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:var(--fs-body);line-height:var(--lh-cjk);-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:var(--pad)}
+  header{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--gap);padding:var(--sec-y) 0 calc(var(--gap));flex-wrap:wrap}
+  .eyebrow{font-size:var(--fs-eyebrow);letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+  h1{font-family:var(--serif);font-size:var(--fs-page);line-height:1.1;margin:0;font-weight:400}
+  .lede{color:var(--muted);max-width:52ch;margin:12px 0 0}
+  .tools{display:flex;gap:10px;align-items:center}
+  button{font:inherit;color:var(--ink);background:var(--surface);border:0;border-radius:var(--btn-radius);padding:9px 14px;cursor:pointer}
+  button[aria-pressed="true"]{background:var(--accent);color:var(--bg)}
+  button.icon{width:44px;height:44px;padding:0;display:grid;place-items:center;background:transparent}
+  button.icon svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round}
+  .icon-moon{display:none}
+  [data-theme="charcoal"] .icon-sun,[data-theme="dark"] .icon-sun{display:none}
+  [data-theme="charcoal"] .icon-moon,[data-theme="dark"] .icon-moon{display:block}
+  :focus-visible{outline:2px solid var(--accent-ink);outline-offset:3px}
+  .swatches{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:calc(var(--gap)) 0}
+  .sw{padding:18px 16px;border-radius:var(--radius)}
+  .sw b{display:block;font-weight:600;font-size:var(--fs-small)}
+  .sw span{font-family:var(--mono);font-size:12px;opacity:.85}
+  .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--gap);margin-bottom:var(--sec-y)}
+  .card{background:var(--surface);border-radius:var(--radius);padding:26px}
+  .card h2{font-size:var(--fs-h3);margin:0 0 8px;font-weight:600}
+  .card p{margin:0 0 14px;color:var(--muted)}
+  .cta{background:var(--accent);color:var(--bg);border-radius:var(--btn-radius);padding:11px 18px;border:0;font-weight:600}
+  a{color:var(--link);text-decoration:none;border-bottom:1px solid var(--accent-soft)}
+  .dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--green);margin-right:8px;vertical-align:middle}
+  .danger{color:var(--danger-ink)}
+  .accentish{color:var(--accent-ink)}
+  .spec{color:var(--muted);font-size:var(--fs-small)}
+  .spec code{font-family:var(--mono);font-size:12px}
+  h1 .u{color:var(--accent-ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <p class="eyebrow">theme pack · ouuut-editorial v1.0.0</p>
+      <h1>和色六景 <span class="u">纸白 / 炭黑</span></h1>
+      <p class="lede">深浅只翻中性色,强调色两模共用;六章各取一色,层级靠留白与字号,不靠线与阴影。</p>
+    </div>
+    <div class="tools">
+      <button class="icon" id="theme-toggle" type="button" aria-label="切换深色模式">
+        <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.6 12h2.2M19.2 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.2A8.2 8.2 0 0 1 9.8 4a8.4 8.4 0 1 0 10.2 10.2z"/></svg>
+      </button>
+      <button data-pal="a" aria-pressed="true" type="button">A 和色六景</button>
+      <button data-pal="b" aria-pressed="false" type="button">B 矿物大地</button>
+      <button data-pal="c" aria-pressed="false" type="button">C 双色印刷</button>
+      <button data-pal="d" aria-pressed="false" type="button">D 三色分类</button>
+    </div>
+  </header>
+
+  <section class="swatches" aria-label="六章颜色">
+    <div class="sw" style="background:var(--c-weather);color:var(--bg)"><b>青磁 · weather</b><span data-hex="--c-weather">#0C8B7A</span></div>
+    <div class="sw" style="background:var(--c-quake);color:var(--bg)"><b>山吹 · quake</b><span data-hex="--c-quake">#A77109</span></div>
+    <div class="sw" style="background:var(--c-crime);color:var(--bg)"><b>朱 · crime</b><span data-hex="--c-crime">#CD5545</span></div>
+    <div class="sw" style="background:var(--c-cabinet);color:var(--bg)"><b>藍 · cabinet</b><span data-hex="--c-cabinet">#3F7DCA</span></div>
+    <div class="sw" style="background:var(--c-housing);color:var(--bg)"><b>苔 · housing</b><span data-hex="--c-housing">#678618</span></div>
+    <div class="sw" style="background:var(--c-population);color:var(--bg)"><b>紫 · population</b><span data-hex="--c-population">#A165AE</span></div>
+  </section>
+
+  <div class="row">
+    <article class="card">
+      <h2>卡面与正文</h2>
+      <p>这张卡没有边框也没有阴影:它靠 <code>--surface</code> 与留白从页面上浮起来。</p>
+      <p class="spec">小字彩色文本走 <span class="accentish">--accent-ink</span>,不用原色;纸白侧原色只有 3.8:1,不达 AA。</p>
+      <button class="cta" type="button">主按钮</button>
+      <p style="margin-top:16px"><a href="#">链接用同一色相的提亮档</a> · <span class="dot"></span>通过 <span class="danger">· 警示走朱色</span></p>
+    </article>
+
+    <article class="card">
+      <h2>章节提色</h2>
+      <p>同一套组件,换 <code>data-chapter</code> 就把该章颜色提为当页重点色:</p>
+      <p class="tools" style="flex-wrap:wrap">
+        <button data-chapter="weather" type="button">weather</button>
+        <button data-chapter="quake" type="button">quake</button>
+        <button data-chapter="crime" type="button">crime</button>
+        <button data-chapter="cabinet" type="button">cabinet</button>
+        <button data-chapter="housing" type="button">housing</button>
+        <button data-chapter="population" type="button">population</button>
+      </p>
+      <p class="spec">当前重点色:<code id="accent-readout">—</code></p>
+    </article>
+  </div>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement, KEY = "ouuut-editorial-theme";
+  var toggle = document.getElementById("theme-toggle");
+  var saved = null;
+  try { saved = localStorage.getItem(KEY); } catch (e) {}
+  var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  if (saved) root.setAttribute("data-theme", saved);
+  function sync() {
+    var dark = root.getAttribute("data-theme") === "charcoal";
+    toggle.setAttribute("aria-label", dark ? "切换到浅色模式" : "切换到深色模式");
+    toggle.setAttribute("aria-pressed", String(dark));
+  }
+  sync();
+  toggle.addEventListener("click", function () {
+    var next = root.getAttribute("data-theme") === "charcoal" ? "paper" : "charcoal";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    sync();
+  });
+  function syncHex() {
+    Array.prototype.forEach.call(document.querySelectorAll("[data-hex]"), function (el) {
+      el.textContent = getComputedStyle(root).getPropertyValue(el.dataset.hex).trim();
+    });
+  }
+  syncHex();
+  Array.prototype.forEach.call(document.querySelectorAll("[data-pal]"), function (b) {
+    b.addEventListener("click", function () {
+      root.setAttribute("data-palette", b.dataset.pal);
+      Array.prototype.forEach.call(document.querySelectorAll("[data-pal]"), function (o) {
+        o.setAttribute("aria-pressed", String(o === b));
+      });
+      syncHex();
+    });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-chapter]"), function (b) {
+    b.addEventListener("click", function () {
+      root.setAttribute("data-chapter", b.dataset.chapter);
+      var v = getComputedStyle(root).getPropertyValue("--accent").trim();
+      document.getElementById("accent-readout").textContent = b.dataset.chapter + " → " + v;
+    });
+  });
+}());
+</script>
+</body>
+</html>

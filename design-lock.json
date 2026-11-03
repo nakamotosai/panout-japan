@@ -1,6 +1,31 @@
 {
   "project": "panout-japan",
-  "updated": "2026-11-02",
+  "updated": "2026-11-03",
+  "assets": [
+    {
+      "pack": "ouuut-editorial",
+      "category": "themes",
+      "version": "1.0.0",
+      "sha": "038273f",
+      "via": "apply.py",
+      "applied_at": "2026-11-03",
+      "files": [
+        "css/default.css",
+        "css/all.css",
+        "css/themes.css",
+        "css/type.css",
+        "tokens/absolute.json",
+        "tokens/index.json",
+        "tokens/semantic/paper.json",
+        "tokens/semantic/charcoal.json",
+        "docs/usage.md",
+        "scripts/assert_tokens.py",
+        "SKILL.md",
+        "README.md"
+      ],
+      "note": "只读拷贝,包内字节未改(逐字拷自 F:/projects/sai-assets@038273f);构建消费 css/type.css + css/all.css(顺序:type → all → src/theme-overrides.css → src/app.css),项目专有部分只剩 src/theme-overrides.css。apply.py 的 files 之外另逐字补拷 pack.json 与 preview/index.html —— 包自带 scripts/assert_tokens.py 要读这两者,否则断言必失败;现况 python src/packs/ouuut-editorial/scripts/assert_tokens.py 退出 0。"
+    }
+  ],
   "source_of_truth": "ouuut-v2 design-lock + live computed styles at 1440px, 2026-10-21. japan.ouuut.com must read as the same publication as ouuut.com.",
   "style": "Tokyo Expedition Magazine Editorial / ouuut family. Two themes only: sage (day) and dark (night). Zero structural lines.",
   "themes": [

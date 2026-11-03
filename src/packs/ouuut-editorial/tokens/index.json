@@ -1,0 +1,18 @@
+{
+  "default": "paper",
+  "variants": [
+    { "id": "paper", "name": "纸白", "mode": "light", "contrast": "medium", "path": "tokens/semantic/paper.json", "default": true, "aliases": ["light"] },
+    { "id": "charcoal", "name": "炭黑", "mode": "dark", "contrast": "medium", "path": "tokens/semantic/charcoal.json", "default": false, "aliases": ["dark"] }
+  ],
+  "palettes": [
+    { "id": "a", "name": "和色六景", "default": true },
+    { "id": "b", "name": "矿物大地" },
+    { "id": "c", "name": "双色印刷" },
+    { "id": "d", "name": "三色分类" }
+  ],
+  "axes": {
+    "theme": { "attr": "data-theme", "values": ["paper", "charcoal"], "aliases": { "light": "paper", "dark": "charcoal" }, "note": "只翻中性色,强调色两模共用" },
+    "palette": { "attr": "data-palette", "values": ["a", "b", "c", "d"], "note": "四套强调色组,与主题正交" },
+    "chapter": { "attr": "data-chapter", "values": ["weather", "quake", "crime", "cabinet", "housing", "population"], "note": "章节页把该章颜色提为页面重点色" }
+  }
+}

@@ -30,6 +30,7 @@ import home_plates as HP
 ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
 SRC = ROOT / "src"
+PACKS = SRC / "packs"   # sai-assets 包的只读拷贝(见 design-lock.json assets[])
 WEATHER_SRC = SRC / "weather"
 SITE_URL = "https://japan.ouuut.com"
 BRAND = "japan.ouuut.com"
@@ -1663,7 +1664,11 @@ def main():
     i18n_ver = hashlib.sha1(i18n_json.encode("utf-8")).hexdigest()[:8]
     files["/assets/i18n.json"] = i18n_json
 
-    css = (SRC / "tokens.css").read_text(encoding="utf-8") + "\n" + \
+    # 主题 token 消费自 sai-assets 的 ouuut-editorial 包(见 design-lock.json assets[]):
+    # 包 type.css(字体族/版式刻度)+ 包 all.css(双模配色/和色六景)+ 本站专有覆盖。
+    css = (PACKS / "ouuut-editorial" / "css" / "type.css").read_text(encoding="utf-8") + "\n" + \
+          (PACKS / "ouuut-editorial" / "css" / "all.css").read_text(encoding="utf-8") + "\n" + \
+          (SRC / "theme-overrides.css").read_text(encoding="utf-8") + "\n" + \
           (SRC / "app.css").read_text(encoding="utf-8")
     js = (SRC / "shell.js").read_text(encoding="utf-8").replace("__I18N_VER__", i18n_ver)
 

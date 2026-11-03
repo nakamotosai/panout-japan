@@ -1,0 +1,40 @@
+{
+  "id": "ouuut-editorial",
+  "note": "原色表:中性斜坡(双模)+ 四套强调色组(和色六景 A/B/C/D)+ 小字提亮参数。所有强调色落在同一亮度带 Y≈0.20,故同一色值在两模下都能成立。",
+  "neutrals": {
+    "paper": { "bg": "#F5F3ED", "ink": "#1A1A16", "muted": "#5B5A53", "surface": "rgba(26, 26, 22, .045)" },
+    "charcoal": { "bg": "#0E0E0C", "ink": "#EDEBE4", "muted": "#A3A199", "surface": "rgba(237, 235, 228, .055)" }
+  },
+  "accentInk": {
+    "paper": { "mix": "85%", "target": "#14140F" },
+    "charcoal": { "mix": "86%", "target": "#FFFDF5" },
+    "note": "小字一档:color-mix(in oklab, <accent> <mix>, <target>) → 纸白侧 4.9:1 / 炭黑侧 5.8:1"
+  },
+  "accentSoft": { "paper": "10%", "charcoal": "14%", "note": "color-mix(in srgb, <accent> <mix>, transparent)" },
+  "palettes": {
+    "a": {
+      "name": "和色六景",
+      "note": "默认。六章各取一色,全部同亮度",
+      "colors": { "weather": "#0C8B7A", "quake": "#A77109", "crime": "#CD5545", "cabinet": "#3F7DCA", "housing": "#678618", "population": "#A165AE" },
+      "roles": { "weather": "青磁", "quake": "山吹", "crime": "朱(主色/警示)", "cabinet": "藍", "housing": "苔", "population": "紫" }
+    },
+    "b": {
+      "name": "矿物大地",
+      "note": "比 A 安静一档的土色",
+      "colors": { "weather": "#378697", "quake": "#A07244", "crime": "#A96B66", "cabinet": "#8873A2", "housing": "#53885E", "population": "#867C42" },
+      "roles": { "weather": "青灰", "quake": "黄土", "crime": "赭", "cabinet": "紫灰", "housing": "松", "population": "橄榄" }
+    },
+    "c": {
+      "name": "双色印刷",
+      "note": "两色跨六章交替",
+      "colors": { "weather": "#3F7DCA", "quake": "#CF5343", "crime": "#3F7DCA", "cabinet": "#CF5343", "housing": "#3F7DCA", "population": "#CF5343" },
+      "roles": { "weather": "藍", "quake": "朱" }
+    },
+    "d": {
+      "name": "三色分类",
+      "note": "一个域一色:自然 / 社会 / 人",
+      "colors": { "weather": "#688527", "quake": "#688527", "crime": "#CB5848", "cabinet": "#CB5848", "housing": "#427DC7", "population": "#427DC7" },
+      "roles": { "weather": "苔 · 自然", "crime": "朱 · 社会", "housing": "藍 · 人" }
+    }
+  }
+}

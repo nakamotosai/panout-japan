@@ -1,0 +1,42 @@
+/* japan.ouuut.com · theme-overrides — 项目专有层。
+   本文件只放**不在** sai-assets/ouuut-editorial 包里、或与包取值不同的规则;
+   通用 token(配色 / 字体族 / 版式刻度 / 动效)一律由包提供:
+     src/packs/ouuut-editorial/css/type.css  →  字体族 · 版式栅格 · 字号档 · 动效刻度
+     src/packs/ouuut-editorial/css/all.css   →  纸白 / 炭黑双模 · 和色六景 A–D · 章节提色
+   构建顺序(build.py):包 type.css → 包 all.css → 本文件 → src/app.css。
+   包内已有的声明不在此重复,避免出现第二份副本。 */
+
+/* ---- 1) 封面 H1 的 <900px 下限 ----
+   包内 type.css 全局取 --fs-h1-en: clamp(2.6rem, …) 一档;本站封面 H1 是 2rem 起
+   (两栏 hero 才需要 2.6rem),故按原 tokens.css 的取值把 <900px 这一半补回来。
+   `not all and (min-width: 900px)` 即精确的“视口 < 900px”,与下面 ≥900px 组互补。 */
+@media not all and (min-width: 900px) {
+  :root {
+    --fs-h1-en: clamp(2rem, 6.2vw, 5.7rem);
+  }
+}
+
+/* ---- 2) 封面 H1 clamp(≥900px 两栏 hero) ----
+   原 src/tokens.css 原文保留:取值与包内 type.css 相同,此处只作为上方补丁的另一半。 */
+@media (min-width: 900px) {
+  :root {
+    --fs-h1-en: clamp(2.6rem, 6.2vw, 5.7rem);
+    --fs-h1-ja: clamp(1.9rem, 5vw, 4.6rem);
+    --fs-h1-zh: clamp(1.9rem, 5.6vw, 5.2rem);
+  }
+}
+
+/* ---- 3) 强调色组 C(双色印刷)的默认重点色 ----
+   包内 css/all.css 的 [data-palette="c"] 不重设 --accent-base,于是回落到
+   var(--c-crime)(C 组里 = 藍 #3F7DCA);本站 C 组的默认重点色是**朱**(--c-quake
+   = #CF5343),故按原样覆盖。
+
+   :not([data-chapter]) 是关键:原 tokens.css 里,组规则(html[data-palette="c"])
+   之后紧接着六条章节提色规则(html[data-chapter="…"] → var(--c-…)),两者同为
+   (0,1,1),靠文件顺序让**章节色胜出**。包内章节规则在上游文件里、顺序恒早于本文件,
+   所以这里必须显式排除有 data-chapter 的页面,否则 C 组章节页的重点色会从
+   该章色被掰成朱(实测 crime 页:#3F7DCA → #CF5343)。站点只发六种 data-chapter 值
+   (site/ 下各章 index.html 实测),故 :not([data-chapter]) 与原来的顺序语义逐值等价。 */
+html[data-palette="c"]:not([data-chapter]) {
+  --accent-base: var(--c-quake);
+}

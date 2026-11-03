@@ -1,0 +1,52 @@
+/* ouuut-editorial · 排版与动效刻度(与配色正交,可单独取用)
+   族数 ≤2 用法:拉丁衬线/无衬线 + CJK 自制回退;字号不用 vw 外推中文。 */
+:root,
+.theme-ouuut-editorial {
+  /* 字族:拉丁主 + CJK 分语言回退(禁斜体、禁下划线做强调) */
+  --serif: 'Instrument Serif', 'Serif Fallback', 'Noto Serif SC', 'Noto Serif JP', Georgia, 'Times New Roman', serif;
+  --sans: 'Geist', 'Noto Sans SC', 'Noto Sans JP', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --wordmark: 'Outfit', 'Geist', sans-serif;
+  --zh-serif: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif;
+  --zh-sans: 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  --ja-serif: 'Noto Serif JP', 'Source Han Serif JP', 'Yu Mincho', 'Hiragino Mincho ProN', serif;
+  --ja-sans: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', Meiryo, sans-serif;
+
+  /* 版式栅格 */
+  --pad: clamp(20px, 4vw, 56px);
+  --maxw: 1360px;
+  --gap: clamp(24px, 3vw, 48px);
+  --sec-y: clamp(5rem, 11vw, 9.5rem);
+  --nav-h: 72px;
+
+  /* 字号档:CJK 用 em 上限,禁 ch 限宽 */
+  --fs-eyebrow: 11px;
+  --fs-body: 17px;
+  --fs-small: 15px;
+  --fs-lead: clamp(18px, 1.8vw, 22px);
+  --fs-h1-en: clamp(2.6rem, 6.2vw, 5.7rem);
+  --fs-h1-ja: clamp(1.9rem, 5vw, 4.6rem);
+  --fs-h1-zh: clamp(1.9rem, 5.6vw, 5.2rem);
+  --fs-page: clamp(2rem, 4vw, 3.5rem);
+  --fs-section: clamp(1.6rem, 3.4vw, 2.8rem);
+  --fs-h3: clamp(1.35rem, 2.4vw, 1.9rem);
+  --lh-en: 1.65;
+  --lh-cjk: 1.8;
+
+  /* 动效刻度:常态 ≤500ms,主题切换单独一档 */
+  --ease: cubic-bezier(.2, .7, .2, 1);
+  --dur-fast: .2s;
+  --dur-base: .45s;
+  --dur-enter: .68s;
+  --motion-fast: var(--dur-fast);
+  --motion-theme: .4s;
+  --motion-enter: var(--dur-enter);
+}
+
+/* Metric-compatible 衬线回退:Instrument Serif 在同样字符串下约为 Georgia 的 72% 宽,
+   不设 size-adjust 的话 webfont 落地瞬间英文 H1 会重排。 */
+@font-face {
+  font-family: 'Serif Fallback';
+  src: local('Georgia'), local('Times New Roman'), local('Times');
+  size-adjust: 72%;
+}

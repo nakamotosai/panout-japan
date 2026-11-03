@@ -1,0 +1,54 @@
+/* ouuut-editorial · default = 纸白(paper) + 和色六景(palette A)
+   Link this file alone for the fastest apply. 完整系统(双模 + 四套强调色组)见 css/all.css。 */
+:root,
+[data-theme="paper"],
+[data-theme="light"],
+.theme-ouuut-editorial {
+  color-scheme: light;
+
+  /* 中性斜坡:深浅只翻这四个 + 小字参数 */
+  --bg: #F5F3ED;
+  --ink: #1A1A16;
+  --muted: #5B5A53;
+  --surface: rgba(26, 26, 22, .045);
+
+  /* 小字强调一档(同色相提亮/压暗);色块与图形用 --accent 原色 */
+  --accent-ink-mix: 85%;
+  --accent-ink-target: #14140F;
+  --accent-soft-mix: 10%;
+
+  /* 和色六景:六章各取一色,同一亮度带 Y≈0.20 */
+  --c-weather: #0C8B7A;    /* 青磁 */
+  --c-quake: #A77109;      /* 山吹 */
+  --c-crime: #CD5545;      /* 朱(主色 / 警示) */
+  --c-cabinet: #3F7DCA;    /* 藍 */
+  --c-housing: #678618;    /* 苔 */
+  --c-population: #A165AE; /* 紫 */
+
+  --accent-base: var(--c-crime);
+  --accent: var(--accent-base);
+  --accent-ink-base: color-mix(in oklab, var(--accent-base) var(--accent-ink-mix), var(--accent-ink-target));
+  --accent-ink: var(--accent-ink-base);
+  --accent-soft-base: color-mix(in srgb, var(--accent-base) var(--accent-soft-mix), transparent);
+  --accent-soft: var(--accent-soft-base);
+
+  /* 语义别名:跨包共存时用 --theme-* 引用,内部一律用短名 */
+  --theme-bg: var(--bg);
+  --theme-ink: var(--ink);
+  --theme-muted: var(--muted);
+  --theme-surface: var(--surface);
+  --theme-accent: var(--accent);
+  --theme-accent-ink: var(--accent-ink);
+
+  --link: var(--accent-ink);
+  --danger: var(--c-crime);
+  --danger-ink: color-mix(in oklab, var(--c-crime) var(--accent-ink-mix), var(--accent-ink-target));
+  --red: var(--c-crime);
+  --green: var(--c-housing);
+  --aqua: var(--c-weather);
+  --blue: var(--c-cabinet);
+  --purple: var(--c-population);
+
+  --radius: 4px;
+  --btn-radius: 2px;
+}
