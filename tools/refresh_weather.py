@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import hashlib
 import json
 import os
 import re
@@ -95,6 +96,12 @@ def http_get(url: str, timeout: int = 30) -> tuple[int, dict, bytes]:
         return response.status, dict(response.headers), response.read()
 
 
+def weather_version() -> str:
+    names = ["app.js", "data.js", "geo.js", "weather.css"]
+    payload = "".join((SITE / "assets/weather" / name).read_text("utf-8") for name in sorted(names))
+    return hashlib.sha1(payload.encode("utf-8")).hexdigest()[:8]
+
+
 def verify_build(data: dict, report: dict) -> None:
     if not SITE.exists():
         raise RuntimeError("site/ was not created")
@@ -106,8 +113,9 @@ def verify_build(data: dict, report: dict) -> None:
     unresolved = re.search(r"__[A-Z]+_VER__", html)
     if unresolved:
         raise RuntimeError(f"Unresolved placeholder in weather HTML: {unresolved.group(0)}")
-    if 'src="/assets/weather/data.js"' not in html:
-        raise RuntimeError("Weather HTML does not reference /assets/weather/data.js")
+    version = weather_version()
+    if f'src="/assets/weather/data.js?v={version}"' not in html:
+        raise RuntimeError("Weather HTML does not reference the current data version")
     body = html.split("<tbody>", 1)[1].split("</tbody>", 1)[0]
     rows = body.count("<tr>")
     if rows != 47:
@@ -115,7 +123,7 @@ def verify_build(data: dict, report: dict) -> None:
     built = W.parse_js_object(SITE / "assets/weather/data.js", "WEATHER_DATA")
     if built["generatedAt"] != data["generatedAt"] or len(built["regions"]) != 47:
         raise RuntimeError("Built data.js does not match the validated snapshot")
-    log(f"Build verified: 6 pages, 47 rows, {report['regions']} regions")
+    log(f"Build verified: 6 pages, 47 rows, weather v{version}, {report['regions']} regions")
 
 
 def list_production_deployments() -> list[dict]:

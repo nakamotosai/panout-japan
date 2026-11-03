@@ -65,8 +65,8 @@ manual refresh.
    valid precipitation period; required metadata.
 5. Completeness floors: at most 7 missing `todayHigh`, at most 7 missing
    `todayPop`, at most 2 empty overviews.
-6. Full build: 6 pages, 47 no-JS weather rows, the page references
-   `/assets/weather/data.js`, no unresolved placeholders.
+6. Full build: 6 pages, 47 no-JS weather rows, the current `data.js?v=` stamp, no
+   unresolved placeholders.
 7. Deployment artifact first: the Pages URL `wrangler` just printed must already
    serve the new `generatedAt` (3 tries, 5s apart). The artifact is authoritative
    the moment the upload returns, so a failure here is a real defect.
@@ -102,16 +102,28 @@ and made every retry hopeless.
 So the site revalidates by default (`_headers` `/*` rule: `max-age=0,
 must-revalidate`). Only two exceptions exist: `/assets/fonts/*` keeps `immutable`
 because a fingerprinted woff2 is the one URL that fully identifies its bytes, and
-`/data/*` keeps a day because those CSVs are not stamped and change daily. The
-weather runtime carries **no** `?v=` at all: a stable URL plus ETag revalidation
-costs one conditional round trip (304) and cannot pin anything.
+`/data/*` keeps a day because those CSVs are not stamped and change daily.
+
+The weather runtime keeps its content-hash stamp (`?v=<sha1 of the four files>`), so
+every release publishes fresh cache keys and a release can never be answered from an
+entry an older deployment filled — and because the assets revalidate, a stamp can
+never pin a body either.
+
+Both hypotheses behind this were measured on 2026-11-03, and they are one class: a URL
+first requested while the edge still resolves the previous deployment receives the
+*previous* body, and a long cache then pins it to that URL. `?v=a1513657` did it at
+06:12 (that is what failed the first production verification and made every retry
+hopeless). A bare-path probe the same morning showed the same thing without any stamp:
+`/assets/weather/data.js` carried an entry filled the previous day, still served the
+11-02 snapshot 29.6h later (`cf-cache-status: HIT`, `age: 106721`), and a request
+`Cache-Control: no-cache` did **not** make the edge revalidate it. Only a fresh key
+(another path or stamp) or a purge clears such an entry, and this token has no Cache
+Purge permission (401 on `purge_cache`). Hence: stamps stay, and nothing is
+long-cached.
 
 Both the pipeline (`verify_site`) and the hourly probe assert that `data.js` does
 *not* come back long-cached, so a regression fails loudly instead of serving stale
-data quietly. Entries pinned before this change stay pinned until revalidated or
-evicted, and the Pages token has no Cache Purge permission (401 on `purge_cache`) —
-but the pinned entries are orphan URLs that no page references any more, which is
-why nothing needs purging.
+data quietly.
 
 ## Manual release check
 
