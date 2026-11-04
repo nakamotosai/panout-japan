@@ -28,6 +28,7 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import time
@@ -168,7 +169,9 @@ def preflight(allow_stale: bool) -> dict:
 
 
 def deploy() -> tuple[str | None, str | None]:
-    proc = run(["npx", "--yes", f"wrangler@{WRANGLER}", "pages", "deploy", "site",
+    # Windows 上 npx 是 npx.cmd:裸 "npx" 会 WinError 2,先按 PATH/PATHEXT 解析一次。
+    npx = shutil.which("npx") or "npx"
+    proc = run([npx, "--yes", f"wrangler@{WRANGLER}", "pages", "deploy", "site",
                 f"--project-name={PROJECT}", "--branch=main"], timeout=1800, capture=True)
     out = proc.stdout or ""
     print(out.rstrip(), flush=True)
