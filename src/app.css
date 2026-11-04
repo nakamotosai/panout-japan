@@ -198,10 +198,11 @@ html[lang^="zh"] .ch-doc h2 { font-family: var(--zh-serif); }
 .ch-faq dd:last-child { margin-bottom: 0; }
 
 /* 内阁全屏舞台布局与高质感平滑入场遮罩 */
+/* 舞台の高さは .chapter-app-page > .stage の calc(100dvh − ヘッダ − パンくず) が決める。
+   ここで height:100% を重ねてはいけない:親 main は「舞台 + 正文」の auto 高さなので、
+   100% は 0 に解決し、舞台ごと消える(2026-11-04 の正文改稿で実測 0px)。 */
 .chapter-app-page .stage-cabinet {
-  height: 100% !important;
-  min-height: 0 !important;
-  position: relative !important;
+  position: relative;
   background: var(--bg);
 }
 .cab-veil {

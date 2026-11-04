@@ -655,3 +655,13 @@
 - 验收:`python src/build.py` → `pages: 28`(fonts 13 文件);`site/` 起 8907 本地服务,28 页 200 且 `<html lang>` 正确、四语正文互不相同、hreflang 五条目标全 200、无 `?lang=`、sitemap 28 loc / 每条 4+x-default、28 张 og 均 1200×630;`verify_sites.py --only 3,4,8`(japan 域改写到本地)断言 3、4 通过,断言 8 的 japan 项(`Dataset.distribution`)通过,整体仍红在 find 的 `BreadcrumbList` 与 cn 的 `citation`(别的仓,不在本轮范围)。
 - 已知限制:章节交互部件(`app/*/view.js`)与海报 SVG 里的日文标注只有 ja/zh/en 三套词表,zh-Hant 页的部件按简体渲染;四章正文扩写未做,要点清单见 `docs/content-gap-japan.md`。
 - 唯一 next:四章正文扩写(quake/crime/cabinet/housing 现 355–506 字),并给章节视图补 zh-Hant 词表。
+
+## 2026-11-04 · 内阁章图表消失(生产回归修复)
+
+- 症状:用户报 `/cabinet/` 图表不见了。先把线上 `cabinet/index.html` 与 `app/cabinet/view.js` 拉回本地比 md5 —— 与 `site/` 逐字节相同,说明不是部署/缓存问题,是源码 bug。
+- 根因:`.chapter-app-page .stage-cabinet { height: 100% !important }`(2026-10-21 加,当时 `main` 还是固定高)遇上同日的「舞台 + 正文」改稿 —— 改稿把 `main` 变成 auto 高的普通文档,把一屏高挪到 `.chapter-app-page > .stage` 的 `calc(100dvh − 页头 − 面包屑)`。`height:100%` 对 auto 高父盒子解析为 0,舞台塌成 0px;它的子元素(`.stage-live`、`.cab-veil`)全是绝对定位,于是整块舞台连同图表一起消失(正文与页脚照旧,页面上只留下一道空白)。
+- 取证(ego,用户浏览器):`.stage-cabinet` 的 `getBoundingClientRect().height = 0`,`data-live="1"`、`.stage-live` 里已注入 4.3KB 内容、canvas 1 个 + svg 2 个 —— 图确实画出来了,只是容器高 0。临时把高度改回 calc,立刻 811px 且图表可见。四语同病,其余四章不受影响(它们没有这条覆盖)。
+- 修复:`src/app.css` 删掉那行高度覆盖(以及原本空转的 `min-height: 0 !important`),高度回到 `.chapter-app-page > .stage` 一处定义;保留 `position: relative` / `background: var(--bg)`。注释写明为什么不能在这里写高度,防止再犯。
+- 验收:`python src/build.py` → 28 页,CSS `bba3939d`;本机 8900 预览实渲染(cabinet 四语 1920 宽舞台 811px、390 宽 742px,图表可见、遮罩淡出、溢出 0);`.private/verify_local.py`（8907 被上轮遗留的 `http.server` 占着,改在空闲端口跑)PASS 222 / FAIL 1 —— 唯一那条 FAIL 是三站闸里 `find` 站的 `BreadcrumbList`,别的仓且本轮之前就是红。
+- 部署:CF Pages `panout-site` 生产 `8b2d79ff-a7f5-440d-baf6-098bc2c877ec`(2026-11-04 11:59 JST);线上复核四语舞台 811px、`/assets/app.css?v=bba3939d` 内已无该高度覆盖、控制台无错。
+- 唯一 next:盯 2026-11-05 06:10 JST 的天气日更 run —— 它从 VPS 的 checkout 重建,那份源码必须已经 pull 到本修,否则会把 0px 的舞台重新部署上去。
