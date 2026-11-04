@@ -37,6 +37,8 @@ PROJECT = "panout-site"
 WRANGLER = "4.152.0"
 UA = "PanOutJapan-WeatherRefresh/1.0 (+https://japan.ouuut.com/weather/)"
 JST = dt.timezone(dt.timedelta(hours=9))
+# 字体构建被跳过时 build_fonts 的 stub 版本号是 "0";用正则而不是子串判断,见 verify_build。
+FONT_STUB = re.compile(r"\?v=0(?![0-9a-f])")
 
 sys.path.insert(0, str(ROOT / "tools"))
 import weather_data as W  # noqa: E402
@@ -163,7 +165,10 @@ def verify_build(data: dict, report: dict) -> None:
     if rows != 47:
         raise RuntimeError(f"Expected 47 no-JS rows, got {rows}")
     css = (SITE / "assets/app.css").read_text("utf-8")
-    if css.count("@font-face") < 10 or "?v=0" in css:
+    # `?v=0` 是字体构建被跳过的标记(build_fonts 的 stub 版本号就是 "0")。别写成子串判断:
+    # 字体版本恰好以 0 开头时(?v=0d7b5491)会误判成「没有字体」,2026-11-04 那次 VPS 的
+    # 日更因此拦下了完全正常的构建。
+    if css.count("@font-face") < 10 or FONT_STUB.search(css):
         raise RuntimeError(
             "Built CSS has no font faces: the font build was skipped (missing font "
             "sources), which would deploy a fontless site"

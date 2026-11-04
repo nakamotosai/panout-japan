@@ -132,7 +132,9 @@ def preflight(allow_stale: bool) -> dict:
 
     css_path = SITE / "assets" / "app.css"
     css = css_path.read_text(encoding="utf-8")
-    if css.count("@font-face") < 10 or "?v=0" in css:
+    # `?v=0` 是字体构建被跳过的痕迹(build_fonts 的 stub 版本号就是 "0")。正则而非子串:
+    # 字体版本以 0 开头时(?v=0d7b5491)子串判断会误报「没有字体」。
+    if css.count("@font-face") < 10 or re.search(r"\?v=0(?![0-9a-f])", css):
         raise SystemExit(
             "Refusing to deploy: the built CSS has no @font-face or a ?v=0 stamp, which means "
             "the font build was skipped (set PANOUT_LATIN_FONTS / PANOUT_SC_FONTS / PANOUT_OUTFIT_FONT)"
