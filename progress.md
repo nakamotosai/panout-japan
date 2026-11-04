@@ -691,3 +691,10 @@
 - **已知未修**:`冲绳县` → `衝繩縣`(正确为 `沖繩縣`)。这不是本轮引入的:构建期静态表格(47 行)现在就是 `衝繩縣`,运行时表格与它一致。根因是 `src/hant.py` 按 OpenCC **s2t/s2tw** 字符+TW 变体转字,缺 TWPhrases 词组层;本机 `opencc.OpenCC('s2twp')` 对 47 个县名只有「冲绳县」这一处不同。要不要切到 s2twp(会连带改变词汇层,如 软件→軟體)是文案口径决定,记在 README 待拍板。
 
 - 唯一 next:06:10 JST 的日更 run 应「开场同步 → 抓取 → 构建(28 页四语)→ 部署 → 线上校验 → 双远端推送」全绿;若快照不是当天,现在会在构建/探针两处被拦下而不是悄悄上线。
+
+### 上线与彩排(同日完成)
+
+- **手工发布走新入口**:`python tools/deploy_site.py`(带 `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID`)→ 生产 `48b79362-8f00-4837-9728-557d4910bff6`,CSS `339cc9ee`,线上 `data.js` 已是当天快照;第一次读线上还是 500(部署切换窗口),重试循环等到了。
+- **VPS 彩排(两次,第一次失败正好复现了要修的东西)**:第一次 `bash tools/panout_weather_refresh.sh --force` 时 VPS 的 checkout 还停在 `0996b1f`(我推的这轮改动它没有,所以那次跑的是**旧代码**、没有同步步),于是它用旧源码重建、部署,然后 `git push origin main` 再次被拒 —— 与今晨同型。手工 `git fetch origin && git rebase origin/main && git push` 之后第二次跑(此时已有新代码):`Checkout already on origin/main (3513ab33a)` → 抓取 → 28 页构建(带新的 `weather: report …` 行)→ 部署 `8c5e9774-15a7-43e2-8a8d-76daf448b72b` → 产物与生产都校验通过(`generatedAt 2026-11-04T05:15:47Z`)→ 提交 `f48c447` → 双远端 `0/0` → `Refresh complete`。探针随后 exit 0,并报今晨那次事故「已恢复」;`state.json` 记为 `last_success_date 2026-11-04`、失败标记清空。
+- **彩排中又逮到一个既有 bug**:`verify_build` 与新的部署工具都用子串 `"?v=0" in css` 判「字体构建被跳过」,而字体版本一旦以 0 开头(这次是 `0d7b5491`)就会把完全正常的构建判成 fontless(那轮 run 就这样被拦下,而它前一行刚打印 `fonts: 13 files`)。两处都改成 `\?v=0(?![0-9a-f])`,并写进注释。提交 `02b6e83`。
+- **线上复验(ego)**:线上 `/assets/weather/app.js?v=f141ddf7` 里已含 `relativeDay`/`jstDay`/`editorial-stale`;四语日按钮 = 今日/明日、今天/明天、今天/明天(繁体页凡例是「多雲」)、Today/Tomorrow;因为快照就是当天,`.editorial-stale` 不出现;横向溢出 0;`/cabinet/` 图表仍在。`/zh-Hant/weather/` 的 HTML 里有 `__pjToHant`,ja 页没有(只在繁体页注入)。
