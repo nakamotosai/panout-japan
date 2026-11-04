@@ -663,5 +663,8 @@
 - 取证(ego,用户浏览器):`.stage-cabinet` 的 `getBoundingClientRect().height = 0`,`data-live="1"`、`.stage-live` 里已注入 4.3KB 内容、canvas 1 个 + svg 2 个 —— 图确实画出来了,只是容器高 0。临时把高度改回 calc,立刻 811px 且图表可见。四语同病,其余四章不受影响(它们没有这条覆盖)。
 - 修复:`src/app.css` 删掉那行高度覆盖(以及原本空转的 `min-height: 0 !important`),高度回到 `.chapter-app-page > .stage` 一处定义;保留 `position: relative` / `background: var(--bg)`。注释写明为什么不能在这里写高度,防止再犯。
 - 验收:`python src/build.py` → 28 页,CSS `bba3939d`;本机 8900 预览实渲染(cabinet 四语 1920 宽舞台 811px、390 宽 742px,图表可见、遮罩淡出、溢出 0);`.private/verify_local.py`（8907 被上轮遗留的 `http.server` 占着,改在空闲端口跑)PASS 222 / FAIL 1 —— 唯一那条 FAIL 是三站闸里 `find` 站的 `BreadcrumbList`,别的仓且本轮之前就是红。
-- 部署:CF Pages `panout-site` 生产 `8b2d79ff-a7f5-440d-baf6-098bc2c877ec`(2026-11-04 11:59 JST);线上复核四语舞台 811px、`/assets/app.css?v=bba3939d` 内已无该高度覆盖、控制台无错。
-- 唯一 next:盯 2026-11-05 06:10 JST 的天气日更 run —— 它从 VPS 的 checkout 重建,那份源码必须已经 pull 到本修,否则会把 0px 的舞台重新部署上去。
+- 部署:第一次 CF Pages `panout-site` 生产 `8b2d79ff-a7f5-440d-baf6-098bc2c877ec`(2026-11-04 11:59 JST),线上复核四语舞台 811px、`/assets/app.css?v=bba3939d` 内已无该高度覆盖、控制台无错。
+- 顺带发现并处理的两件事:
+  1. **VPS 日更的 checkout 已经分叉**:`vps-jp:/home/ubuntu/panout-japan` 停在 `82494ba`(11-03 15:09)那条线上,本地后来推的四语/正文改动它一条都没有;它今天 06:12 JST 的日更用旧源码重建并部署了**旧的单语站**(`8ef320f6`),随后自己在 `git push origin main` 上被拒(`state.json` 的 `last_error`),所以线上那半天其实是被 06:17 的一次本地手动部署盖回来的。若放着不管,次日 06:10 会再盖一次。处理:`ssh vps-jp` → `git fetch origin && git rebase origin/main`(把本地那条 weather 提交 918e5e3 rebase 到 46123b2 之上成为 729824f),再从 VPS 推回 origin(修好推送)。预检:在 VPS 上 `set -a && . ~/.config/panout/weather.env` 后 `python3 src/build.py` → `fonts: 13 files, 2788 KB`、`pages: 28`,即明天 06:10 会构建出修好的四语站(不 source 这个 env 的话字体源路径缺失、fonts SKIPPED,而 `refresh_weather.py` 的 `verify_build` 会以「CSS 无 @font-face」拦下部署)。
+  2. **天气快照落后一天**:11:59 那次部署带的是本地 11-03 快照,`/weather/` 的「今天」显示 11月3日。把 VPS 已经抓好的 11-04 快照(`generatedAt 2026-11-03T21:10:23Z`)合并回本地后重建并再部署一次:生产 `1a619fe4-2877-4875-91d5-ec41bcd92494`,CSS `ceb75f3e`,线上 `/weather/` dateline 回到 11月4日、47 行、`data.js?v=7f9b3620`。
+- 唯一 next:盯 2026-11-05 06:10 JST 的天气日更 run —— checkout 已同步到 main,它的构建应是 28 页四语站、推送应成功。
