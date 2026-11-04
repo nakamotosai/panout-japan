@@ -47,6 +47,54 @@ def iso(value: str) -> dt.datetime:
     return dt.datetime.fromisoformat(value.replace("Z", "+00:00"))
 
 
+def jst_date(value: object, field: str) -> dt.date:
+    """Parse an ISO timestamp (JST-normalised) into its JST calendar date."""
+    if not value:
+        raise ValueError(f"缺少 {field}")
+    try:
+        return iso(str(value)).astimezone(JST).date()
+    except Exception:
+        raise ValueError(f"{field} 无法解析: {value}")
+
+
+def freshness_error(payload: dict, now_jst: dt.datetime) -> str | None:
+    """Judge production freshness from production's own bytes.
+
+    2026-11-04: a manual deploy from a checkout that had not pulled the pipeline's
+    data commit served the 11-03 snapshot for ~5h while the page labelled it
+    "today". The old probe missed it because every check was anchored to
+    ~/.cache/panout-weather/state.json, which was stale in exactly the same way.
+    This helper reads only the payload served by production.
+    """
+    try:
+        generated_date = jst_date(payload.get("generatedAt"), "generatedAt")
+    except ValueError as exc:
+        return f"线上快照 {exc}"
+    raw_report = payload.get("reportDatetime")
+    if not raw_report:
+        regions = payload.get("regions") or []
+        raw_report = next(
+            (r.get("reportDatetime") for r in regions if r.get("reportDatetime")), None
+        )
+    if not raw_report:
+        raw_report = payload.get("generatedAt")
+    try:
+        report_date = jst_date(raw_report, "reportDatetime")
+    except ValueError as exc:
+        return f"线上快照 {exc}"
+    # 2026-11-04:JMA 发布日与抓取日不是同一天 = 混装/过期构建(手动部署把 11-03 的
+    # Snapshot 放在 11-04 的页面,页面却标成「今天」)。这两个日期必须一致。
+    if report_date != generated_date:
+        return f"线上快照日期混装: 发布 {report_date} != 抓取 {generated_date}"
+    # 当天 06:10 的刷新跑完前,昨天那份仍是正常在线的;06:40 之后必须已经是今天。
+    if now_jst.time() >= DEADLINE:
+        if report_date != now_jst.date():
+            return f"线上快照过期: 发布 {report_date} 不是今天(已过 06:40 JST)"
+    elif report_date not in (now_jst.date(), now_jst.date() - dt.timedelta(days=1)):
+        return f"线上快照过期: 发布 {report_date}(今天 {now_jst.date()})"
+    return None
+
+
 def check() -> str | None:
     try:
         state = json.loads(STATE.read_text(encoding="utf-8"))
@@ -135,7 +183,11 @@ def check() -> str | None:
         if any((b - a).days != 1 for a, b in zip(axis, axis[1:])):
             return f"{rid} week 日期不连续"
         if axis[-1] < base + dt.timedelta(days=6):
-            return f"{rid} week 覆盖不足（到 {axis[-1]}）"
+            return f"{rid} week 覆盖不足(到 {axis[-1]})"
+    # 2026-11-04:线上自己的字节说了算 —— 即使 state.json 与陈旧快照一致,也要报错。
+    stale = freshness_error(payload, now_jst)
+    if stale:
+        return stale
     # 2026-11-03:长缓存会把「部署切换窗口里填进来的旧正文」钉在新版 URL 上(当天两次
     # 事故都是这一类:?v=a1513657 钉住 11-02 快照,裸路径条目钉了 29.6h 且 purge 权限
     # 为 0)。判据:不得 immutable、不得 ≥1 天、必须每次校验;zone 的 browser cache TTL

@@ -668,3 +668,26 @@
   1. **VPS 日更的 checkout 已经分叉**:`vps-jp:/home/ubuntu/panout-japan` 停在 `82494ba`(11-03 15:09)那条线上,本地后来推的四语/正文改动它一条都没有;它今天 06:12 JST 的日更用旧源码重建并部署了**旧的单语站**(`8ef320f6`),随后自己在 `git push origin main` 上被拒(`state.json` 的 `last_error`),所以线上那半天其实是被 06:17 的一次本地手动部署盖回来的。若放着不管,次日 06:10 会再盖一次。处理:`ssh vps-jp` → `git fetch origin && git rebase origin/main`(把本地那条 weather 提交 918e5e3 rebase 到 46123b2 之上成为 729824f),再从 VPS 推回 origin(修好推送)。预检:在 VPS 上 `set -a && . ~/.config/panout/weather.env` 后 `python3 src/build.py` → `fonts: 13 files, 2788 KB`、`pages: 28`,即明天 06:10 会构建出修好的四语站(不 source 这个 env 的话字体源路径缺失、fonts SKIPPED,而 `refresh_weather.py` 的 `verify_build` 会以「CSS 无 @font-face」拦下部署)。
   2. **天气快照落后一天**:11:59 那次部署带的是本地 11-03 快照,`/weather/` 的「今天」显示 11月3日。把 VPS 已经抓好的 11-04 快照(`generatedAt 2026-11-03T21:10:23Z`)合并回本地后重建并再部署一次:生产 `1a619fe4-2877-4875-91d5-ec41bcd92494`,CSS `ceb75f3e`,线上 `/weather/` dateline 回到 11月4日、47 行、`data.js?v=7f9b3620`。
 - 唯一 next:盯 2026-11-05 06:10 JST 的天气日更 run —— checkout 已同步到 main,它的构建应是 28 页四语站、推送应成功。
+
+## 2026-11-04 · 天气日更与「今天」口径收口(根治)
+
+用户追加要求:上一轮顺带发现的两件事要完全根治,尤其「天气快照时间搞错」,要做到以后每天都能正确抓取。逐条查证后按四处下手:
+
+- **日更流水线开场先同步 checkout**(`tools/refresh_weather.py::sync_checkout`):`git fetch origin` → HEAD 与 `origin/main` 相同即跳过 / HEAD 是祖先则 `merge --ff-only` / 否则 `pull --rebase --autostash`;有不落地的冲突就在**部署之前**中止;若这次同步改动了 `refresh_weather.py` 自身则 `os.execv` 重跑新代码。新增 `--no-sync`(离线/一次性跑用)。这条直接消灭「VPS 落后 → 用旧源码重建并覆盖线上 → 自己的 data 提交被 origin 拒」的整条链。
+- **快照鲜度门**:`src/build.py` 增加 `weather: report <JMA 发表日>, snapshot <抓取日>, built <今天>` 一行,快照不是今天 JST 时追加 `— STALE: run git pull ...`;环境变量 `PANOUT_REQUIRE_TODAY_WEATHER=1` 时直接 `SystemExit`(流水线与手工发布路径都设它)。流水线的 `verify_build` 再对**构建产物**的 `regions[0].reportDatetime` 复核一次。
+- **页面不再把昨天叫「今天」**(`src/weather/app.js`):`今日/明日/昨日` 由「数据自身日期 vs 访客的 JST 今天」推出(`jstDay()` + `relativeDay()`),不符时显示真实日期;快照不是今天时在 `.editorial-stale` 里写明「本站是 X 日(周Y)发布的那份、今天(Z)的还没取到」(`--danger` 色);周条首格、日切换按钮同源。静态(无 JS)版:`w.doc.fact.report`「预报基准日」事实 + `{stale_note}`(同一句话,构建期 `{d}`/`{t}` 由 `day_text()` 填)。
+- **手工发布单一入口**(新 `tools/deploy_site.py`):① `HEAD == origin/main`(否则给「先 pull」或「先 push」的具体命令)且工作树干净;② 以 `PANOUT_REQUIRE_TODAY_WEATHER=1` 构建;③ 产物预检(28 页、`@font-face ≥ 10` 且无 `?v=0`、快照是今天、`/weather/` 有带戳的 data.js);④ wrangler 部署并解析 deployment id;⑤ 线上按字节复核 `app.css?v=`(sha1)、`data.js?v=`+`generatedAt`、7 条路由 200,最多 12×10s。`--skip-build` / `--allow-stale-weather` / `--no-verify-live` 三个开关。
+- **外部探针改看线上自己的字节**(`deploy/vps/panout_weather_watch.py`,新增 `freshness_error()`):线上快照的 JMA 发表日必须等于它自己的抓取日(混装即报),06:40 JST 之后必须是今天(之前今天或昨天都合法,因为当天刷新可能还没跑)。旧探针拿 `state.json` 当基准,而 11-04 那次正是「两边一样旧」—— 线上说 11-03、state 也说 11-03,监控一路绿灯。
+
+### 验证(本地实测)
+
+- 过期快照夹具:把 `src/weather/data.js` 里所有 ISO 日期整体前移一天(565 处),构建 → `weather: report 2026-11-03, snapshot 2026-11-03, built 2026-11-04 — STALE ...`;静态页出现 `weather-stale` 与「予報の基準日 2026-11-03」;四语实测日按钮 = 昨日/今日(`Yesterday`/`Today`、`昨天`/`今天`)、周条首格 = 昨日、`.editorial-stale` 文案两处日期都填对(`split/join` 修掉 `replace` 只换首例的毛病)、颜色 `rgb(205,85,69)`;`PANOUT_REQUIRE_TODAY_WEATHER=1` → rc 1 且拒绝文案正确;`deploy_site.preflight(allow_stale=False)` → 拒绝,`allow_stale=True` → 放行并打警告。
+- 恢复新鲜快照重建:四语日按钮 = 今日/明日(`Today`/`Tomorrow`)、无 stale 提示、`予報の基準日 2026-11-04`。
+- `.private/verify_local.py`(端口 8907 被上一轮遗留的 http.server 占着,用一次性 runner 换空闲端口跑)PASS 222 / FAIL 1 —— 唯一 FAIL 仍是三站闸里 `find` 站的 `BreadcrumbList`,别的仓。
+
+### 顺带修的既有缺陷(天气页语言)
+
+- `/zh-Hans/` 与 `/zh-Hant/` 的天气页整块交互视图此前渲染成**日语**:`DOMContentLoaded` 里把原始 `<html lang>`(如 `zh-Hans`)直接写回 `lang` 变量,而词表只有 ja/zh/en 三套 → `T['zh-Hans']` 不存在 → 回落 ja。现按站点惯例读 `data-view-lang`(zh-Hant 页另用 inline module 把 `app/hant.js` 的 `toHant` 交给经典脚本的 app.js,首次渲染后表到了再重画一次)。`src/view_i18n.py` 的裁剪源加入 `src/weather/app.js`,`python tools/gen_view_hant.py` 重生成(457→460 字、167→173 词条)。四语实测:ja 今日/明日/東京都/関東、zh-Hans 今天/明天/东京都/关东、zh-Hant 今天/明天/東京都/關東(「多雲」「來源與閱讀方式」也繁体)、en Today/Tomorrow。顺手删掉 `legend()` 里重复的 ja/zh/en 天气词(改为复用 `conditionName()`,zh-Hant 才不会落回英文)。
+- **已知未修**:`冲绳县` → `衝繩縣`(正确为 `沖繩縣`)。这不是本轮引入的:构建期静态表格(47 行)现在就是 `衝繩縣`,运行时表格与它一致。根因是 `src/hant.py` 按 OpenCC **s2t/s2tw** 字符+TW 变体转字,缺 TWPhrases 词组层;本机 `opencc.OpenCC('s2twp')` 对 47 个县名只有「冲绳县」这一处不同。要不要切到 s2twp(会连带改变词汇层,如 软件→軟體)是文案口径决定,记在 README 待拍板。
+
+- 唯一 next:06:10 JST 的日更 run 应「开场同步 → 抓取 → 构建(28 页四语)→ 部署 → 线上校验 → 双远端推送」全绿;若快照不是当天,现在会在构建/探针两处被拦下而不是悄悄上线。

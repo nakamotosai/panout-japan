@@ -8,19 +8,31 @@
   var regions = DATA && DATA.regions || [];
   var byId = Object.fromEntries(regions.map(function (r) { return [r.id, r]; }));
   var saved = null;
-  // 语言来自 <html lang>(构建期写死,四语各一份页面);本视图只有 ja/zh/en 三套词表,
-  // 所以 zh-Hans / zh-Hant 都按 zh 取词。
+  // 语言:构建期写死的 <html data-view-lang> 是权威(shell 的章节视图用同一处),zh-Hans 与
+  // zh-Hant 共用 zh 词表,繁体由 app/hant.js 的 s2tw 表在运行时转出。
+  // 2026-11-04 修:曾经在 DOMContentLoaded 里把原始 lang 直接写回 lang 变量,
+  // T["zh-Hans"] 不存在 → /zh-Hans/ 与 /zh-Hant/ 的天气页整块回落到日语。
+  var rawLang = String(document.documentElement.dataset.viewLang ||
+                       document.documentElement.lang || 'ja');
+  var hant = /^zh-hant/i.test(rawLang);
   var lang = (function (raw) {
     raw = String(raw || '').toLowerCase();
     if (raw.indexOf('zh') === 0) return 'zh';
     if (raw.indexOf('en') === 0) return 'en';
     return 'ja';
-  })(document.documentElement.lang);
+  })(rawLang);
+  // 繁体只在「中文原文」上过转换表:日文回退串(如 nameJa)原样保留,免得把 関 之类的
+  // 日本汉字当成简体字改写。
+  function zh(s) {
+    return hant && typeof s === 'string' && typeof window.__pjToHant === 'function'
+      ? window.__pjToHant(s) : s;
+  }
   var state = { selected: '130000', day: 0, pickerOpen: false, filter: '' };
   var T = {
     ja: {
       title: '日本の天気', eyebrow: '天気 / 全国47都道府県', choose: '都道府県を選ぶ', chooseHint: '地図または一覧から選べます',
-      today: '今日', tomorrow: '明日', high: '最高', low: '最低', rain: '降水確率', issued: '発表', retrieved: '取得',
+      today: '今日', tomorrow: '明日', yesterday: '昨日', high: '最高', low: '最低', rain: '降水確率', issued: '発表', retrieved: '取得',
+      stale: 'このお知らせは {d} の発表分です。本日({t})の分はまだ取得できていないため、「今日」はこの日を指します。',
       week: 'これから7日間', weekSub: '最高 / 最低気温と降水確率', places: '47都道府県', placesSub: '一覧から選ぶ',
       confidence: '信頼度', original: '気象庁原文', sourceLink: '発表元の予報 ↗', details: '出典と見方',
       note: '気象庁の予報を都道府県ごとに整列した天気図です。気温は予報値で、現在の観測値ではありません。',
@@ -32,7 +44,8 @@
     },
     zh: {
       title: '日本天气', eyebrow: '天气 / 全国 47 都道府县', choose: '选择都道府县', chooseHint: '可点地图或从列表选择',
-      today: '今天', tomorrow: '明天', high: '最高', low: '最低', rain: '降水概率', issued: '发布', retrieved: '获取',
+      today: '今天', tomorrow: '明天', yesterday: '昨天', high: '最高', low: '最低', rain: '降水概率', issued: '发布', retrieved: '获取',
+      stale: '本站的气象厅预报是 {d} 发布的那一份;今天({t})的预报尚未取到,所以页面里的「今天」指的是 {d}。',
       week: '未来 7 天', weekSub: '最高 / 最低气温与降水概率', places: '47 个都道府县', placesSub: '从列表选择',
       confidence: '可信度', original: '气象厅日文原文', sourceLink: '查看官方预报 ↗', details: '来源与阅读方式',
       note: '本页把日本气象厅的预报按都道府县整理成天气图。气温为预报值，不是实时观测。',
@@ -44,7 +57,8 @@
     },
     en: {
       title: 'Japan weather', eyebrow: 'WEATHER / 47 PREFECTURES', choose: 'Choose a prefecture', chooseHint: 'Select on the map or from the list',
-      today: 'Today', tomorrow: 'Tomorrow', high: 'High', low: 'Low', rain: 'Precipitation', issued: 'Issued', retrieved: 'Retrieved',
+      today: 'Today', tomorrow: 'Tomorrow', yesterday: 'Yesterday', high: 'High', low: 'Low', rain: 'Precipitation', issued: 'Issued', retrieved: 'Retrieved',
+      stale: 'This page carries JMA’s {d} issue. Today’s ({t}) forecast has not been retrieved yet, so “Today” here means {d}.',
       week: 'The next seven days', weekSub: 'High / low temperatures and precipitation probability', places: 'All 47 prefectures', placesSub: 'Choose from the list',
       confidence: 'Reliability', original: 'Original Japanese from JMA', sourceLink: 'Official forecast ↗', details: 'Sources and how to read this',
       note: 'Japan Meteorological Agency forecasts, arranged by prefecture on one map. Temperatures are forecast values, not live observations.',
@@ -55,9 +69,9 @@
       search: 'Search by place', searchPlaceholder: 'Tokyo / 東京 / 北海道…', groupLabels: { 北海道:'Hokkaido', 東北:'Tohoku', 関東:'Kanto', 中部:'Chubu', 近畿:'Kansai', 中国:'Chugoku', 四国:'Shikoku', 九州:'Kyushu', 沖縄:'Okinawa' }
     }
   };
-  var tr = function (k) { return (T[lang] || T.ja)[k] || T.ja[k] || k; };
+  var tr = function (k) { return zh((T[lang] || T.ja)[k] || T.ja[k] || k); };
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
-  function region(r) { return lang === 'zh' ? (r.nameZh || r.nameJa || r.name) : lang === 'en' ? (r.nameEn || r.name) : (r.nameJa || r.name); }
+  function region(r) { return zh(lang === 'zh' ? (r.nameZh || r.nameJa || r.name) : lang === 'en' ? (r.nameEn || r.name) : (r.nameJa || r.name)); }
   function area(r) { return (state.day === 0 ? (r.areaName || r.sourceAreaName || r.office) : (r.weekSourceWeatherAreaName || r.areaName || '')) + ' / ' + (state.day === 0 ? (r.todaySourceAreaName || '') : (r.weekSourceAreaName || '')); }
   // JMA weekly axis drifts with the issue time: the 17:00 product covers "tomorrow + 6",
   // but the 06:10 daily refresh still holds the previous day's 17:00 copy, so week[0] is
@@ -66,6 +80,34 @@
     var p = String(iso || '').split('-');
     if (p.length !== 3) return null;
     return new Date(Date.UTC(+p[0], +p[1] - 1, +p[2]) + n * 86400000).toISOString().slice(0, 10);
+  }
+  // 表示は常に「データの日付 vs 今日(JST)」。ここを固定の「今日/明日」にすると、古い
+  // スナップショットを配った日に 11-03 の数値を「今日」として出してしまう(2026-11-04)。
+  function jstDay(offset) {
+    var parts = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Tokyo', year: 'numeric', month: '2-digit', day: '2-digit'
+    }).formatToParts(new Date(Date.now() + (offset || 0) * 86400000));
+    var o = {};
+    parts.forEach(function (p) { o[p.type] = p.value; });
+    return o.year + '-' + o.month + '-' + o.day;
+  }
+  function relativeDay(iso) {
+    if (!iso) return null;
+    if (iso === jstDay(0)) return 'today';
+    if (iso === jstDay(1)) return 'tomorrow';
+    if (iso === jstDay(-1)) return 'yesterday';
+    return null;
+  }
+  function dayLabel(iso) {
+    var rel = relativeDay(iso);
+    return rel ? tr(rel) : (iso ? dateFmt(iso, true) : tr('noData'));
+  }
+  function staleNote(r) {
+    var date = dayDate(r, 0);
+    if (!date || date === jstDay(0)) return '';
+    // replace() 只换第一处,{d} 在文案里可能出现两次 —— 用 split/join 全换。
+    var text = tr('stale').split('{d}').join(dateFmt(date, true)).split('{t}').join(dateFmt(jstDay(0), true));
+    return '<p class="editorial-stale micro" role="status">' + esc(text) + '</p>';
   }
   function weekEntry(r, day) {
     if (day <= 0 || !r.week) return null;
@@ -95,23 +137,24 @@
   function dayDate(r, day) { if (day === 0) return r.reportDatetime ? r.reportDatetime.slice(0, 10) : (r.week[0] || {}).date; var w = weekEntry(r, day); return w && w.date; }
   function temp(v) { return v == null || v === '' ? '<span aria-label="'+esc(tr('noData'))+'">—</span>' : esc(v)+'<span>°</span>'; }
   function pct(v) { return v == null ? '—' : esc(v)+'%'; }
+  function localeOf() { return hant ? 'zh-TW' : lang === 'zh' ? 'zh-CN' : lang === 'en' ? 'en-GB' : 'ja-JP'; }
   function dateFmt(date, weekday) {
     var d = new Date(date + (String(date).length === 10 ? 'T12:00:00+09:00' : ''));
-    return new Intl.DateTimeFormat(lang === 'zh' ? 'zh-CN' : lang === 'en' ? 'en-GB' : 'ja-JP', { timeZone: 'Asia/Tokyo', month: 'short', day: 'numeric', weekday: weekday ? 'short' : undefined }).format(d);
+    return new Intl.DateTimeFormat(localeOf(), { timeZone: 'Asia/Tokyo', month: 'short', day: 'numeric', weekday: weekday ? 'short' : undefined }).format(d);
   }
   function timestamp(value) {
     if (!value) return '—';
-    return new Intl.DateTimeFormat(lang === 'zh' ? 'zh-CN' : lang === 'en' ? 'en-GB' : 'ja-JP', { timeZone: 'Asia/Tokyo', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(value)) + ' JST';
+    return new Intl.DateTimeFormat(localeOf(), { timeZone: 'Asia/Tokyo', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(value)) + ' JST';
   }
   function popPeriod(r) {
     if (state.day !== 0 || !r.popPeriod || !r.popPeriod.start) return '';
     return '<span class="micro">' + esc(r.popPeriod.start.slice(11, 16)) + '–' + esc(r.popPeriod.end.slice(11, 16)) + ' JST</span>';
   }
-  function daySwitch() {
-    return '<div class="day-control" role="group" aria-label="'+esc(tr('weekSub'))+'"><button type="button" data-day="0" aria-pressed="'+(state.day===0)+'">'+esc(tr('today'))+'</button><button type="button" data-day="1" aria-pressed="'+(state.day===1)+'">'+esc(tr('tomorrow'))+'</button></div>';
+  function daySwitch(r) {
+    return '<div class="day-control" role="group" aria-label="'+esc(tr('weekSub'))+'"><button type="button" data-day="0" aria-pressed="'+(state.day===0)+'">'+esc(dayLabel(dayDate(r,0)))+'</button><button type="button" data-day="1" aria-pressed="'+(state.day===1)+'">'+esc(dayLabel(dayDate(r,1)))+'</button></div>';
   }
   function groupOf(r) { return r.displayRegionJa || r.regionJa || r.region || ''; }
-  function groupLabel(g) { return (T[lang] || T.ja).groupLabels[g] || g; }
+  function groupLabel(g) { return zh((T[lang] || T.ja).groupLabels[g] || g); }
   function geoFeatures() { return GEO && (GEO.features || GEO.prefectures || []) || []; }
   function geoCenter(f) { return f.center || f.centroid || [f.bbox[0]+f.bbox[2]/2, f.bbox[1]+f.bbox[3]/2]; }
   function geoBBox(f) { return f.bbox || f.bounds || [0,0,1,1]; }
@@ -183,8 +226,9 @@
     var aria = esc(region(r)+', '+cityLabel+', '+conditionName(weatherCode(r,state.day))+', '+tr('mapInstruction'));
     return '<div class="okinawa-inset'+(selected?' is-selected':'')+'"><svg class="okinawa-map" viewBox="'+vb+'" role="group" aria-label="'+esc(region(r))+'"><path class="okinawa-land'+(selected?' selected':'')+'" d="'+esc(main)+'" aria-hidden="true"/><path class="pin-link" d="M'+pinX+' '+pinY+'L'+targetX.toFixed(1)+' '+targetY.toFixed(1)+'" aria-hidden="true"/><g class="okinawa-pin" data-map-id="471000" role="button" tabindex="0" aria-pressed="'+selected+'" aria-label="'+aria+'"><circle class="pin-hit" cx="'+pinX+'" cy="'+pinY+'" r="4"/><circle class="pin-disc" cx="'+pinX+'" cy="'+pinY+'" r="'+pinR+'"/><g class="map-symbol" transform="translate('+pinX+' '+pinY+') scale(.16) translate(-16 -16)">'+svgGlyph(weatherCode(r,state.day))+'</g></g>'+(selected?'<text class="okinawa-label" x="'+pinX+'" y="'+(pinY+7)+'" aria-hidden="true">'+esc(cityLabel)+'</text>':'')+'</svg><button type="button" class="okinawa-inset-button" data-map-id="471000" aria-pressed="'+selected+'" aria-label="'+aria+'">'+esc(label)+'</button></div>';
   }
-  function conditionName(code) { var m = { ja: { clear: '晴れ', cloud: 'くもり', rain: '雨', snow: '雪', thunder: '雷雨' }, zh: { clear: '晴', cloud: '多云', rain: '雨', snow: '雪', thunder: '雷雨' }, en: { clear: 'Clear', cloud: 'Cloud', rain: 'Rain', snow: 'Snow', thunder: 'Thunder' } }; return (m[lang] || m.ja)[kind(code)]; }
-  function legend() { return '<div class="map-legend" aria-label="Weather legend">'+[['100','Clear'],['200','Cloud'],['300','Rain'],['400','Snow']].map(function (a) { return '<span>'+icon(a[0])+esc(lang==='ja'?({clear:'晴れ',cloud:'くもり',rain:'雨',snow:'雪'}[kind(a[0])]):lang==='zh'?({clear:'晴',cloud:'多云',rain:'雨',snow:'雪'}[kind(a[0])]):a[1])+'</span>'; }).join('')+'</div>'; }
+  function conditionName(code) { var m = { ja: { clear: '晴れ', cloud: 'くもり', rain: '雨', snow: '雪', thunder: '雷雨' }, zh: { clear: '晴', cloud: '多云', rain: '雨', snow: '雪', thunder: '雷雨' }, en: { clear: 'Clear', cloud: 'Cloud', rain: 'Rain', snow: 'Snow', thunder: 'Thunder' } }; return zh((m[lang] || m.ja)[kind(code)]); }
+  // 凡例的四种天气就该是同一个词源(以前在这里抄了一遍 ja/zh/en 三套词,zh-Hant 会落回英文)。
+  function legend() { return '<div class="map-legend" aria-label="Weather legend">'+['100','200','300','400'].map(function (code) { return '<span>'+icon(code)+esc(conditionName(code))+'</span>'; }).join('')+'</div>'; }
 
   function picker(r) {
     var groups = [], seen = {};
@@ -198,7 +242,7 @@
   }
   function editorial(r) {
     var p = pop(r, state.day);
-    var head = '<div class="editorial-head"><div class="editorial-dateline">'+esc(dateFmt(dayDate(r,state.day),true))+' · '+esc(groupLabel(groupOf(r)))+'</div>'+daySwitch()+'</div>';
+    var head = '<div class="editorial-head"><div class="editorial-dateline">'+esc(dateFmt(dayDate(r,state.day),true))+' · '+esc(groupLabel(groupOf(r)))+'</div>'+staleNote(r)+daySwitch(r)+'</div>';
     var identity = '<div class="editorial-identity"><h2 class="editorial-place">'+esc(region(r))+'</h2><p class="editorial-en">'+esc(r.nameEn||r.name)+'</p></div>';
     var weather = '<div class="editorial-weather"><div class="editorial-condition">'+icon(weatherCode(r,state.day))+'<span>'+esc(conditionName(weatherCode(r,state.day)))+'</span></div><div class="editorial-temps"><div class="temperature"><span>'+esc(tr('high'))+'</span><strong>'+temp(high(r,state.day))+'</strong></div><div class="temperature low"><span>'+esc(tr('low'))+'</span><strong>'+temp(low(r,state.day))+'</strong></div></div></div>';
     var details = '<div class="editorial-details"><p class="editorial-rain">'+esc(tr('rain'))+' <strong>'+pct(p)+'</strong> '+popPeriod(r)+'</p></div>';
@@ -210,7 +254,7 @@
   function week(r) {
     return '<section class="weather-section" aria-labelledby="week-title"><div class="section-heading"><h2 id="week-title">'+esc(tr('week'))+'</h2><p>'+esc(tr('weekSub'))+'</p></div><div class="week-scroll"><div class="week-grid">'+[0,1,2,3,4,5,6].map(function (i) {
       var d = i === 0 ? { date: dayDate(r, 0) } : (weekEntry(r, i) || {});
-      return '<article class="week-day'+(i===state.day?' is-selected':'')+'"><time class="week-date" datetime="'+esc(d.date)+'">'+esc(i===0?tr('today'):dateFmt(d.date,true))+'</time>'+icon(weatherCode(r,i))+'<p class="week-temp">'+esc(high(r,i)==null?'—':high(r,i)+'°')+'<span>'+esc(low(r,i)==null?'—':low(r,i)+'°')+'</span></p><p class="week-rain">'+pct(pop(r,i))+'</p>'+(i>0 && d.reliability?'<p class="week-reliability">'+esc(tr('confidence'))+' '+esc(d.reliability)+'</p>':'')+'</article>';
+      return '<article class="week-day'+(i===state.day?' is-selected':'')+'"><time class="week-date" datetime="'+esc(d.date)+'">'+esc(i===0?dayLabel(d.date):dateFmt(d.date,true))+'</time>'+icon(weatherCode(r,i))+'<p class="week-temp">'+esc(high(r,i)==null?'—':high(r,i)+'°')+'<span>'+esc(low(r,i)==null?'—':low(r,i)+'°')+'</span></p><p class="week-rain">'+pct(pop(r,i))+'</p>'+(i>0 && d.reliability?'<p class="week-reliability">'+esc(tr('confidence'))+' '+esc(d.reliability)+'</p>':'')+'</article>';
     }).join('')+'</div></div></section>';
   }
   function directory(r) {
@@ -260,5 +304,7 @@
     if (map && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); choose(map.dataset.mapId, 'map'); return; }
     if (e.key === 'Escape') { openPicker(false); }
   });
-  window.addEventListener('DOMContentLoaded', function () { lang = document.documentElement.lang || 'ja'; render(); });
+  window.addEventListener('DOMContentLoaded', function () { render(); });
+  // 繁体表(app/hant.js)比 app.js 后到时要重画一次:首屏先按简体,表到了再换繁体。
+  window.addEventListener('pj:hant', function () { if (hant) render(); });
 })();

@@ -57,6 +57,15 @@ manual refresh.
 
 ## What the job checks
 
+0. **Sync first.** Before anything is fetched, the run puts its working tree on
+   `origin/main` (`git fetch`, then fast-forward, else `pull --rebase --autostash`)
+   and aborts if the tree has conflicts — before it can deploy. This checkout is a
+   second copy of the repo, and on 2026-11-04 it had drifted back to the 11-03
+   commit: the 06:12 run rebuilt the *old* single-language site, deployed it over
+   the new one, and could not push its own data commit (`state.json`
+   `last_error: git push origin main`). If the sync changes
+   `tools/refresh_weather.py` itself, the run re-execs so the new code is what runs.
+   `--no-sync` skips this for offline or throwaway runs.
 1. 95 JMA resources: `area.json`, 47 short/weekly forecasts, 47 overviews.
 2. All 47 short-range `reportDatetime` dates are today in JST.
 3. 47 unique regions match the 47 features in `geo.js`; Hokkaido `016000`,
@@ -65,9 +74,15 @@ manual refresh.
    valid precipitation period; required metadata.
 5. Completeness floors: at most 7 missing `todayHigh`, at most 7 missing
    `todayPop`, at most 2 empty overviews.
-6. Full build: 6 pages, 47 no-JS weather rows, the current `data.js?v=` stamp, font
-   faces present (`@font-face` count and no `?v=0`, so a font build that silently fell
-   back to the stub cannot deploy a fontless site), no unresolved placeholders.
+6. Full build: 7 routes × 4 languages, 47 no-JS weather rows, the current `data.js?v=`
+   stamp, font faces present (`@font-face` count and no `?v=0`, so a font build that
+   silently fell back to the stub cannot deploy a fontless site), no unresolved
+   placeholders. The build runs with `PANOUT_REQUIRE_TODAY_WEATHER=1`, so `src/build.py`
+   itself refuses to render a site whose weather snapshot is not today's JST; and the
+   check re-reads the built `data.js` and requires `regions[0].reportDatetime` to be
+   today. Both gates exist because on 2026-11-04 a hand-run deploy shipped a build
+   carrying the previous day's snapshot, and `/weather/` spent five hours calling
+   11-03 "today".
 7. Deployment artifact first: the Pages URL `wrangler` just printed must already
    serve the new `generatedAt` (3 tries, 5s apart). The artifact is authoritative
    the moment the upload returns, so a failure here is a real defect.
@@ -172,10 +187,23 @@ Automated data checks do not see the rendered dates. After a forced refresh, ope
 - The seven `.week-day` cards start with `今日` + the report date, then six
   consecutive dates; today uses `today`/`pop`, tomorrow and later use
   `week[0..5]`.
+- `.editorial-stale` is **absent**: it appears only when the snapshot's JMA issue
+  date is not the viewer's today, and it names both dates. The day buttons are
+  derived from the data's own dates (`今日`/`明日`/`昨日`/a date), so a stale
+  snapshot can no longer borrow the word "today".
 - Tokyo shows the map, high/low, precipitation and the 47-row table.
 
 This gate caught the 2026-10-26 off-by-one where `week[0]` (tomorrow) was rendered
 as today. Do not treat the data-level validation as proof of the rendered date.
+
+**Never deploy by hand with a bare `wrangler pages deploy`.** Use
+`python tools/deploy_site.py`: it refuses a HEAD that is not `origin/main` (the 06:10
+job builds from `origin/main`, so anything else is reverted at its next run), refuses
+a weather snapshot that is not today's (unless `--allow-stale-weather`), and verifies
+the CSS bytes, the weather version and all seven routes on production afterwards.
+On 2026-11-04 a bare `wrangler` deploy from a checkout that had not pulled the
+pipeline's data commit is exactly how production spent five hours serving the
+previous day's forecast.
 
 ## Monitoring
 
@@ -192,6 +220,14 @@ Kuma monitor `panout-weather-refresh` (id 54) is fed by two independent paths:
   JMA's 17:00 product covers "tomorrow + 6" while the 06:10 refresh holds the
   previous day's copy, so `week[0]` is often today; the front end aligns by
   date, not by offset), and the revalidating cache header.
+  Since 2026-11-04 it also judges **production freshness from production's own
+  bytes**, not from `state.json` (`freshness_error()`): the served snapshot's JMA
+  issue date must equal its own retrieval date, and from 06:40 JST onwards it must be
+  today (before that, today or yesterday is legitimate because the day's refresh may
+  not have run yet). The old probe compared production against `state.json`, so on
+  2026-11-04 — when a hand-run deploy replaced a good snapshot with the previous
+  day's — both sides were stale in exactly the same way and the monitor stayed green
+  while `/weather/` called 11-03 "today".
 
 Registration: `/home/ubuntu/watchdog/registry.json` item
 `panout-japan.weather`, cron `panout-weather-watch`, heartbeat

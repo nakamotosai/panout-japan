@@ -34,7 +34,9 @@ import hant  # noqa: E402
 from hant_data import MAXLEN, PHRASES, STCHAR, TWVAR  # noqa: E402
 
 MODULE = ROOT / "app" / "hant.js"
-SOURCES = [SRC / "shell.js"] + sorted((ROOT / "app").glob("*/view.js"))
+# 章节视图(app/*/view.js)与天气运行时(src/weather/app.js):两者都在浏览器里
+# 用这张表把简体词条转成繁体,所以它们的文案必须一起进裁剪集。
+SOURCES = [SRC / "shell.js", SRC / "weather" / "app.js"] + sorted((ROOT / "app").glob("*/view.js"))
 
 # 单引号/双引号/模板字符串的字面量内容。模板里的 ${...} 会一起被切出来,但域名只看
 # 子串,多出来的表达式片段的字也属于「章节视图的文案字符集」,按字符集裁掉即可。

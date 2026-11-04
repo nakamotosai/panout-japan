@@ -83,6 +83,48 @@ def run(cmd: list[str], timeout: int = 600, env: dict | None = None) -> subproce
     return proc
 
 
+def git(*args: str, timeout: int = 180) -> str:
+    proc = subprocess.run(["git", *args], cwd=ROOT, text=True, stdout=subprocess.PIPE,
+                          stderr=subprocess.STDOUT, timeout=timeout)
+    if proc.returncode != 0:
+        raise RuntimeError(f"git {' '.join(args)} failed ({proc.returncode}): {proc.stdout.strip()[:300]}")
+    return proc.stdout.strip()
+
+
+def sync_checkout() -> None:
+    """Put this working tree on origin/main before anything is built.
+
+    2026-11-04: this checkout (the VPS copy) had drifted back to the 11-03 commit
+    while the four-language work existed only on the other machine's main. The
+    06:10 run then rebuilt the *old* site, deployed it over the new one, and could
+    not push its own data commit. Syncing first — and aborting before the deploy
+    when the tree cannot be reconciled — keeps the pipeline, production and the
+    commits on one tree.
+    """
+    if not (ROOT / ".git").exists():
+        log("Not a git checkout; skipping the origin/main sync")
+        return
+    script = ROOT / "tools" / "refresh_weather.py"
+    before = script.read_bytes()
+    git("fetch", "origin", "--prune")
+    head, remote = git("rev-parse", "HEAD"), git("rev-parse", "origin/main")
+    if head == remote:
+        log(f"Checkout already on origin/main ({head[:9]})")
+    elif subprocess.run(["git", "merge-base", "--is-ancestor", head, remote], cwd=ROOT).returncode == 0:
+        git("merge", "--ff-only", "origin/main")
+        log(f"Fast-forwarded {head[:9]} -> {git('rev-parse', 'HEAD')[:9]}")
+    else:
+        log(f"Local commits are not on origin/main ({head[:9]} vs {remote[:9]}); rebasing onto it")
+        git("pull", "--rebase", "--autostash", "origin", "main")
+    conflicts = [line for line in git("status", "--porcelain", "--untracked-files=no").splitlines()
+                 if line[:2].strip() in {"UU", "AA", "DD", "AU", "UA", "DU", "UD"}]
+    if conflicts:
+        raise RuntimeError("Checkout has unresolved conflicts after the sync: " + "; ".join(conflicts))
+    if script.read_bytes() != before:
+        log("refresh_weather.py changed in the sync; restarting with the new code")
+        os.execv(sys.executable, [sys.executable, str(Path(__file__).resolve()), *sys.argv[1:]])
+
+
 def parse_js_text(text: str, namespace: str) -> dict:
     prefix, suffix = f"window.{namespace}=", ";\n"
     if not text.startswith(prefix) or not text.endswith(suffix):
@@ -129,6 +171,13 @@ def verify_build(data: dict, report: dict) -> None:
     built = W.parse_js_object(SITE / "assets/weather/data.js", "WEATHER_DATA")
     if built["generatedAt"] != data["generatedAt"] or len(built["regions"]) != 47:
         raise RuntimeError("Built data.js does not match the validated snapshot")
+    # 2026-11-04:配ったビルドの天気が「今日のもの」であることを、デプロイの手前で確かめる。
+    # 手元の古い data.js を使ったビルドは、页面が昨日の数値を「今日」として出す。
+    report_day = str((built["regions"] or [{}])[0].get("reportDatetime", ""))[:10]
+    if report_day != today_jst():
+        raise RuntimeError(
+            f"Built weather snapshot is not today's: reportDatetime {report_day or '?'} != {today_jst()}"
+        )
     log(f"Build verified: 6 pages, 47 rows, weather v{version}, {report['regions']} regions")
 
 
@@ -343,7 +392,13 @@ def main() -> int:
     parser.add_argument("--no-commit", action="store_true", help="do not commit or push")
     parser.add_argument("--force", action="store_true", help="ignore today's success state")
     parser.add_argument("--reuse-cache", action="store_true", help="reuse cached JMA responses (test only)")
+    parser.add_argument("--no-sync", action="store_true",
+                        help="skip the origin/main sync (offline or throwaway runs)")
     args = parser.parse_args()
+
+    # 先把这棵树拉到 origin/main:这是流水线与生产共用同一份源码的前提(2026-11-04)。
+    if not args.no_sync and (ROOT / ".git").exists():
+        sync_checkout()
 
     state = load_state()
     if not args.force and not args.dry_run and state.get("last_success_date") == today_jst():
@@ -366,7 +421,9 @@ def main() -> int:
 
         W.write_data_js(data, DATA)
         W.write_notes(data, report, manifest, NOTES)
-        run([sys.executable, "src/build.py"], timeout=600)
+        # ビルド自身にも同じ鮮度の門を立てる(古いスナップショットのまま「成功」するビルドを止める)。
+        run([sys.executable, "src/build.py"], timeout=600,
+            env={**os.environ, "PANOUT_REQUIRE_TODAY_WEATHER": "1"})
         verify_build(data, report)
 
         if args.no_deploy:

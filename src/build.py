@@ -16,11 +16,12 @@ import hashlib
 import html
 import json
 import math
+import os
 import re
 import shutil
 import sys
 from collections import defaultdict
-from datetime import date, datetime
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
@@ -245,6 +246,22 @@ for _page in PAGE_META:
 _weather_raw = (WEATHER_SRC / "data.js").read_text(encoding="utf-8")
 WEATHER_DOC = json.loads(_weather_raw.split("=", 1)[1].rstrip().rstrip(";"))
 WEATHER_REGIONS = WEATHER_DOC["regions"]
+
+# 天気スナップショットの日付。页面は「今日/明日」を日付から導くので、古いスナップショットを
+# 新しいサイトに載せたときだけ嘘になる —— ここで見張るのはその一点。
+JST = timezone(timedelta(hours=9))
+
+
+def _jst_day(stamp):
+    """UTC/オフセット付き ISO タイムスタンプ → JST の YYYY-MM-DD。"""
+    return datetime.fromisoformat(str(stamp).replace("Z", "+00:00")).astimezone(JST).date().isoformat()
+
+
+# JMA の発表日(= 页面の「今日」が指す日)と、このビルドを走らせた日。
+WEATHER_REPORT_DATE = _jst_day(WEATHER_REGIONS[0]["reportDatetime"])
+WEATHER_SNAPSHOT_DATE = _jst_day(WEATHER_DOC["generatedAt"])
+WEATHER_TODAY = datetime.now(JST).date().isoformat()
+WEATHER_STALE = WEATHER_REPORT_DATE != WEATHER_TODAY
 
 MUNI_BY = {m["ward"]: m for m in MUNI}
 CAB_BY = {c["pm"]: c for c in CAB["cabinets"]}
@@ -1094,6 +1111,13 @@ COPY = {
     "w.doc.fact.regions": ("都道府県", "都道府县", "Prefectures"),
     "w.doc.fact.issued": ("気象庁の発表", "气象厅发布", "Issued by JMA"),
     "w.doc.fact.gen": ("取得", "抓取", "Retrieved"),
+    "w.doc.fact.report": ("予報の基準日", "预报基准日", "Forecast day"),
+    # 快照过期时才出现的这句。日付はビルド時に差し込む({d}=発表日、{t}=今日)。
+    "w.stale": (
+        "このお知らせは {d} の発表分です。本日({t})の分はまだ取得できていないため、「今日」はこの日を指します。",
+        "本站的气象厅预报是 {d} 发布的那一份;今天({t})的预报尚未取到,所以页面里的「今天」指的是 {d}。",
+        "This page carries JMA’s {d} issue. Today’s ({t}) forecast has not been retrieved yet, so “Today” "
+        "here means {d}."),
     "w.doc.read.h": ("どう読むか", "怎么读", "How to read it"),
     "w.doc.read.p1": (
         "第一に、予報と観測を混ぜない。この章の数字はすべて予報で、実際に観測された気温や降水量ではない。"
@@ -2241,6 +2265,21 @@ def build_weather(ver):
         v = r.get("pop")
         return "—" if v is None else f"{esc(v)}%"
 
+    def day_text(iso):
+        """2026-11-03 → ja/zh「11月3日」、en「3 Nov」。"""
+        _y, m, d = (int(x) for x in iso.split("-"))
+        if CUR == "en":
+            return f"{d} {('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec')[m - 1]}"
+        return f"{m}月{d}日"
+
+    # 过期快照的诚实标注:JS 有 JS 的那句,无 JS 时这句留着(两处只有一句会显示)。
+    stale_note = ""
+    if WEATHER_STALE:
+        stale_note = ('<p class="weather-stale" role="status">'
+                      + tr("w.stale").replace("{d}", day_text(WEATHER_REPORT_DATE))
+                                       .replace("{t}", day_text(WEATHER_TODAY))
+                      + "</p>")
+
     rows = "".join(
         f'<tr><th scope="row">{esc(region_name(r))}</th>'
         f'<td>{esc(r.get("summaryJa") or "")}</td>'
@@ -2260,12 +2299,20 @@ def build_weather(ver):
         "https://www.jma.go.jp/jma/kishou/info/coment.html",
         ["Forecast temperature (°C)", "Precipitation probability (%)", "Weather code"],
     )
+    # zh-Hant:交互部件也要繁体。站点唯一的 s2tw 表是 app/hant.js(章节视图同源),
+    # 这里用一段 inline module 把它交给 app.js(后者仍是经典脚本,不改成模块)。
+    hant_boot = ""
+    if CUR == "zh-Hant":
+        hant_boot = ('<script type="module">import { toHant } from "/app/hant.js";'
+                     'window.__pjToHant = toHant;'
+                     'window.dispatchEvent(new Event("pj:hant"));</script>\n')
     body = f"""<main id="main" class="weather-lab">
 <div class="wrap" id="weather-app"></div>
 <noscript><section class="wrap weather-static-fallback">
 <p class="micro">気象庁 / JMA</p>
 <h1>{tr('w.noscript.h1')}</h1>
 <p class="muted">{tr('w.noscript.p')}</p>
+{stale_note}
 <div class="table-scroll"><table><thead><tr><th>{tr('w.th.pref')}</th><th>{tr('w.th.summary')}</th><th>{tr('w.th.temp')}</th><th>{tr('w.th.pop')}</th></tr></thead><tbody>{rows}</tbody></table></div>
 </section></noscript>
 {chapter_doc("w", [
@@ -2273,12 +2320,13 @@ def build_weather(ver):
     ("period", f"{week[0]['date']} – {week[-1]['date']}"),
     ("regions", f"{len(WEATHER_REGIONS)} (代表予報区)"),
     ("issued", f"{WEATHER_REGIONS[0]['reportDatetime'][:16].replace('T', ' ')} JST"),
+    ("report", WEATHER_REPORT_DATE),
     ("gen", WEATHER_DOC["generatedAt"]),
 ])}
 </main>
 <script src="/assets/weather/data.js?v={ver}" defer></script>
 <script src="/assets/weather/geo.js?v={ver}" defer></script>
-<script src="/assets/weather/app.js?v={ver}" defer></script>"""
+{hant_boot}<script src="/assets/weather/app.js?v={ver}" defer></script>"""
     return page("/weather/", PAGE_META["weather"][CUR][0], PAGE_META["weather"][CUR][1],
                 body, "weather", jsonld,
                 head_extra=f'<link rel="stylesheet" href="/assets/weather/weather.css?v={ver}">')
@@ -2653,6 +2701,25 @@ def og_cards():
 def main():
     global CSS_VER, JS_VER, FONT_VER, WEATHER_VER
     files = {}
+
+    # 天气快照的鲜度:JMA 的发表日不是今天时,页面会把昨天的数值当「今天」出(2026-11-04:
+    # 一次手工部署把 11-03 的快照装进 11-04 的站点,线上 5 小时都在说假话)。所以这里
+    # 永远把状态打出来;`PANOUT_REQUIRE_TODAY_WEATHER=1`(部署路径与日更流水线都设它)时
+    # 直接失败,挡住「用旧数据部署」这条路。
+    freshness = (
+        f"weather: report {WEATHER_REPORT_DATE}, snapshot {WEATHER_SNAPSHOT_DATE}, "
+        f"built {WEATHER_TODAY}"
+    )
+    if WEATHER_STALE:
+        freshness += " — STALE: run `git pull` (the 06:10 JST job commits the current snapshot) and rebuild"
+        print(freshness)
+        if os.environ.get("PANOUT_REQUIRE_TODAY_WEATHER") == "1":
+            raise SystemExit(
+                f"weather: refusing to build a deployable site from the {WEATHER_REPORT_DATE} "
+                f"snapshot while today is {WEATHER_TODAY} (PANOUT_REQUIRE_TODAY_WEATHER=1)"
+            )
+    else:
+        print(freshness)
 
     # 繁体列由简体列转出:文案出现词表外的字时在这里报错,而不是悄悄漏转。
     hant.assert_covered([v[1] for v in COPY.values()] +

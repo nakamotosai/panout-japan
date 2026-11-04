@@ -61,6 +61,9 @@
 .editorial-details .editorial-rain { margin: 0; }
 .editorial-copy .picker { margin-top: 16px; }
 .editorial-dateline { font: 13px var(--mono); color: var(--accent); margin-bottom: 10px; }
+/* 快照过期时的诚实标注(JMA の発表日が今日でないビルド):JS 側の .editorial-stale と
+   无 JS 兜底の .weather-stale は同じ見た目。2026-11-04 の事故で追加。 */
+.weather-lab .editorial-stale, .weather-lab .weather-stale { color: var(--danger); margin: 0 0 10px; }
 .editorial-place { font-size: clamp(28px,3vw,44px); font-weight: 350; line-height: 1.35; letter-spacing: -.035em; }
 .editorial-en { font: 400 20px var(--serif); color: var(--muted); margin-top: 2px; }
 .editorial-condition { display: flex; align-items: center; gap: 12px; margin-block: 14px; font-size: 18px; }
