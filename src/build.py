@@ -1938,7 +1938,9 @@ def person_node():
         "alternateName": "NAKAMOTO SAI",
         "url": "https://saaaai.com/",
         "sameAs": ["https://saaaai.com/", "https://ouuut.com/", "https://x.com/saaaaicom"],
-        "email": "mailto:sai@saaaai.com",
+        # 联系邮箱按域名归属走(2026-11-06):ouuut.com 的站显示 out@saaaai.com,
+        # saaaai.com 的站显示 sai@saaaai.com。above 的 url/sameAs 是作品主页链接,不是联系方式,不动。
+        "email": "mailto:out@saaaai.com",
         "knowsLanguage": list(LANGS),
     }
 
@@ -2193,7 +2195,7 @@ def build_home_preview():
 <a href="https://saaaai.com/"><strong>saaaai.com</strong><small>{tr('author.personal')}</small><span aria-hidden="true">↗</span></a>
 <div class="hp-author-contact">
 <span class="hp-author-contact-label">{tr('author.contact')}</span>
-<a href="mailto:sai@saaaai.com">sai@saaaai.com</a>
+<a href="mailto:out@saaaai.com">out@saaaai.com</a>
 <a href="https://x.com/saaaaicom" rel="me">X <span class="hp-author-handle">@saaaaicom</span></a>
 </div>
 </nav>
@@ -2238,7 +2240,7 @@ def build_404():
 <nav aria-label="{esc(tr('nav.label'))}"><ul>{links}</ul></nav>
 <div class="hero-actions">
 <a class="btn-primary" href="{url("/")}">{tr("nf.home")}</a>
-<a href="mailto:sai@saaaai.com">{tr("author.contact")}</a>
+<a href="mailto:out@saaaai.com">{tr("author.contact")}</a>
 </div>
 </div></main>'''
     return page("/404.html", PAGE_META["404"][CUR][0], PAGE_META["404"][CUR][1], body,
