@@ -42,6 +42,36 @@ BRAND = "japan.ouuut.com"
 SIX = ("--c-weather", "--c-quake", "--c-crime", "--c-cabinet", "--c-housing", "--c-population")
 WM_COLOUR = {6: 0, 7: 1, 8: 2, 9: 3, 10: 4, 11: 5}
 
+# 2026-11-04 换标:字标开头那枚手绘 O。它替换 index 6 的 `o`(japan.|o|uuut.com),
+# 颜色仍由 WM_COLOUR 给到 --c-weather,所以 A/B/C/D 四套配色跟着变量走。
+# 几何的唯一真相源是 ouuut-brand 仓的资产,构建期读,不在本站抄第二份 path;
+# 尺寸公式(Outfit 800:标记 ink 高 = o ink 高 × 1.10)见 src/app.css 的 .wm-mark。
+# 别的机器(VPS 日更)用 OUUUT_MARK_JSON 指向同一份资产 —— 与 src/fonts.py 的 PANOUT_* 同法。
+MARK_JSON = Path(os.environ.get("OUUUT_MARK_JSON",
+                               "F:/projects/ouuut-brand/logo/ouuut-mark.json"))
+MARK_INDEX = 6
+
+
+def wm_mark():
+    """Inline SVG for the hand-drawn O, or "" when the brand asset is not on this machine.
+
+    A missing asset must not stop a build: the mark is decorative, and the daily VPS
+    pipeline has to keep publishing. We fall back to the plain letter o the wordmark
+    used before the 2026-11-04 rebrand, loudly.
+    """
+    if not MARK_JSON.is_file():
+        print(f"[warn] 缺 O 标记 {MARK_JSON}(唯一真相源是 ouuut-brand 的 logo/ouuut-mark.json;"
+              f"别的机器用 OUUUT_MARK_JSON 指到它的路径)—— 已退回字母 o")
+        return ""
+    mark = json.loads(MARK_JSON.read_text(encoding="utf-8"))
+    x0, y0, x1, y1 = mark["bounds"]
+    viewbox = f"{x0} {y0} {round(x1 - x0, 2)} {round(y1 - y0, 2)}"
+    return (f'<svg class="wm-mark" viewBox="{viewbox}" aria-hidden="true" focusable="false">'
+            f'<path fill="currentColor" d="{mark["d"]}"/></svg>')
+
+
+MARK = wm_mark()
+
 
 def paint_chars(text):
     """Wrap each glyph in its chapter colour; the cycle restarts at every space."""
@@ -68,7 +98,8 @@ def wm_glyphs(anim=False, aria=False):
             css.append("color:var(--ink)")
         style = f' style="{";".join(css)}"' if css else ""
         hide = ' aria-hidden="true"' if aria else ""
-        out.append(f"<span{hide}{style}>{ch}</span>")
+        body = MARK if (i == MARK_INDEX and MARK) else ch
+        out.append(f"<span{hide}{style}>{body}</span>")
     return "".join(out)
 
 

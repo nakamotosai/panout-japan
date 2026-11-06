@@ -27,6 +27,11 @@ not rebuild `geo.js`.
 - Node 24 with `npx`; the script pins `wrangler@4.152.0`.
 - Font cache: `/home/ubuntu/panout-fonts/{latin,sc}` plus
   `/home/ubuntu/panout-japan/.cache/fonts/{NotoSansJP-VF,NotoSerifJP-VF}.ttf`.
+- Wordmark asset: `src/build.py` inlines the hand-drawn O mark from the brand source
+  of truth, `logo/ouuut-mark.json` in the `ouuut-brand` repo. On the VPS that file is
+  `/home/ubuntu/ouuut-brand/logo/ouuut-mark.json` and `weather.env` points at it with
+  `OUUUT_MARK_JSON`. Missing it does not stop the build: the wordmark renders the
+  plain letter `o` with a `[warn]` line (see Local development).
 - Cloudflare API token with Pages edit access, stored only in the 600-mode env file.
 
 ## Manual commands
@@ -283,6 +288,15 @@ and does not need shapely. `src/fonts.py` accepts `PANOUT_LATIN_FONTS`,
 `PANOUT_SC_FONTS` and `PANOUT_OUTFIT_FONT`; the VPS font cache is
 `/home/ubuntu/panout-fonts/`, with the JP variable fonts in
 `/home/ubuntu/panout-japan/.cache/fonts/`.
+
+The 2026-11-04 wordmark inlines the hand-drawn O mark. `src/build.py` reads its
+geometry from the brand source of truth, `F:/projects/ouuut-brand/logo/ouuut-mark.json`
+by default; `OUUUT_MARK_JSON` overrides that path on a machine without the brand
+checkout (the VPS sets it to `/home/ubuntu/ouuut-brand/logo/ouuut-mark.json`). Only
+the geometry is read — the path is never copied into this repo. If the file is
+missing the build keeps going, printing
+`[warn] 缺 O 标记 … —— 已退回字母 o`, and the wordmark renders the plain letter `o`
+exactly as it did before the rebrand.
 
 Do not edit `site/` or deploy an unverified directory. Do not commit the raw JMA
 cache or Cloudflare tokens.

@@ -556,6 +556,32 @@ html[lang^="zh"] .foot, html[lang^="zh"] .pager {
 .wordmark .wm-main { font-size: 1em; letter-spacing: -.015em; }
 .wordmark .wm-tld { font-size: 1em; letter-spacing: -.015em; font-weight: 800; }
 
+/* 2026-11-04 rebrand: the hand-drawn O that opens the wordmark, japan.|O|uuut.com.
+   Geometry is inlined at build time by src/build.py from ouuut-brand/logo/ouuut-mark.json
+   (no second copy of the path). Colour is not written here: the wrapping span carries
+   color:var(--c-weather), so all four palettes (a/b/c/d) follow the variable, and
+   fill="currentColor" picks it up.
+   Size: Outfit 800's o ink height is 512/1000em; the mark's ink height is 1.10x that
+   = .5625em (18.56px at 33px). Width = height x 996.72/999.15 (the asset ink bounds
+   ratio) = .5611em. vertical-align keeps the o's -.011em baseline overshoot.
+   The mark's box is its ink box, so it has no side bearing of its own, and Chrome adds
+   no letter-spacing after an atomic inline either: margin 18/1000em per side restores
+   exactly the bearings the letter o had, and the ink gaps either side come out equal
+   to the o's.
+   Measured on the built site (33px): wordmark total 253.06px before the swap and
+   254.05px after, i.e. +30/1000em x 33px; the mark's box is 19.703px = 18.516px of ink
+   plus 2 x .018em bearings, against the o's 18.719px advance box, and both ink gaps
+   measure .594px = 18/1000em, matching the o's font bearing (17.6/1000em).
+   Keep this comment ASCII: app.css text also feeds the CJK font subset charset
+   (collect_chars), and CJK here would grow site/assets/fonts for nothing. */
+.wm-mark {
+  display: inline-block;
+  width: .5611em;
+  height: .5625em;
+  vertical-align: -.011em;
+  margin: 0 .018em;
+}
+
 /* Shared twelve-second wordmark cycle: plain text stays the accessible name.
    Both phrases hold fully visible for about three seconds. Only opacity moves;
    absolute layers reserve the old link's width, so controls never shift. */
