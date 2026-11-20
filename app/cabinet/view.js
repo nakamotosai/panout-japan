@@ -1284,8 +1284,8 @@ const CAB_PROFILES = {
     "partyJa": "自由民主党（保守派）",
     "partyEn": "Liberal Democratic Party (Conservative)",
     "period": "2025-10-21 — 2030-12-31",
-    "months": 12,
-    "days": 365,
+    "months": 14,
+    "days": 396,
     "trendBadgeZh": "首位女首相 · 危机管理投资",
     "trendBadgeJa": "憲政史上初の女性首相・危機管理投資",
     "trendBadgeEn": "First Female PM · Economic Security",
@@ -1435,7 +1435,7 @@ const I18N = {
     shareLabel: '画像で保存',
     shareDone: '保存しました',
     shareFail: '保存できませんでした',
-    overviewTitle: '14の内閣 · 331か月',
+    overviewTitle: (c, m) => c + 'の内閣 · ' + m + 'か月',
     overviewDesc: '1998年から2026年までのNHK放送文化研究所、選挙WEB、各社世論調査を月平均で集計。',
     overviewHint: '首相の区間や折線にマウスを合わせると、詳細な内閣データと経歴が表示されます。',
     unpin: '✕ 全首相の表示に戻す',
@@ -1457,7 +1457,7 @@ const I18N = {
     shareLabel: '保存图片',
     shareDone: '已保存',
     shareFail: '保存失败',
-    overviewTitle: '14届内阁 · 331个月',
+    overviewTitle: (c, m) => c + '届内阁 · ' + m + '个月',
     overviewDesc: '1998年至2026年间NHK放送文化研究所、选举WEB及各主要媒体舆论调查月均汇总。',
     overviewHint: '鼠标悬停于首相任期或折线上，可查看该内阁的完整数据指标与执政档案。',
     unpin: '✕ 恢复全景概览',
@@ -1479,7 +1479,7 @@ const I18N = {
     shareLabel: 'Save image',
     shareDone: 'Saved',
     shareFail: 'Could not save',
-    overviewTitle: '14 Cabinets · 331 Mos',
+    overviewTitle: (c, m) => c + ' Cabinets · ' + m + ' Mos',
     overviewDesc: 'Monthly aggregate of cabinet polls from NHK, Nikkei, Asahi, Yomiuri and Kyodo (1998–2026).',
     overviewHint: 'Hover over any cabinet segment or curve to inspect historical data and editorial profile.',
     unpin: '✕ Reset View',
@@ -1650,9 +1650,13 @@ function renderPanel(targetCabId) {
   const cabId = targetCabId || focusCabinet;
   if (!cabId || !cabStats[cabId]) {
     const totalPolls = rawData.polls.length;
+    const cabCount = rawData.cabinets.length;
+    const totalMonths = Object.keys(rawData.polls.reduce((acc, q) => {
+      if (!q.derived) acc[q.date.slice(0, 7)] = 1;
+      return acc;
+    }, {})).length;
     const allMeans = Object.values(cabStats).map(s => s.mean);
     const avgAll = allMeans.length ? (Math.round((allMeans.reduce((a, b) => a + b, 0) / allMeans.length) * 10) / 10) : 41.2;
-    
     panelEl.innerHTML = `
       <!-- 卡片 1: 全景大盘核心数据卡 -->
       <div class="panel-card">
@@ -1660,8 +1664,8 @@ function renderPanel(targetCabId) {
           <span class="card-badge" style="background:var(--accent-soft, rgba(47,107,79,0.12));color:var(--accent);border:1px solid var(--accent-soft, rgba(47,107,79,0.25))">${isZh(langKey) ? zhx(langKey, '大盘总览'):langKey==='en'?'OVERVIEW':'政権全体'}</span>
           <span class="card-badge" style="background:rgba(0,0,0,0.05);color:var(--muted)">1998 — 2026</span>
         </div>
-        <h2 class="card-title" style="margin-top:6px">${t.overviewTitle}</h2>
-        <div class="card-subtitle">14${isZh(langKey) ? zhx(langKey, '届内阁 · 331个月民调脉搏'):langKey==='en'?' Cabinets · 331 Months of Polls':'内閣・331ヶ月の世論推移'}</div>
+        <h2 class="card-title" style="margin-top:6px">${typeof t.overviewTitle === 'function' ? t.overviewTitle(cabCount, totalMonths) : t.overviewTitle}</h2>
+        <div class="card-subtitle">${cabCount}${isZh(langKey) ? zhx(langKey, '届内阁 · ') + totalMonths + zhx(langKey, '个月民调脉搏'):langKey==='en'?' Cabinets · ' + totalMonths + ' Months of Polls':'内閣・' + totalMonths + 'ヶ月の世論推移'}</div>
 
         <div class="stat-grid">
           <div class="stat-box">
@@ -1767,7 +1771,7 @@ function renderPanel(targetCabId) {
       </div>
       <div class="card-subtitle">${eraTitle} · ${partyTitle}</div>
       <div style="font-size:12px;color:var(--muted);font-family:var(--font-sans);margin-top:4px">
-        ${s.start.slice(0, 7)} — ${s.end.slice(0, 7)} (${s.months}${isZh(langKey) ? zhx(langKey, '个月'):langKey==='en'?' months':'ヶ月'} / ${p.days || (s.months * 30)}${isZh(langKey) ? zhx(langKey, '天'):langKey==='en'?' days':'日'})
+        ${s.start.slice(0, 7)} — ${s.end.slice(0, 7)} (${s.months}${isZh(langKey) ? zhx(langKey, '个月'):langKey==='en'?' months':'ヶ月'} / ${(Date.parse(s.end) > Date.now() && s.start) ? Math.max(1, Math.floor((Date.now() - Date.parse(s.start)) / 86400000) + 1) : (p.days || (s.months * 30))}${isZh(langKey) ? zhx(langKey, '天'):langKey==='en'?' days':'日'})
       </div>
 
       <!-- 任期内支持率曲线 + 分享按钮(在四个指标上方) -->

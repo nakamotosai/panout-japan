@@ -716,3 +716,17 @@
 - **发布**:`python tools/deploy_site.py`(HEAD `6909e2c`、工作区干净)→ 构建 28 页、`preflight ok`(css `3e91c645`、js `c1a553de`、weather `a01dc181` 快照 2026-11-06)→ 上传 → **部署 `38c93d68-5514-42b3-bf2b-4801986e2063`**(`https://38c93d68.panout-site.pages.dev`)→ 生产校验 7 路由 200、CSS 字节与本地一致。
 - **线上复核**(四语 29 页 + 4 条不存在的路径走 404 兜底,29×200 全绿):Cloudflare 现在有**两种**邮箱混淆形态 —— 旧的 `data-cfemail="<hex>"` 属性与新的 `href="/cdn-cgi/l/email-protection#<hex>"`(两者首字节都是异或密钥,纯 grep `out@ouuut.com` 两种都查不到)。解码后**只有 `out@ouuut.com`**(13 处混淆链接:四个首页 + `/404.html` + 四条 404 兜底路径各 1,`/en/` 首页 2);`out@saaaai.com` / `sai@saaaai.com` 明文 0 处;JSON-LD 在 `script` 里不被改写,29 页各一处 `mailto:out@ouuut.com`;构建产物 `site/`:旧地址 0 文件、`out@ouuut.com` 29 文件、`https://saaaai.com/` 29 文件。解码脚本 `.cache/live_email_check.py`(一次性取证,`.cache/` 不入库)。
 - **唯一 next**:看 2026-11-07 06:10 JST 的日更 run 是否带着 `OUUUT_MARK_JSON` 重建出带 O 标记的同版页面,并把它记进 `~/.cache/panout-weather/refresh.log`。
+
+## 2026-11-20 · 内阁支持率更新至 2026-11 (v8.5, 652 调查 / 332 个月)
+
+- **新增 2026-11 6 社实测调查**(`app/cabinet/data.json` v8.5-nov-2026,646→652 点,331→332 月,2026-11 月均 53.0%):
+  - JNN 世論調査(10/31–11/1,标注 `2026-11-01`):支持 **64.9%** / 不支持 32.5%,`https://newsdig.tbs.co.jp/articles/-/3068377`
+  - NHK 世論調査(11/6–8):支持 **53.0%** / 不支持 32.1%,`https://news.web.nhk/senkyo/shijiritsu/pdf/aggregate/2026/y202611.pdf`
+  - 時事世論調査(11/13–16):支持 **42.8%** / 不支持 28.5%,`https://www.jiji.com/jc/article?k=2026111900701&g=pol`
+  - 読売新聞世論調査(11/13–15):支持 **58.0%** / 不支持 30%,`https://www.yomiuri.co.jp/election/yoron-chosa/20261115-GYT1T00223/`
+  - 朝日新聞世論調査(11/14–15):支持 **49.0%** / 不支持 36%,`https://www.asahi.com/articles/DA3S16588339.html`
+  - 共同通信世論調査(11/14–15):支持 **50.4%** / 不支持 34.4%,`https://www.47news.jp/15234256.html`
+  - 注:截至 2026-11-20,日経 `vdata` `historical.json` 仍止于 `202610`、日経世論調査专栏未发布 11 月调查,本轮仅收录已实测的 6 社。
+- **消灭硬编码计数与天数**:`src/build.py`(`PAGE_META`、`b.h1`、`cab.loading`、`m.b.p`、首页 `rows`、`llms.txt` 及 `b.doc.cal.p2` 英/中媒体名映射)、`src/home_plates.py`(`cabinet_svg`)、`app/cabinet/view.js`(`overviewTitle`、总览副标题、在任首相动态天数计算)全部改为由 `data.json` 实时推导;同步刷新 `src/hant_data.py`、`app/hant.js` 与 `assets/og/{home,cabinet}-*.png`。
+- **本地构建与验收**:`PANOUT_REQUIRE_TODAY_WEATHER=1 python src/build.py` 28 页全绿;`.private/verify_local.py` 本仓断言全绿(唯一 FAIL 仍为外部 `find` 站 `BreadcrumbList`);无头浏览器检查 `/zh-Hans/cabinet/` 1440×900 渲染正常。
+- **唯一 next**:日経 11 月世論調査发布后补录第 7 社。

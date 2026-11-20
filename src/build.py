@@ -156,6 +156,12 @@ Q_MAX_DAY = max(Q, key=lambda e: e["mag"])["time"][:10]
 _MONTHS_EN = ("January", "February", "March", "April", "May", "June", "July",
               "August", "September", "October", "November", "December")
 
+CAB = json.loads((ROOT / "app/cabinet/data.json").read_text(encoding="utf-8"))
+POLLS = CAB["polls"]
+ALL_MONTHS = sorted({p["date"][:7] for p in POLLS})
+CAB_FIRST = min(POLLS, key=lambda p: p["date"])
+CAB_LAST = max(POLLS, key=lambda p: p["date"])
+
 
 def _day_ja(d):
     return f"{d[0:4]}年{int(d[5:7])}月{int(d[8:10])}日"
@@ -180,15 +186,32 @@ def _ym_zh(ym):
 def _ym_en(ym):
     return f"{_MONTHS_EN[int(ym[5:7]) - 1]} {ym[0:4]}"
 
+_CAB_SRC_ZH = {"朝日新聞": "朝日新闻", "読売新聞": "读卖新闻", "日経": "日经", "時事": "时事", "共同通信": "共同通信"}
+_CAB_SRC_EN = {
+    "NHK世論調査": "NHK poll",
+    "日経世論調査": "Nikkei poll",
+    "朝日新聞世論調査": "Asahi poll",
+    "読売新聞世論調査": "Yomiuri poll",
+    "時事世論調査": "Jiji poll",
+    "共同通信世論調査": "Kyodo poll",
+    "JNN世論調査": "JNN poll",
+}
+
+
+def _en_poll_phrase(src):
+    p = _CAB_SRC_EN.get(src, src)
+    art = "an" if p[:1].upper() in "AEIOU" or p.startswith(("NHK",)) else "a"
+    return f"{art} {p}"
+
 # 每页三语 title/description：静态 HTML 里只有 ja，shell 在切语言时替换 head
 PAGE_META = {
     "home": {
         "ja": (f"{BRAND} — 日本を、六つの尺度で見る",
-               f"{f"{Q_N:,}"}の震源、5,234の町丁、331か月の内閣支持率、23区の住宅価格、47都道府県の天気、1,719市町村の人口。六つの尺度、六つの入口から直接起動する。"),
+               f"{f"{Q_N:,}"}の震源、5,234の町丁、{len(ALL_MONTHS):,}か月の内閣支持率、23区の住宅価格、47都道府県の天気、1,719市町村の人口。六つの尺度、六つの入口から直接起動する。"),
         "zh-Hans": (f"{BRAND} — 用六个尺度看日本",
-               f"{f"{Q_N:,}"} 个震源、5,234 个町丁、331 个月的內閣支持率、23 区住宅价格、47 个都道府县的天气、1,719 个市町村的人口。六个尺度，六个入口直接启动。"),
+               f"{f"{Q_N:,}"} 个震源、5,234 个町丁、{len(ALL_MONTHS):,} 个月的内阁支持率、23 区住宅价格、47 个都道府县的天气、1,719 个市町村的人口。六个尺度，六个入口直接启动。"),
         "en": (f"{BRAND} — Japan in six scales",
-               f"{f"{Q_N:,}"} hypocentres, 5,234 neighbourhoods, 331 months of cabinet approval, 23-ward housing prices, 47-prefecture weather and 1,719 municipalities of population. Six scales; six entry points."),
+               f"{f"{Q_N:,}"} hypocentres, 5,234 neighbourhoods, {len(ALL_MONTHS):,} months of cabinet approval, 23-ward housing prices, 47-prefecture weather and 1,719 municipalities of population. Six scales; six entry points."),
     },
     "quake": {
         "ja": (f"地震 — {f"{Q_N:,}"}の震源 | {BRAND}",
@@ -207,12 +230,12 @@ PAGE_META = {
                "Recorded offences for 5,234 neighbourhoods across Tokyo in 2025, ranked per capita across 62 municipalities."),
     },
     "cabinet": {
-        "ja": (f"内閣 — 331か月の支持率 | {BRAND}",
-               "1998年から2026年までの内閣支持率646調査。月次平均331か月、14内閣。"),
-        "zh-Hans": (f"内阁 — 331 个月的支持率 | {BRAND}",
-               "1998 年至 2026 年的 646 次内阁支持率调查，月度均值 331 个月、14 届内阁。"),
-        "en": (f"Cabinet — 331 months of approval | {BRAND}",
-               "646 approval polls from 1998 to 2026: 331 monthly means across 14 cabinets."),
+        "ja": (f"内閣 — {len(ALL_MONTHS):,}か月の支持率 | {BRAND}",
+               f"{CAB_FIRST['date'][:4]}年から{CAB_LAST['date'][:4]}年までの内閣支持率{len(POLLS):,}調査。月次平均{len(ALL_MONTHS):,}か月、{len(CAB['cabinets'])}内閣。"),
+        "zh-Hans": (f"内阁 — {len(ALL_MONTHS):,} 个月的支持率 | {BRAND}",
+               f"{CAB_FIRST['date'][:4]} 年至 {CAB_LAST['date'][:4]} 年的 {len(POLLS):,} 次内阁支持率调查，月度均值 {len(ALL_MONTHS):,} 个月、{len(CAB['cabinets'])} 届内阁。"),
+        "en": (f"Cabinet — {len(ALL_MONTHS):,} months of approval | {BRAND}",
+               f"{len(POLLS):,} approval polls from {CAB_FIRST['date'][:4]} to {CAB_LAST['date'][:4]}: {len(ALL_MONTHS):,} monthly means across {len(CAB['cabinets'])} cabinets."),
     },
     "housing": {
         "ja": (f"住宅 — 町名の価格 | {BRAND}",
@@ -236,7 +259,6 @@ PAGE_META = {
         "en": (f"404 — Page not found | {BRAND}", "No page exists at this URL. Return to the cover or choose a chapter."),
     },
 }
-CAB = json.loads((ROOT / "app/cabinet/data.json").read_text(encoding="utf-8"))
 MUNI = json.loads((ROOT / "app/crime/data/muni.json").read_text(encoding="utf-8"))
 POINTS = json.loads((ROOT / "app/crime/data/points.json").read_text(encoding="utf-8"))
 CHOME = json.loads((ROOT / "app/crime/data/chome_poly.json").read_text(encoding="utf-8"))
@@ -296,7 +318,6 @@ WEATHER_STALE = WEATHER_REPORT_DATE != WEATHER_TODAY
 
 MUNI_BY = {m["ward"]: m for m in MUNI}
 CAB_BY = {c["pm"]: c for c in CAB["cabinets"]}
-POLLS = CAB["polls"]
 
 
 def energy(mag):
@@ -353,7 +374,6 @@ for c in CAB["cabinets"]:
         b[1] += 1
     CAB_MONTHS[c["pm"]] = [(ym, v / n) for ym, (v, n) in sorted(buckets.items())]
 
-ALL_MONTHS = sorted({p["date"][:7] for p in POLLS})
 MONTH_MEAN = {}
 for ym in ALL_MONTHS:
     vs = [p["value"] for p in POLLS if p["date"][:7] == ym]
@@ -373,9 +393,6 @@ for p in POLLS:
     CAB_BUCKETS[(p["pm"], p["date"][:7])] += 1
 N_BUCKETS = len(CAB_BUCKETS)
 N_SINGLE = sum(1 for v in CAB_BUCKETS.values() if v == 1)
-# 系列の両端は polls から導出(本文の「先頭/末尾」はここを見る)。
-CAB_FIRST = min(POLLS, key=lambda p: p["date"])
-CAB_LAST = max(POLLS, key=lambda p: p["date"])
 POLL_SRC = defaultdict(int)
 for _p in POLLS:
     POLL_SRC[_p["source"]] += 1
@@ -843,7 +860,7 @@ COPY = {
                     "Population, counts, rate and top neighbourhoods."),
 
     "b.eyebrow": ("04 / 通して見る", "04 / 拉长看", "04 / Stretch out"),
-    "b.h1": ("内閣 — <em>331</em>か月", "内阁 — <em>331</em>个月", "Cabinet — <em>331</em> months"),
+    "b.h1": (f"内閣 — <em>{n(len(ALL_MONTHS))}</em>か月", f"内阁 — <em>{n(len(ALL_MONTHS))}</em>个月", f"Cabinet — <em>{n(len(ALL_MONTHS))}</em> months"),
     "b.lede": ("1998年から2026年まで、月ごとの支持率。内閣をまたいで、一本の線にする。",
                "1998年至2026年，逐月支持率。跨过内阁，连成一条线。",
                "Monthly approval from 1998 to 2026, joined across cabinets into one line."),
@@ -966,7 +983,7 @@ COPY = {
     "b.index.sub": ("在任期間・平均・最高・最低。", "任期、平均、最高、最低。",
                     "Term, mean, high and low."),
 
-    "cab.loading": ("331か月の世論調査データを展開中…", "331个月民调数据载入中…", "Loading 331 months of poll data…"),
+    "cab.loading": (f"{n(len(ALL_MONTHS))}か月の世論調査データを展開中…", f"{n(len(ALL_MONTHS))}个月民调数据载入中…", f"Loading {n(len(ALL_MONTHS))} months of poll data…"),
     "d.year.months": ("月別の震源数", "月度震源数", "Events by month"),
     "d.year.top": ("主な地震", "主要地震", "Notable events"),
     "d.year.energy": ("エネルギー", "能量", "Energy"),
@@ -1017,9 +1034,9 @@ COPY = {
               "警视厅《区市町村町丁别、罪种别及手口别认知件数》令和7年（2025）全年及令和8年月度累计。人口取自住民基本台帐（令和8年1月1日）。东京都内5,234个町丁、62个区市町村。",
               "Tokyo Metropolitan Police, incidents by neighbourhood and offence type, full-year 2025 plus 2026 monthly cumulative. Population from the Basic Resident Register (1 Jan 2026). 5,234 neighbourhoods, 62 wards."),
     "m.b.h": ("内閣", "内阁", "Cabinet"),
-    "m.b.p": ("NHK放送文化研究所の月例政治意識調査（2000–2017）、NHK選挙WEB（2018–2026）、日経・朝日・時事・読売・JNN・共同の各社世論調査。646点、331か月、14内閣。",
-              "NHK放送文化研究所月度政治意识调查（2000–2017）、NHK选举WEB（2018–2026），以及日经、朝日、时事、读卖、JNN、共同各社舆论调查。646点、331个月、14届内阁。",
-              "NHK Broadcasting Culture Research Institute monthly surveys (2000–2017), NHK election web (2018–2026), plus Nikkei, Asahi, Jiji, Yomiuri, JNN and Kyodo polls. 646 polls, 331 months, 14 cabinets."),
+    "m.b.p": (f"NHK放送文化研究所の月例政治意識調査（2000–2017）、NHK選挙WEB（2018–2026）、日経・朝日・時事・読売・JNN・共同の各社世論調査。{n(len(POLLS))}点、{n(len(ALL_MONTHS))}か月、{len(CAB['cabinets'])}内閣。",
+              f"NHK放送文化研究所月度政治意识调查（2000–2017）、NHK选举WEB（2018–2026），以及日经、朝日、时事、读卖、JNN、共同各社舆论调查。{n(len(POLLS))}点、{n(len(ALL_MONTHS))}个月、{len(CAB['cabinets'])}届内阁。",
+              f"NHK Broadcasting Culture Research Institute monthly surveys (2000–2017), NHK election web (2018–2026), plus Nikkei, Asahi, Jiji, Yomiuri, JNN and Kyodo polls. {n(len(POLLS))} polls, {n(len(ALL_MONTHS))} months, {len(CAB['cabinets'])} cabinets."),
     "m.cal.h": ("口径", "口径", "Definitions"),
     "m.cal.q": ("エネルギーは log₁₀E = 1.5M + 4.8（ジュール）。年の合計は単純和。",
                 "能量按 log₁₀E = 1.5M + 4.8（焦耳）。年度合计为简单相加。",
@@ -1469,14 +1486,14 @@ COPY = {
         f"{_ym_ja(SWING_FROM)}から{_ym_ja(SWING_TO)}への上げ幅(内閣交代の月も、そのまま1か月の変動として数える)。",
         f"月度值取月内全部调查的算术平均。只连有实测的月份,不做插值。所以「{n(len(POLLS))} 次调查」和"
         f"「{n(len(MONTH_MEAN))} 个月」数的是两个东西。系列开头是 {_ym_zh(CAB_FIRST['date'][:7])} 的"
-        f"{CAB_FIRST['source'].replace('世論調査', '')}调查({CAB_FIRST['pm']}、{CAB_FIRST['value']}),"
-        f"末尾是 {_ym_zh(CAB_LAST['date'][:7])} 的{CAB_LAST['source'].replace('世論調査', '')}调查"
+        f"{_CAB_SRC_ZH.get(CAB_FIRST['source'].replace('世論調査', ''), CAB_FIRST['source'].replace('世論調査', ''))}调查({CAB_FIRST['pm']}、{CAB_FIRST['value']}),"
+        f"末尾是 {_ym_zh(CAB_LAST['date'][:7])} 的{_CAB_SRC_ZH.get(CAB_LAST['source'].replace('世論調査', ''), CAB_LAST['source'].replace('世論調査', ''))}调查"
         f"({CAB_LAST['pm']}、{CAB_LAST['value']})。最大单月变动是 {SWING:+.1f},"
         f"从 {_ym_zh(SWING_FROM)} 到 {_ym_zh(SWING_TO)} 的涨幅(内阁交替的那个月,也照样算作一个月的变动)。",
         f"Each monthly value is the arithmetic mean of every poll that month. Only measured months are joined; "
         f"nothing is interpolated. That is why “{n(len(POLLS))} polls” and “{n(len(MONTH_MEAN))} months” count "
-        f"different things. The series starts with a {CAB_FIRST['source']} in {_ym_en(CAB_FIRST['date'][:7])} "
-        f"({CAB_FIRST['pm']}, {CAB_FIRST['value']}) and ends with a {CAB_LAST['source']} in "
+        f"different things. The series starts with {_en_poll_phrase(CAB_FIRST['source'])} in {_ym_en(CAB_FIRST['date'][:7])} "
+        f"({CAB_FIRST['pm']}, {CAB_FIRST['value']}) and ends with {_en_poll_phrase(CAB_LAST['source'])} in "
         f"{_ym_en(CAB_LAST['date'][:7])} ({CAB_LAST['pm']}, {CAB_LAST['value']}). The largest single-month swing is "
         f"{SWING:+.1f}, the rise from {_ym_en(SWING_FROM)} to {_ym_en(SWING_TO)} (a month in which the cabinet "
         f"changed still counts as one month's move)."),
@@ -2145,7 +2162,7 @@ def build_home_preview():
         ("crime", "03", "/crime/", "card.crime.title", "nav.crime", "5,234",
          "card.crime.unit", "card.crime.claim", "card.crime.source",
          HP.crime_svg(POINTS, MUNI_POLY, WARD_RATE, T=plates(), lang=CUR)),
-        ("cabinet", "04", "/cabinet/", "card.cabinet.title", "nav.cabinet", "331",
+        ("cabinet", "04", "/cabinet/", "card.cabinet.title", "nav.cabinet", n(len(ALL_MONTHS)),
          "card.cabinet.unit", "card.cabinet.claim", "card.cabinet.source",
          HP.cabinet_svg(ALL_MONTHS, MONTH_MEAN, CAB, T=plates(), lang=CUR)),
         ("housing", "05", "/housing/", "card.housing.title", "nav.housing", f"{HOUSE['totals']['trades']:,}",
@@ -3138,7 +3155,7 @@ def write_meta(font_meta):
 - [天気](/weather/): 気象庁の予報、47都道府県。今日・明日と7日間、気温と降水確率。
 - [地震](/quake/): 2000–{Q_END_DOT}、M4以上の震源{n(Q_N)}点。年別・月別・エネルギー。
 - [犯罪](/crime/): 2025年、東京都内5,234町丁、62区市町村。人口あたりの率。
-- [内閣](/cabinet/): 1998–2026、646調査、331か月、14内閣。
+- [内閣](/cabinet/): {CAB_FIRST['date'][:4]}–{CAB_LAST['date'][:4]}、{n(len(POLLS))}調査、{n(len(ALL_MONTHS))}か月、{len(CAB['cabinets'])}内閣。
 - [住宅](/housing/): 直近4四半期 2025Q2–2026Q1(2025年4月–2026年3月)、東京、中古マンション成約26,416件を町名(1,237町)ごとに平均したm2単価の地図。
 - [人口](/population/): 2025年国勢調査、{POP['meta']['n']:,}市町村。91.2%が減少、73.4%が減少市町村に住む。2050年は社人研推計で{POP_N['pop2050']:,}人。CSV: /data/population.csv
 

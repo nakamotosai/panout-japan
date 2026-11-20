@@ -206,9 +206,9 @@ def cabinet_svg(months, month_mean, cabinet_data, w=1000, h=760, T=None, lang="j
         if cab["id"] in shortcuts and width > 44:
             out.append(f'<text x="{left + width / 2:.1f}" y="{ribbon_y + 23}" '
                        f'text-anchor="middle" class="ribbon ink">{shortcuts[cab["id"]]}</text>')
-    out.append(f'<text x="{x0}" y="{ribbon_y - 18}" class="micro">14 CABINETS / 331 MONTHS</text>')
+    out.append(f'<text x="{x0}" y="{ribbon_y - 18}" class="micro">{len(cabinet_data["cabinets"])} CABINETS / {len(months)} MONTHS</text>')
     out.append(f'<text x="{x1}" y="{ribbon_y - 18}" text-anchor="end" class="micro">'
-               f'ONE LINE, 1998—2026</text>')
+               f'ONE LINE, {months[0][:4]}—{months[-1][:4]}</text>')
 
     # Approval line. 0–100 is the shared scale, so the line is comparable.
     top, bottom = 150, 620
