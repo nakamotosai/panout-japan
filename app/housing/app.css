@@ -142,21 +142,21 @@
   --bg-page: var(--bg);
   --bg-glass: color-mix(in srgb, var(--bg) 45%, transparent);
   --bg-map: var(--bg);
-  --bg-card: var(--bg);
+  --bg-card: var(--card);
   --bg-card-sub: var(--surface);
   --bg-hover: color-mix(in srgb, var(--ink) 6%, transparent);
   --text-main: var(--ink);
   --text-muted: var(--muted);
   --text-faint: var(--muted);
-  --line-main: transparent;
+  --line-main: var(--wire);
   --line-strong: var(--ink);
   --accent: var(--accent-base);
   --accent-soft: var(--accent-soft-base);
   --shadow-card: none;
   --card-glass: none;
   /* 选中气泡必须是实心：旧的 color-mix(--surface, transparent) 只有 ~4% 不透明度，地图注记会透上来压住文字 */
-  --capsule-bg: var(--bg);
-  --capsule-line: color-mix(in srgb, var(--ink) 14%, transparent);
+  --capsule-bg: var(--card);
+  --capsule-line: var(--wire);
 }
 
 /* ---- 方案 B：暖炭黑 (Warm Charcoal / 深色去蓝定稿) ---- */
@@ -165,21 +165,21 @@
   --bg-page: var(--bg);
   --bg-glass: color-mix(in srgb, var(--bg) 55%, transparent);
   --bg-map: var(--bg);
-  --bg-card: var(--bg);
+  --bg-card: var(--card);
   --bg-card-sub: var(--surface);
   --bg-hover: color-mix(in srgb, var(--ink) 8%, transparent);
   --text-main: var(--ink);
   --text-muted: var(--muted);
   --text-faint: var(--muted);
-  --line-main: transparent;
+  --line-main: var(--wire);
   --line-strong: var(--ink);
   --accent: var(--accent-base);
   --accent-soft: var(--accent-soft-base);
   --shadow-card: none;
   --card-glass: none;
   /* 选中气泡必须是实心：旧的 color-mix(--surface, transparent) 只有 ~4% 不透明度，地图注记会透上来压住文字 */
-  --capsule-bg: var(--bg);
-  --capsule-line: color-mix(in srgb, var(--ink) 14%, transparent);
+  --capsule-bg: var(--card);
+  --capsule-line: var(--wire);
 }
 
 /* =====================================================================

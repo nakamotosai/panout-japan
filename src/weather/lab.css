@@ -20,10 +20,11 @@
    规则特异性相同、且 weather.css 后加载,所以把它们收进 app 与 noscript 两个子树里 ——
    章正文的标题与段落排版交回 app.css。 */
 .weather-lab :is(#weather-app, .weather-static-fallback) :is(h1, h2, h3, p) { margin: 0; }
-.weather-lab :is(#weather-app, .weather-static-fallback) h1 { font-family: var(--sans); font-size: clamp(30px,3.6vw,48px); line-height: 1.25; font-weight: 350; letter-spacing: -.035em; }
-.weather-lab :is(#weather-app, .weather-static-fallback) h2 { font-size: 22px; font-weight: 400; line-height: 1.45; }
-.weather-lab :is(#weather-app, .weather-static-fallback) h3 { font-size: 15px; font-weight: 500; }
-.weather-lab .muted { color: var(--muted); }
+.weather-lab :is(#weather-app, .weather-static-fallback) h1 { font-family: var(--serif); font-size: clamp(32px,3.8vw,50px); line-height: 1.15; font-weight: 700; letter-spacing: -.02em; }
+html[lang="en"] .weather-lab :is(#weather-app, .weather-static-fallback) h1 { font-weight: 400; }
+.weather-lab :is(#weather-app, .weather-static-fallback) h2 { font-family: var(--serif); font-size: 24px; font-weight: 700; line-height: 1.35; }
+html[lang="en"] .weather-lab :is(#weather-app, .weather-static-fallback) h2 { font-weight: 400; }
+.weather-lab :is(#weather-app, .weather-static-fallback) h3 { font-size: 15px; font-weight: 600; }
 .weather-lab .micro { font-family: var(--mono); font-size: 12px; line-height: 1.7; color: var(--muted); }
 .weather-lab a { text-underline-offset: 4px; }
 .weather-lab a:hover { text-decoration: underline; }
@@ -34,18 +35,17 @@
 .section-heading p { font-size: 14px; color: var(--muted); }
 .week-scroll { overflow-x: auto; padding-bottom: 12px; scrollbar-width: thin; -webkit-overflow-scrolling: touch; }
 .week-grid { display: grid; grid-template-columns: repeat(7, minmax(0,1fr)); gap: 12px; }
-.week-day { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; min-height: 168px; padding: 12px; background: var(--surface); border-radius: var(--radius); }
-.week-day.is-selected { background: var(--accent-soft); }
-.week-day .week-date { font-size: 13px; color: var(--muted); }
+.week-day { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; min-height: 168px; padding: 12px; background: var(--card); border: 1px solid var(--wire); border-radius: var(--radius); transition: border-color .2s var(--ease), background-color .2s var(--ease); }
+.week-day.is-selected { background: color-mix(in srgb, var(--accent) 6%, var(--card)); border-color: var(--accent); border-top: 3px solid var(--accent); }
+.week-day .week-date { font-family: var(--mono); font-size: 12px; color: var(--muted); }
 .week-day .weather-icon { margin-block: 12px; width: 26px; height: 26px; }
 .week-day .week-temp { margin-top: auto; font: 400 22px var(--serif); }
 .week-day .week-temp span { font-size: 16px; color: var(--muted); margin-left: 6px; }
 .week-day .week-rain { font-size: 13px; color: var(--muted); margin-top: 6px; }
 .week-day .week-reliability { font: 12px var(--mono); margin-top: 4px; color: var(--muted); }
-.day-control { display: inline-flex; gap: 4px; padding: 4px; border-radius: var(--radius); background: var(--surface); }
-.day-control button { min-height: 40px; padding: 6px 14px; border-radius: var(--btn-radius); font-size: 14px; color: var(--muted); transition: background-color .2s var(--ease), color .2s var(--ease); }
-.day-control button[aria-pressed="true"] { background: var(--bg); color: var(--accent); font-weight: 500; }
-
+.day-control { display: inline-flex; gap: 2px; padding: 2px; border: 1px solid var(--wire); border-radius: var(--radius); background: var(--card); }
+.day-control button { min-height: 40px; padding: 6px 14px; border-radius: var(--btn-radius); font-family: var(--mono); font-size: 12.5px; color: var(--muted); transition: background-color .2s var(--ease), color .2s var(--ease); }
+.day-control button[aria-pressed="true"] { background: var(--ink); color: var(--bg); font-weight: 600; }
 /* Editorial layout: left reading column, right national map. */
 .editorial-grid { display: grid; grid-template-columns: minmax(0,5fr) minmax(0,7fr); gap: 48px; align-items: start; padding-top: 24px; }
 .editorial-copy { display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; min-height: min(620px, 50vw, calc(100vh - 120px)); }
@@ -57,16 +57,15 @@
 .editorial-identity .editorial-en { margin-top: 2px; }
 .editorial-weather { display: flex; flex-direction: column; gap: 14px; }
 .editorial-weather .editorial-condition, .editorial-weather .editorial-temps { margin-block: 0; }
-.editorial-details { padding-top: 12px; border-top: 1px solid var(--border); }
-.editorial-details .editorial-rain { margin: 0; }
+.editorial-details { padding-top: 12px; border-top: 1px solid var(--wire); }
 .editorial-copy .picker { margin-top: 16px; }
 .editorial-dateline { font: 13px var(--mono); color: var(--accent); margin-bottom: 10px; }
 /* 快照过期时的诚实标注(JMA の発表日が今日でないビルド):JS 側の .editorial-stale と
    无 JS 兜底の .weather-stale は同じ見た目。2026-11-04 の事故で追加。 */
 .weather-lab .editorial-stale, .weather-lab .weather-stale { color: var(--danger); margin: 0 0 10px; }
-.editorial-place { font-size: clamp(28px,3vw,44px); font-weight: 350; line-height: 1.35; letter-spacing: -.035em; }
+.editorial-place { font-family: var(--serif); font-size: clamp(30px,3.2vw,46px); font-weight: 700; line-height: 1.18; letter-spacing: -.02em; }
+html[lang="en"] .editorial-place { font-weight: 400; }
 .editorial-en { font: 400 20px var(--serif); color: var(--muted); margin-top: 2px; }
-.editorial-condition { display: flex; align-items: center; gap: 12px; margin-block: 14px; font-size: 18px; }
 .editorial-condition .weather-icon { width: 42px; height: 42px; }
 .editorial-temps { display: flex; align-items: flex-end; gap: 24px; margin-block: 14px; }
 .editorial-temps .temperature { display: grid; gap: 4px; }
@@ -84,7 +83,7 @@
 .map-footer .map-legend { justify-content: center; margin: 0 0 4px; }
 .map-source { display: flex; justify-content: space-between; gap: 16px; font: 12px var(--mono); color: var(--muted); padding: 10px 8px 0; }
 .map-footer .map-source { padding: 0 8px; }
-.okinawa-inset { position: absolute; right: 16px; bottom: 120px; left: auto; z-index: 3; width: clamp(84px, 9vw, 128px); display: flex; flex-direction: column; gap: 4px; padding: 6px 6px 5px; background: color-mix(in srgb, var(--bg) 92%, transparent); border: 1px solid color-mix(in srgb, var(--ink) 16%, transparent); border-radius: var(--radius); text-align: left; cursor: default; }
+.okinawa-inset { position: absolute; right: 16px; bottom: 120px; left: auto; z-index: 3; width: clamp(84px, 9vw, 128px); display: flex; flex-direction: column; gap: 4px; padding: 6px 6px 5px; background: var(--card); border: 1px solid var(--wire); border-radius: var(--radius); text-align: left; cursor: default; }
 .okinawa-inset .okinawa-map { display: block; width: 100%; height: clamp(88px, 10vw, 110px); }
 .okinawa-inset .okinawa-land { fill: color-mix(in srgb, var(--ink) 10%, transparent); stroke: color-mix(in srgb, var(--ink) 28%, transparent); stroke-width: .9; vector-effect: non-scaling-stroke; pointer-events: none; }
 .okinawa-inset .okinawa-land.selected { fill: color-mix(in srgb, var(--accent) 48%, transparent); }
@@ -99,19 +98,19 @@
 .okinawa-inset .okinawa-pin:focus { outline: none; }
 .okinawa-inset .okinawa-pin:focus-visible .pin-disc { stroke: var(--accent); stroke-width: 2; }
 .okinawa-inset .okinawa-label { fill: var(--accent); font: 500 3px var(--sans); text-anchor: middle; pointer-events: none; }
-.okinawa-inset .okinawa-inset-button { align-self: flex-start; font: 12px/1.4 var(--mono); color: var(--muted); letter-spacing: .01em; padding: 2px 8px; border: 1px solid color-mix(in srgb, var(--ink) 16%, transparent); border-radius: var(--btn-radius); background: transparent; transition: background-color .2s var(--ease), color .2s var(--ease), border-color .2s var(--ease); }
-.okinawa-inset .okinawa-inset-button:hover { background: var(--surface); }
-.okinawa-inset.is-selected { border-color: color-mix(in srgb, var(--ink) 32%, transparent); }
-.okinawa-inset.is-selected .okinawa-inset-button { color: var(--ink); border-color: color-mix(in srgb, var(--ink) 36%, transparent); }
+.okinawa-inset .okinawa-inset-button { align-self: flex-start; font: 12px/1.4 var(--mono); color: var(--muted); letter-spacing: .01em; padding: 2px 8px; border: 1px solid var(--wire); border-radius: var(--btn-radius); background: transparent; transition: background-color .2s var(--ease), color .2s var(--ease), border-color .2s var(--ease); }
+.okinawa-inset .okinawa-inset-button:hover { background: var(--surface); border-color: var(--ink); color: var(--ink); }
+.okinawa-inset.is-selected { border-color: var(--ink); }
+.okinawa-inset.is-selected .okinawa-inset-button { color: var(--ink); border-color: var(--wire-strong); }
 
 /* Custom picker: a quiet button and a native-free listbox. */
 .picker { position: relative; margin-top: 16px; }
 .picker-label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
-.picker-trigger { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 44px; padding: 8px 12px; background: var(--surface); border-radius: var(--radius); text-align: left; color: var(--ink); font-size: 15px; }
-.picker-trigger:hover { background: var(--accent-soft); }
+.picker-trigger { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 44px; padding: 8px 12px; background: var(--card); border: 1px solid var(--wire); border-radius: var(--radius); text-align: left; color: var(--ink); font-size: 15px; }
+.picker-trigger:hover { border-color: var(--ink); background: var(--card); }
 .picker-chevron { font: 15px var(--mono); color: var(--accent); transition: transform .2s var(--ease); }
 .picker-trigger[aria-expanded="true"] .picker-chevron { transform: rotate(180deg); }
-.picker-panel { position: absolute; z-index: 40; left: 0; right: 0; bottom: calc(100% + 4px); max-height: 320px; overflow-y: auto; background: var(--bg); border-radius: var(--radius); box-shadow: 0 10px 30px rgba(0,0,0,.14); padding: 4px; scrollbar-width: thin; }
+.picker-panel { position: absolute; z-index: 40; left: 0; right: 0; bottom: calc(100% + 4px); max-height: 320px; overflow-y: auto; background: var(--card); border: 1px solid var(--wire-strong); border-radius: var(--radius); padding: 4px; scrollbar-width: thin; }
 .picker-trigger { position: relative; z-index: 41; }
 .picker-panel[hidden] { display: none; }
 .picker-option { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; min-height: 40px; padding: 6px 10px; border-radius: var(--btn-radius); text-align: left; font-size: 14px; }
@@ -136,8 +135,9 @@
 .directory-table td.temp { width: 5.2em; text-align: right; font: 13px var(--mono); white-space: nowrap; color: var(--muted); }
 .directory-table td.temp b { font-weight: 400; color: var(--ink); }
 .directory-table .weather-icon { width: 18px; height: 18px; }
-.weather-notes { margin-top: 40px; padding: 20px 0 0; display: grid; grid-template-columns: 1fr 2fr; gap: 24px; }
-.weather-notes h2 { font-size: 16px; }
+.weather-notes { margin-top: 40px; padding: 24px 0 0; border-top: 1px solid var(--wire); display: grid; grid-template-columns: 1fr 2fr; gap: 24px; }
+.weather-notes h2 { font-family: var(--serif); font-weight: 700; font-size: 18px; }
+html[lang="en"] .weather-notes h2 { font-weight: 400; }
 .weather-notes-content { display: grid; gap: 10px; }
 .weather-notes p { font-size: 13px; line-height: 1.75; color: var(--muted); }
 .weather-notes a { color: var(--accent); }

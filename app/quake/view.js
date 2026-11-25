@@ -28,7 +28,7 @@ const CSS_CANDIDATES = [
   './app/quake/vendor/quake-core.css',
   '../app/quake/vendor/quake-core.css',
 ];
-const THEME_MAP = { sage: 'sage', dark: 'dark', mono: 'sage', tactical: 'dark' };
+const THEME_MAP = { light: 'sage', sage: 'sage', dark: 'dark', mono: 'sage', tactical: 'dark' };
 
 let mounted = false;
 let bootToken = 0;
@@ -70,10 +70,12 @@ function detectLang() {
 
 function detectTheme() {
   const de = (typeof document !== 'undefined') ? document.documentElement.getAttribute('data-theme') : null;
-  if (de === 'sage' || de === 'dark') return de;
+  if (de === 'light' || de === 'sage') return 'sage';
+  if (de === 'dark') return 'dark';
   try {
     const t = localStorage.getItem('pj-theme') || localStorage.getItem('eq-theme');
-    if (t === 'sage' || t === 'dark') return t;
+    if (t === 'light' || t === 'sage') return 'sage';
+    if (t === 'dark') return 'dark';
   } catch (e) {}
   return 'sage';
 }

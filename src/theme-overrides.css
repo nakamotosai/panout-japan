@@ -1,23 +1,106 @@
-/* japan.ouuut.com · theme-overrides — 项目专有层。
-   本文件只放**不在** sai-assets/ouuut-editorial 包里、或与包取值不同的规则;
-   通用 token(配色 / 字体族 / 版式刻度 / 动效)一律由包提供:
-     src/packs/ouuut-editorial/css/type.css  →  字体族 · 版式栅格 · 字号档 · 动效刻度
-     src/packs/ouuut-editorial/css/all.css   →  纸白 / 炭黑双模 · 和色六景 A–D · 章节提色
+/* japan.ouuut.com · theme-overrides — Wireframe Studio Edition / 和色六景
    构建顺序(build.py):包 type.css → 包 all.css → 本文件 → src/app.css。
-   包内已有的声明不在此重复,避免出现第二份副本。 */
+   包内只读文件不改(保 assert_tokens.py 绿);本层补齐 Wireframe Studio 所需
+   线框令牌(--card / --bar / --wire* / --c1..c6 / --c*-ink / 卡尺滚动条令牌 /
+   2px 架构圆角 / 64px 页头)及 JA/ZH-Hans/ZH-Hant/EN 衬线加粗字体栈。 */
 
-/* ---- 1) 封面 H1 的 <900px 下限 ----
-   包内 type.css 全局取 --fs-h1-en: clamp(2.6rem, …) 一档;本站封面 H1 是 2rem 起
-   (两栏 hero 才需要 2.6rem),故按原 tokens.css 的取值把 <900px 这一半补回来。
-   `not all and (min-width: 900px)` 即精确的“视口 < 900px”,与下面 ≥900px 组互补。 */
+:root,
+html[data-theme="light"],
+html[data-theme="sage"] {
+  color-scheme: light;
+  --bg: #F5F3ED;
+  --card: #FBFAF5;
+  --bar: rgba(245, 243, 237, 0.92);
+  --ink: #1A1A16;
+  --muted: #5B5A53;
+  --surface: rgba(26, 26, 22, 0.045);
+  --surface-2: rgba(26, 26, 22, 0.08);
+
+  --wire: rgba(26, 26, 22, 0.16);
+  --wire-soft: rgba(26, 26, 22, 0.08);
+  --wire-strong: rgba(26, 26, 22, 0.34);
+
+  --c1: #0C8B7A;
+  --c2: #A77109;
+  --c3: #CD5545;
+  --c4: #3F7DCA;
+  --c5: #678618;
+  --c6: #A165AE;
+
+  --c1-ink: #07685B;
+  --c2-ink: #7E5404;
+  --c3-ink: #A53A2C;
+  --c4-ink: #275DA3;
+  --c5-ink: #4A610E;
+  --c6-ink: #7D468A;
+
+  --sb-edge: rgba(26, 26, 22, 0.42);
+  --sb-fill: rgba(26, 26, 22, 0.10);
+  --sb-fill2: rgba(26, 26, 22, 0.22);
+
+  --radius: 2px;
+  --btn-radius: 2px;
+  --nav-h: 64px;
+
+  --serif: 'Instrument Serif', 'Serif Fallback', 'Noto Serif SC', 'Noto Serif JP', Georgia, serif;
+  --sans: 'Geist', 'Noto Sans SC', 'Noto Sans JP', -apple-system, 'Microsoft YaHei', sans-serif;
+  --mono: 'JetBrains Mono', 'Noto Sans SC', 'Noto Sans JP', ui-monospace, monospace;
+  --zh-hant-serif: 'Instrument Serif', 'Serif Fallback', 'Noto Serif TC Punct', 'Noto Serif TC', 'Noto Serif SC', 'Noto Serif JP', Georgia, serif;
+  --zh-hant-sans: 'Geist', 'Noto Sans TC Punct', 'Noto Sans TC', 'Noto Sans SC', 'Noto Sans JP', -apple-system, 'Microsoft JhengHei', sans-serif;
+}
+
+html[lang="ja"] {
+  --serif: 'Instrument Serif', 'Serif Fallback', 'Noto Serif JP', 'Noto Serif SC', Georgia, serif;
+  --sans: 'Geist', 'Noto Sans JP', 'Noto Sans SC', -apple-system, sans-serif;
+  --mono: 'JetBrains Mono', 'Noto Sans JP', 'Noto Sans SC', ui-monospace, monospace;
+}
+
+html[lang="zh-Hans"] {
+  --serif: 'Instrument Serif', 'Serif Fallback', 'Noto Serif SC', 'Noto Serif JP', Georgia, serif;
+  --sans: 'Geist', 'Noto Sans SC', 'Noto Sans JP', -apple-system, 'Microsoft YaHei', sans-serif;
+  --mono: 'JetBrains Mono', 'Noto Sans SC', 'Noto Sans JP', ui-monospace, monospace;
+}
+
+html[lang="zh-Hant"] {
+  --serif: var(--zh-hant-serif);
+  --sans: var(--zh-hant-sans);
+  --mono: 'JetBrains Mono', 'Noto Sans TC Punct', 'Noto Sans TC', 'Noto Sans SC', ui-monospace, monospace;
+  --zh-serif: var(--zh-hant-serif);
+  --zh-sans: var(--zh-hant-sans);
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0E0E0C;
+  --card: #151512;
+  --bar: rgba(14, 14, 12, 0.92);
+  --ink: #EDEBE4;
+  --muted: #A3A199;
+  --surface: rgba(237, 235, 228, 0.055);
+  --surface-2: rgba(237, 235, 228, 0.10);
+
+  --wire: rgba(237, 235, 228, 0.22);
+  --wire-soft: rgba(237, 235, 228, 0.09);
+  --wire-strong: rgba(237, 235, 228, 0.42);
+
+  --c1-ink: #47C9B4;
+  --c2-ink: #DBA335;
+  --c3-ink: #EA8776;
+  --c4-ink: #77ACEB;
+  --c5-ink: #9EC04E;
+  --c6-ink: #C690D1;
+
+  --sb-edge: rgba(237, 235, 228, 0.46);
+  --sb-fill: rgba(237, 235, 228, 0.13);
+  --sb-fill2: rgba(237, 235, 228, 0.26);
+}
+
 @media not all and (min-width: 900px) {
   :root {
     --fs-h1-en: clamp(2rem, 6.2vw, 5.7rem);
   }
 }
 
-/* ---- 2) 封面 H1 clamp(≥900px 两栏 hero) ----
-   原 src/tokens.css 原文保留:取值与包内 type.css 相同,此处只作为上方补丁的另一半。 */
 @media (min-width: 900px) {
   :root {
     --fs-h1-en: clamp(2.6rem, 6.2vw, 5.7rem);
@@ -26,17 +109,6 @@
   }
 }
 
-/* ---- 3) 强调色组 C(双色印刷)的默认重点色 ----
-   包内 css/all.css 的 [data-palette="c"] 不重设 --accent-base,于是回落到
-   var(--c-crime)(C 组里 = 藍 #3F7DCA);本站 C 组的默认重点色是**朱**(--c-quake
-   = #CF5343),故按原样覆盖。
-
-   :not([data-chapter]) 是关键:原 tokens.css 里,组规则(html[data-palette="c"])
-   之后紧接着六条章节提色规则(html[data-chapter="…"] → var(--c-…)),两者同为
-   (0,1,1),靠文件顺序让**章节色胜出**。包内章节规则在上游文件里、顺序恒早于本文件,
-   所以这里必须显式排除有 data-chapter 的页面,否则 C 组章节页的重点色会从
-   该章色被掰成朱(实测 crime 页:#3F7DCA → #CF5343)。站点只发六种 data-chapter 值
-   (site/ 下各章 index.html 实测),故 :not([data-chapter]) 与原来的顺序语义逐值等价。 */
 html[data-palette="c"]:not([data-chapter]) {
   --accent-base: var(--c-quake);
 }

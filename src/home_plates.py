@@ -475,3 +475,74 @@ def population_svg(doc, w=1000, h=760, T=None, lang="ja"):
                f'54 × 32 / 1,719</text>')
 
     return _svg(w, h, _t(T, "plate.pop.aria"), "".join(out))
+
+
+def companion_essays_svg(w=1000, h=420, label="Pretending in Tokyo essays"):
+    """Editorial manuscript sheet & life-ledger bars for jp.ouuut.com card."""
+    out = []
+    # Subtle architectural ruling grid on right half
+    for x in range(420, 960, 48):
+        out.append(f'<line x1="{x}" y1="24" x2="{x}" y2="{h - 24}" stroke="var(--ink)" stroke-width="0.6" opacity="0.06"/>')
+    for y in range(48, h - 24, 48):
+        out.append(f'<line x1="360" y1="{y}" x2="960" y2="{y}" stroke="var(--ink)" stroke-width="0.6" opacity="0.06"/>')
+    # Manuscript page frame
+    out.append('<rect x="440" y="34" width="500" height="344" fill="none" stroke="var(--ink)" stroke-width="1.2" opacity="0.24"/>')
+    out.append('<line x1="476" y1="34" x2="476" y2="378" stroke="var(--accent)" stroke-width="1.4" opacity="0.45"/>')
+    # Editorial headline rule + columns
+    out.append('<rect x="498" y="64" width="310" height="12" rx="1" fill="var(--accent)" opacity="0.48"/>')
+    out.append('<rect x="498" y="88" width="190" height="6" rx="1" fill="var(--ink)" opacity="0.22"/>')
+    lines = [
+        (498, 126, 412, 0.16), (498, 144, 388, 0.14), (498, 162, 404, 0.16),
+        (498, 180, 340, 0.12), (498, 214, 412, 0.16), (498, 232, 372, 0.14),
+        (498, 250, 396, 0.15), (498, 268, 290, 0.12),
+    ]
+    for x, y, lw, op in lines:
+        out.append(f'<rect x="{x}" y="{y}" width="{lw}" height="4.5" rx="1" fill="var(--ink)" opacity="{op}"/>')
+    # Three life-ledger calculator gauges at bottom of sheet
+    for i, (bx, bw, op) in enumerate(((498, 118, 0.55), (636, 118, 0.38), (774, 118, 0.25))):
+        out.append(f'<rect x="{bx}" y="302" width="{bw}" height="46" fill="none" stroke="var(--accent)" stroke-width="1.2" opacity="{op + 0.15:.2f}"/>')
+        out.append(f'<rect x="{bx + 10}" y="316" width="{int(bw * 0.58)}" height="6" fill="var(--accent)" opacity="{op:.2f}"/>')
+        out.append(f'<rect x="{bx + 10}" y="329" width="{int(bw * 0.78)}" height="4" fill="var(--ink)" opacity="0.22"/>')
+    # Editorial seal ring
+    out.append('<circle cx="888" cy="82" r="24" fill="none" stroke="var(--accent)" stroke-width="1.4" opacity="0.52"/>')
+    out.append('<circle cx="888" cy="82" r="5" fill="var(--accent)" opacity="0.72"/>')
+    return _svg(w, h, label, "".join(out))
+
+
+def companion_hot_svg(w=1000, h=420, label="Japan 24h trends live monitor"):
+    """13-source 24h live trend waveform & scanline radar for jp.ouuut.com/hot card."""
+    out = []
+    # 24h vertical ruler grid (00, 06, 12, 18, 24)
+    x0, x1, y0, y1 = 380, 956, 40, 368
+    for i in range(5):
+        gx = x0 + (x1 - x0) * i / 4.0
+        out.append(f'<line x1="{gx:.1f}" y1="{y0}" x2="{gx:.1f}" y2="{y1}" stroke="var(--ink)" stroke-width="0.8" opacity="0.12"/>')
+    # 13 source activity tracks
+    widths = [0.84, 0.62, 0.92, 0.48, 0.76, 0.54, 0.88, 0.41, 0.69, 0.95, 0.58, 0.73, 0.44]
+    for idx, frac in enumerate(widths):
+        ty = 52 + idx * 23.5
+        bw = (x1 - x0) * frac
+        hot = idx in (0, 2, 6, 9)
+        fill = "var(--accent)" if hot else "var(--ink)"
+        op = 0.34 if hot else 0.12
+        out.append(f'<line x1="{x0}" y1="{ty:.1f}" x2="{x1}" y2="{ty:.1f}" stroke="var(--ink)" stroke-width="0.6" opacity="0.08"/>')
+        out.append(f'<rect class="hp-comp-bar" style="--i:{idx}" x="{x0}" y="{ty - 5:.1f}" width="{bw:.1f}" height="10" rx="1" fill="{fill}" opacity="{op}"/>')
+    # Overlaid live spike curve
+    pts_data = [0.22, 0.31, 0.28, 0.44, 0.39, 0.58, 0.52, 0.74, 0.66, 0.86, 0.79, 0.92, 0.84]
+    pts = []
+    for i, v in enumerate(pts_data):
+        px = x0 + (x1 - x0) * i / (len(pts_data) - 1)
+        py = y1 - (y1 - y0) * v
+        pts.append(f"{px:.1f},{py:.1f}")
+    poly = " ".join(pts)
+    area = f"{x0},{y1} " + poly + f" {x1},{y1}"
+    out.append(f'<polygon points="{area}" fill="var(--accent)" opacity="0.10"/>')
+    out.append(f'<polyline points="{poly}" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" opacity="0.88"/>')
+    # Live endpoint & oscillating scanline
+    lx, ly = pts[-1].split(",")
+    out.append(f'<circle cx="{lx}" cy="{ly}" r="5" fill="var(--accent)" opacity="0.9"/>')
+    out.append(f'<circle cx="{lx}" cy="{ly}" r="11" fill="none" stroke="var(--accent)" stroke-width="1.4" opacity="0.5"/>')
+    out.append(f'<g class="hp-comp-scan" style="--d:{x1 - x0}">'
+               f'<line x1="{x0}" y1="{y0}" x2="{x0}" y2="{y1}" stroke="var(--accent)" stroke-width="1.8" opacity="0.55"/></g>')
+    return _svg(w, h, label, "".join(out))
+

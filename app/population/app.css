@@ -26,12 +26,11 @@
 .pop-metrics,
 .pop-views {
   display: flex;
-  gap: 4px;
-  padding: 3px;
-  border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--bg) 82%, transparent);
-  backdrop-filter: blur(8px);
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--wire, color-mix(in srgb, var(--ink) 16%, transparent));
+  border-radius: 2px;
+  background: var(--card, var(--bg));
 }
 
 .pop-metrics button,
@@ -40,11 +39,11 @@
   border: 0;
   background: transparent;
   color: var(--muted);
-  font: inherit;
+  font-family: var(--mono, inherit);
   font-size: 12px;
   line-height: 1;
   padding: 7px 11px;
-  border-radius: 999px;
+  border-radius: 2px;
   cursor: pointer;
   white-space: nowrap;
   transition: background .18s var(--ease), color .18s var(--ease);
@@ -89,10 +88,9 @@
   margin: 0;
   padding: 4px;
   list-style: none;
-  background: var(--bg);
-  border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
-  border-radius: 4px;
-  box-shadow: 0 18px 50px color-mix(in srgb, var(--ink) 14%, transparent);
+  background: var(--card, var(--bg));
+  border: 1px solid var(--wire, color-mix(in srgb, var(--ink) 16%, transparent));
+  border-radius: 2px;
 }
 
 .pop-results button {
@@ -130,10 +128,10 @@
 }
 
 .pop-headline b {
-  font-family: var(--wordmark, var(--sans));
-  font-weight: 800;
-  font-size: clamp(30px, 4.2vw, 50px);
-  line-height: .92;
+  font-family: var(--serif, var(--sans));
+  font-weight: 700;
+  font-size: clamp(32px, 4.4vw, 52px);
+  line-height: .96;
   letter-spacing: -.02em;
   color: var(--accent-ink);
   font-variant-numeric: tabular-nums;
@@ -178,9 +176,10 @@
   max-height: calc(100% - 88px);
   overflow: auto;
   padding: 18px 18px 14px;
-  background: var(--bg);
-  border: 1px solid color-mix(in srgb, var(--ink) 9%, transparent);
-  border-radius: 4px;
+  background: var(--card, var(--bg));
+  border: 1px solid var(--wire, color-mix(in srgb, var(--ink) 16%, transparent));
+  border-top: 3px solid var(--accent);
+  border-radius: 2px;
   font-size: 13px;
   scrollbar-width: thin;
 }
@@ -211,18 +210,18 @@
 
 .pop-card-name {
   margin: 0 0 8px;
-  font-family: var(--ja-serif, var(--serif));
-  font-weight: 500;
-  font-size: 23px;
-  line-height: 1.15;
-  letter-spacing: .01em;
+  font-family: var(--serif, var(--ja-serif));
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1.18;
+  letter-spacing: -.01em;
 }
 
 .pop-card-big {
   margin: 0;
-  font-family: var(--wordmark, var(--sans));
-  font-weight: 800;
-  font-size: 34px;
+  font-family: var(--serif, var(--sans));
+  font-weight: 700;
+  font-size: 36px;
   line-height: 1;
   letter-spacing: -.02em;
   font-variant-numeric: tabular-nums;
@@ -355,11 +354,11 @@
   padding: 7px 9px;
   background: var(--ink);
   color: var(--bg);
-  border-radius: 3px;
+  border: 1px solid var(--wire-strong, var(--ink));
+  border-radius: 2px;
   font-size: 11px;
   line-height: 1.35;
   pointer-events: none;
-  box-shadow: 0 8px 24px color-mix(in srgb, var(--ink) 18%, transparent);
 }
 
 .pop-tooltip b { display: block; font-weight: 600; font-size: 12px; }
@@ -401,7 +400,6 @@
     padding: 15px 15px 12px;
     transform: translateY(calc(100% + 18px));
     transition: transform .28s var(--ease);
-    box-shadow: 0 18px 50px color-mix(in srgb, var(--ink) 18%, transparent);
   }
   .pop-card.is-mobile-open { transform: none; }
   .pop-card-close { display: block; }

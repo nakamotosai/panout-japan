@@ -7,7 +7,7 @@
 const DATA_CANDIDATES = ["./app/cabinet/data.json","../app/cabinet/data.json"];
 let cabForcedBase = null;
 
-const THEME_MAP = { mono: "editorial", sage: "editorial", dark: "tactical", tactical: "tactical", editorial: "editorial" };
+const THEME_MAP = { light: "editorial", mono: "editorial", sage: "editorial", dark: "tactical", tactical: "tactical", editorial: "editorial" };
 
 
 // ECharts 画在 canvas 上，不认识 CSS 变量：直接塞 'var(--ja-sans)' 会静默回落到浏览器默认衬线。
@@ -57,11 +57,11 @@ const CAB_CSS = `
   position: absolute;
   z-index: 6;
   padding: 9px 11px;
-  border-radius: 6px;
+  border-radius: 2px;
   border: 1px solid;
   pointer-events: none;
   font-family: var(--font-sans, system-ui);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.26);
+  box-shadow: none;
 }
 .cab-readout .cr-head {
   display: flex;

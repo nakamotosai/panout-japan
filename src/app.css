@@ -1,6 +1,6 @@
-/* japan.ouuut.com · app.css — layout, type, chrome.
-   Same publication system as ouuut.com: sage/dark, zero structural lines,
-   Outfit wordmark, 4px surface blocks, mono data rails. */
+/* japan.ouuut.com · app.css — Wireframe Studio Edition / 和色六景.
+   Always-ON 48px architectural wireframe grid, Paper/Charcoal + Wa-iro six hues,
+   Sylfaen/Hand-O lockup, Display Serif headings, 2px card/control geometry. */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -8,23 +8,28 @@ html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
   overflow-x: clip;
+  scrollbar-width: thin;
+  scrollbar-color: var(--sb-edge) transparent;
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
 body {
   min-height: 100vh;
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(to right, var(--wire-soft) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--wire-soft) 1px, transparent 1px);
+  background-size: 48px 48px;
   color: var(--ink);
   font-family: var(--sans);
   font-size: var(--fs-body);
   line-height: var(--lh-en);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  transition: background-color 0.65s cubic-bezier(0.16, 1, 0.3, 1),
-              color 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: background-color 0.2s ease, color 0.2s ease;
   overflow-x: clip;
 }
-
 /* 全局跨文档 View Transition 与页面平滑淡入（时长更充分，质感更从容） */
 @view-transition {
   navigation: auto;
@@ -62,12 +67,11 @@ main#main {
 /* 全局主题与颜色平滑流转 (0.65s 柔和缓动，肉眼可见的舒适渐变) */
 html, body, .masthead, .stage, .cab-host, #crm-root, .panel-card, .hp-band, .hp-entry,
 .theme-toggle, .lang-switch, .cab-pill, .seg button {
-  transition: background-color 0.65s cubic-bezier(0.16, 1, 0.3, 1),
-              color 0.65s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.65s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.65s cubic-bezier(0.16, 1, 0.3, 1),
-              fill 0.65s cubic-bezier(0.16, 1, 0.3, 1),
-              stroke 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: background-color 0.2s ease,
+              color 0.2s ease,
+              border-color 0.2s ease,
+              fill 0.2s ease,
+              stroke 0.2s ease;
 }
 
 a { color: inherit; text-decoration: none; }
@@ -77,20 +81,25 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 button:disabled { cursor: progress; }
 ::selection { background: var(--accent); color: var(--bg); }
 
-/* Project scrollbar: classic, themed; never the OS overlay bar.
-   Keep scrollbar-width at auto so Chrome uses ::-webkit-scrollbar, not the
-   white Fluent overlay thumb. Firefox gets scrollbar-color. */
-* { scrollbar-color: color-mix(in srgb, var(--muted) 55%, transparent) transparent; }
-::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--muted) 55%, transparent);
-  border-radius: 999px;
+/* Caliper Ruler Scrollbar (48px major / 12px minor ticks) */
+::-webkit-scrollbar { width: 11px; height: 11px; }
+::-webkit-scrollbar-track {
+  background-color: color-mix(in srgb, var(--ink) 3%, transparent);
+  background-image:
+    repeating-linear-gradient(to bottom, var(--wire) 0, var(--wire) 1px, transparent 1px, transparent 48px),
+    repeating-linear-gradient(to bottom, var(--wire-soft) 0, var(--wire-soft) 1px, transparent 1px, transparent 12px);
+  background-size: 100% 100%, 6px 100%;
+  background-repeat: no-repeat;
+  border-left: 1px solid var(--wire);
 }
-::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--accent) 70%, transparent); }
-html { scrollbar-width: none; }
-html::-webkit-scrollbar { display: none; }
-
+::-webkit-scrollbar-thumb {
+  background-color: var(--sb-fill);
+  background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 5px, var(--wire-soft) 5px, var(--wire-soft) 6px);
+  border: 1px solid var(--sb-edge);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover { background-color: var(--sb-fill2); border-color: var(--ink); }
+::-webkit-scrollbar-corner { background: transparent; }
 .sr-only {
   position: absolute;
   width: 1px;
@@ -141,11 +150,12 @@ body.chapter-app { min-height: 100dvh; }
 /* 見出しは h2 を四本。本文は一続きの文書として舞台の下に置く(JS なしでも読める)。 */
 .ch-doc {
   padding-block: clamp(36px, 5vw, 64px);
-  border-top: 1px solid color-mix(in srgb, var(--ink) 9%, transparent);
+  border-top: 1px solid var(--wire);
 }
 .ch-doc-head { max-width: 46em; margin: 0 0 clamp(16px, 2vw, 24px); }
 .ch-doc-eyebrow {
   margin: 0 0 10px;
+  font-family: var(--mono);
   font-size: 11px;
   letter-spacing: .12em;
   text-transform: uppercase;
@@ -153,13 +163,14 @@ body.chapter-app { min-height: 100dvh; }
 }
 .ch-doc h2 {
   margin: 0;
-  font-family: var(--ja-serif);
-  font-weight: 500;
+  font-family: var(--serif);
+  font-weight: 400;
   font-size: clamp(1.35rem, 2.4vw, 1.9rem);
-  line-height: 1.3;
-  letter-spacing: .01em;
+  line-height: 1.25;
+  letter-spacing: -.01em;
 }
-html[lang^="zh"] .ch-doc h2 { font-family: var(--zh-serif); }
+html[lang="ja"] .ch-doc h2,
+html[lang^="zh"] .ch-doc h2 { font-weight: 700; }
 .ch-doc p {
   max-width: 44em;
   margin: 0 0 1.05em;
@@ -172,11 +183,16 @@ html[lang^="zh"] .ch-doc h2 { font-family: var(--zh-serif); }
 .ch-facts {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 14px 28px;
+  gap: 1px;
   max-width: 46em;
   margin: clamp(20px, 2.4vw, 30px) 0 0;
-  padding: clamp(16px, 2vw, 22px) 0 0;
-  border-top: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+  background: var(--wire);
+  border: 1px solid var(--wire);
+}
+.ch-facts > div {
+  min-width: 0;
+  background: var(--card);
+  padding: 12px 14px;
 }
 .ch-facts > div { min-width: 0; }
 .ch-facts dt {
@@ -298,7 +314,7 @@ html[lang^="zh"] .ch-doc h2 { font-family: var(--zh-serif); }
   width: 100%;
 }
 /* 地震视口 Sage 浅色模式全套配色覆盖与底部渐变遮罩移除 */
-html[data-theme="sage"] #v-quake-viewport {
+:is(html[data-theme="light"], html[data-theme="sage"]) #v-quake-viewport {
   --accent: var(--accent-base) !important;
   --accent-ink: var(--accent-ink-base) !important;
   --accent-soft: var(--accent-soft-base) !important;
@@ -394,29 +410,20 @@ main, main > section[id], #chapters, #download {
 .wrap.narrow { max-width: 900px; }
 
 /* ---------------- atmosphere ---------------- */
-.grain {
-  position: fixed;
-  inset: 0;
-  z-index: 90;
-  pointer-events: none;
-  opacity: .055;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.86' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 180px 180px;
-}
-.scroll-progress {
-  position: fixed;
-  top: 0;
+.scroll-progress-bar {
+  position: absolute;
   left: 0;
-  z-index: 120;
-  width: 0;
-  height: 3px;
-  background: var(--accent);
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--c1), var(--c2), var(--c3), var(--c4), var(--c5), var(--c6));
+  transform-origin: left center;
+  transform: scaleX(0);
   pointer-events: none;
-  transition: width .08s linear;
+  z-index: 5;
 }
 @media (prefers-reduced-motion: reduce) {
-  .grain { display: none; }
-  .scroll-progress { transition: none; }
+  .scroll-progress-bar { display: none; }
 }
 
 /* Keep CJK phrases together where the engine supports phrase segmentation. */
@@ -443,7 +450,7 @@ h1, h2, h3, .lede, .section-title, .prod-name, .beat h3, .prose p, .data-table t
 .section-title {
   font-family: var(--serif);
   font-size: var(--fs-section);
-  line-height: 1.12;
+  line-height: 1.15;
   letter-spacing: -.02em;
   font-weight: 400;
   color: var(--ink);
@@ -451,6 +458,8 @@ h1, h2, h3, .lede, .section-title, .prod-name, .beat h3, .prose p, .data-table t
   max-width: 26ch;
   text-wrap: balance;
 }
+html[lang="ja"] .section-title,
+html[lang^="zh"] .section-title { font-weight: 700; }
 .section-sub { color: var(--muted); font-size: var(--fs-small); line-height: 1.7; margin-bottom: 24px; }
 
 /* ---------------- CJK routing ---------------- */
@@ -494,14 +503,11 @@ html[lang^="zh"] .foot, html[lang^="zh"] .pager {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: color-mix(in srgb, var(--bg) 90%, transparent);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  transition: background-color .3s ease, box-shadow .3s ease;
-}
-.masthead.scrolled {
-  background: color-mix(in srgb, var(--bg) 96%, transparent);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, .03);
+  background: var(--bar);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--wire);
+  transition: background-color .2s ease;
 }
 
 /* ---------------- 面包屑 ---------------- */
@@ -509,7 +515,7 @@ html[lang^="zh"] .foot, html[lang^="zh"] .pager {
 :root { --crumb-h: 38px; }
 .crumbs {
   height: var(--crumb-h);
-  border-bottom: 1px solid color-mix(in srgb, var(--ink) 9%, transparent);
+  border-bottom: 1px solid var(--wire);
   background: var(--bg);
 }
 .crumbs ol {
@@ -520,6 +526,7 @@ html[lang^="zh"] .foot, html[lang^="zh"] .pager {
   margin: 0;
   padding: 0 var(--pad);
   list-style: none;
+  font-family: var(--mono);
   font-size: 11px;
   letter-spacing: .04em;
   color: var(--muted);
@@ -536,115 +543,61 @@ html[lang^="zh"] .foot, html[lang^="zh"] .pager {
   display: flex;
   align-items: center;
   height: var(--nav-h);
-  gap: 20px;
+  gap: 18px;
 }
 
 .wordmark {
   display: inline-flex;
-  align-items: baseline;
+  align-items: center;
   gap: 0;
   font-family: var(--wordmark);
   font-weight: 800;
-  font-size: 33px;
+  font-size: 28px;
   line-height: 1;
   letter-spacing: -.015em;
-  color: var(--accent);
+  color: var(--ink);
   white-space: nowrap;
-  transition: color .3s ease, opacity .2s ease;
+  flex-shrink: 0;
+  transition: opacity .2s ease;
 }
-.wordmark:hover { color: var(--accent); opacity: .82; }
+.wordmark:hover { opacity: .84; }
 .wordmark .wm-main { font-size: 1em; letter-spacing: -.015em; }
 .wordmark .wm-tld { font-size: 1em; letter-spacing: -.015em; font-weight: 800; }
+.wm-lockup { display: block; height: 19px; width: auto; flex-shrink: 0; }
+.wm-lockup.is-animated-lockup,
+.wm-lockup.is-drop-wordmark { overflow: visible; }
+.wm-lockup path { transition: fill .2s ease, stroke .2s ease; }
+.wm-lockup .g-pre,
+.wm-lockup .g-dot1,
+.wm-lockup .g-c,
+.wm-lockup .g-o,
+.wm-lockup .g-m { fill: var(--ink); stroke: var(--ink); }
+.wm-lockup .g-mark { fill: var(--c1); stroke: var(--c1); }
+.wm-lockup .g-u1 { fill: var(--c2); stroke: var(--c2); }
+.wm-lockup .g-u2 { fill: var(--c3); stroke: var(--c3); }
+.wm-lockup .g-u3 { fill: var(--c4); stroke: var(--c4); }
+.wm-lockup .g-t4 { fill: var(--c5); stroke: var(--c5); }
+.wm-lockup .g-dot { fill: var(--c6); stroke: var(--c6); }
 
-/* 2026-11-04 rebrand: the hand-drawn O that opens the wordmark, japan.|O|uuut.com.
-   Geometry is inlined at build time by src/build.py from ouuut-brand/logo/ouuut-mark.json
-   (no second copy of the path). Colour is not written here: the wrapping span carries
-   color:var(--c-weather), so all four palettes (a/b/c/d) follow the variable, and
-   fill="currentColor" picks it up.
-   Size: Outfit 800's o ink height is 512/1000em; the mark's ink height is 1.10x that
-   = .5625em (18.56px at 33px). Width = height x 996.72/999.15 (the asset ink bounds
-   ratio) = .5611em. vertical-align keeps the o's -.011em baseline overshoot.
-   The mark's box is its ink box, so it has no side bearing of its own, and Chrome adds
-   no letter-spacing after an atomic inline either: margin 18/1000em per side restores
-   exactly the bearings the letter o had, and the ink gaps either side come out equal
-   to the o's.
-   Measured on the built site (33px): wordmark total 253.06px before the swap and
-   254.05px after, i.e. +30/1000em x 33px; the mark's box is 19.703px = 18.516px of ink
-   plus 2 x .018em bearings, against the o's 18.719px advance box, and both ink gaps
-   measure .594px = 18/1000em, matching the o's font bearing (17.6/1000em).
-   Keep this comment ASCII: app.css text also feeds the CJK font subset charset
-   (collect_chars), and CJK here would grow site/assets/fonts for nothing. */
+@keyframes logoLetterHop {
+  0%, 10%, 100% { transform: translateY(0); }
+  4% { transform: translateY(-135px); }
+  7% { transform: translateY(18px); }
+}
+.wm-lockup.is-animated-lockup path {
+  animation: logoLetterHop 7.2s cubic-bezier(.34,1.56,.64,1) infinite;
+  animation-delay: calc(var(--li, 0) * 85ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .wm-lockup.is-animated-lockup path { animation: none !important; }
+}
+
 .wm-mark {
   display: inline-block;
   width: .5611em;
   height: .5625em;
   vertical-align: -.011em;
   margin: 0 .018em;
-}
-
-/* Shared twelve-second wordmark cycle: plain text stays the accessible name.
-   Both phrases hold fully visible for about three seconds. Only opacity moves;
-   absolute layers reserve the old link's width, so controls never shift. */
-.wordmark-cycle { position: relative; }
-.wordmark-cycle .wm-static { display: inline-flex; align-items: baseline; }
-.wordmark-cycle .wm-stage { display: none; position: absolute; inset: 0; pointer-events: none; }
-.wm-cycle { position: absolute; inset: 0 auto auto 0; display: flex; align-items: baseline; height: 100%; }
-.wm-cycle > span { opacity: 0; }
-/* Keep every language layer animating; visibility only controls which is seen,
-   so a language switch never restarts that layer's 12s phase. */
-.wm-phrase { display: flex; visibility: hidden; font-weight: 250; color: var(--ink); }
-.wm-phrase-ja {
-  font-family: var(--ja-sans);
-  font-size: .64em;
-  letter-spacing: .02em;
-}
-.wm-phrase-zh {
-  font-family: var(--zh-sans);
-  font-size: .86em;
-  letter-spacing: .035em;
-}
-.wm-phrase-en {
-  font-family: var(--serif);
-  font-size: .72em;
-  font-weight: 400;
-  letter-spacing: -.01em;
-}
-html[lang="ja"] .wm-phrase-ja,
-html[lang^="zh"] .wm-phrase-zh,
-html[lang="en"] .wm-phrase-en { visibility: visible; }
-@media (prefers-reduced-motion: no-preference) {
-  html.js .wordmark-cycle .wm-static { opacity: 0; }
-  html.js .wordmark-cycle .wm-stage { display: block; }
-  .wm-domain { animation: wm-domain-window 12s linear infinite; }
-  .wm-phrase { animation: wm-cjk-window 12s linear infinite; }
-  .wm-cycle > span {
-    animation: wm-domain-letter 12s cubic-bezier(.4, 0, .2, 1) infinite;
-    animation-delay: calc(var(--i) * .065s - 12s);
-  }
-  .wm-phrase > span {
-    animation-name: wm-cjk-letter;
-    animation-delay: calc(6s + var(--i) * .04s - 12s);
-  }
-  .wm-phrase-ja > span { animation-delay: calc(6s + var(--i) * .028s - 12s); }
-  .wm-phrase-en > span { animation-delay: calc(6s + var(--i) * .026s - 12s); }
-}
-@keyframes wm-domain-letter {
-  0% { opacity: 0; }
-  2%, 33.75% { opacity: 1; }
-  41.25%, 100% { opacity: 0; }
-}
-@keyframes wm-cjk-letter {
-  0% { opacity: 0; }
-  7.5%, 36.75% { opacity: 1; }
-  45.25%, 100% { opacity: 0; }
-}
-@keyframes wm-domain-window {
-  0%, 49% { opacity: 1; }
-  50%, 100% { opacity: 0; }
-}
-@keyframes wm-cjk-window {
-  0%, 49% { opacity: 0; }
-  50%, 100% { opacity: 1; }
 }
 
 .chapters {
@@ -1113,8 +1066,9 @@ html[lang^="zh"] .spine-lbl { font-family: var(--zh-sans); }
   margin: 0 0 18px;
 }
 html[lang="ja"] .chapter-head h1, html[lang^="zh"] .chapter-head h1 {
+  font-weight: 700;
   line-height: 1.2;
-  letter-spacing: 0;
+  letter-spacing: -.01em;
 }
 .chapter-head .lede {
   font-size: var(--fs-lead);
@@ -1154,8 +1108,9 @@ html[lang="ja"] .chapter-head .lede, html[lang^="zh"] .chapter-head .lede { font
   position: relative;
   height: clamp(420px, 56vw, 720px);
   overflow: hidden;
-  border-radius: var(--radius);
-  background: var(--surface);
+  border-bottom: 1px solid var(--wire);
+  border-radius: 0;
+  background: var(--bg);
   margin-top: clamp(28px, 4vw, 44px);
 }
 .stage-poster { position: absolute; inset: 0; }
@@ -1220,6 +1175,7 @@ html[lang="ja"] .chapter-head .lede, html[lang^="zh"] .chapter-head .lede { font
   line-height: 1.2;
   margin: 0 0 12px;
 }
+html[lang="ja"] .beat h3, html[lang^="zh"] .beat h3 { font-weight: 700; }
 .beat p { color: var(--muted); font-size: var(--fs-small); line-height: 1.8; }
 
 /* ---------------- index / tables ---------------- */
@@ -1236,21 +1192,22 @@ html[lang="ja"] .chapter-head .lede, html[lang^="zh"] .chapter-head .lede { font
   gap: 6px;
   min-height: 48px;
   padding: 12px 14px;
+  border: 1px solid var(--wire);
   border-radius: var(--radius);
-  background: var(--surface);
+  background: var(--card);
   font-family: var(--mono);
   font-size: 13px;
   color: var(--ink);
-  transition: background-color .2s ease, color .2s ease;
+  transition: background-color .2s ease, color .2s ease, border-color .2s ease;
 }
-.year-index a:hover { background: var(--ink); color: var(--bg); }
+.year-index a:hover { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 .year-index a span { font-size: 10px; color: var(--muted); }
 .year-index a:hover span { color: inherit; opacity: .8; }
 
-.table-scroll { max-width: 100%; overflow-x: auto; }
+.table-scroll { max-width: 100%; overflow-x: auto; background: var(--card); border: 1px solid var(--wire); border-radius: var(--radius); padding: 8px 14px; }
 .data-table { width: 100%; border-collapse: collapse; font-size: 15px; }
 .data-table th {
-  padding: 0 12px 10px 0;
+  padding: 8px 12px 10px 0;
   text-align: left;
   font-family: var(--mono);
   font-size: 11px;
@@ -1258,10 +1215,11 @@ html[lang="ja"] .chapter-head .lede, html[lang^="zh"] .chapter-head .lede { font
   letter-spacing: .1em;
   text-transform: uppercase;
   color: var(--muted);
+  border-bottom: 1px solid var(--wire);
   white-space: nowrap;
 }
-.data-table td { padding: 11px 12px 11px 0; vertical-align: baseline; }
-.data-table tbody tr:nth-child(odd) { background: color-mix(in srgb, var(--surface) 55%, transparent); }
+.data-table td { padding: 11px 12px 11px 0; vertical-align: baseline; border-bottom: 1px dashed var(--wire-soft); }
+.data-table tbody tr:last-child td { border-bottom: 0; }
 .data-table tbody tr:hover { background: var(--surface); }
 .data-table .num { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .data-table .muted { color: var(--muted); }
@@ -1308,8 +1266,7 @@ html[lang="ja"] .chapter-head .lede, html[lang^="zh"] .chapter-head .lede { font
   letter-spacing: -.02em;
   margin: 2.2em 0 .6em;
 }
-html[lang="ja"] .prose h2, html[lang^="zh"] .prose h2 { font-size: var(--fs-section); line-height: 1.2; }
-.prose h3 {
+html[lang="ja"] .prose h2, html[lang^="zh"] .prose h2 { font-size: var(--fs-section); font-weight: 700; line-height: 1.2; }
   font-family: var(--mono);
   font-size: 12px;
   letter-spacing: .12em;
@@ -1328,7 +1285,7 @@ html[lang="ja"] .prose h2, html[lang^="zh"] .prose h2 { font-size: var(--fs-sect
   border-radius: var(--btn-radius);
   color: var(--ink);
 }
-.prose .note { background: var(--surface); padding: 22px 24px; border-radius: var(--radius); font-size: var(--fs-small); }
+.prose .note { background: var(--card); border: 1px solid var(--wire); border-left: 3px solid var(--accent); padding: 20px 22px; border-radius: var(--radius); font-size: var(--fs-small); }
 .prose .note b { color: var(--ink); }
 .prose .note p:last-child { margin-bottom: 0; }
 
@@ -1342,18 +1299,18 @@ html[lang="ja"] .prose h2, html[lang^="zh"] .prose h2 { font-size: var(--fs-sect
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 16px 18px;
+  padding: 14px 16px;
+  border: 1px solid var(--wire);
   border-radius: var(--radius);
-  background: var(--surface);
+  background: var(--card);
   font-family: var(--mono);
   font-size: 13px;
   color: var(--ink);
-  transition: background-color .2s ease, color .2s ease;
+  transition: background-color .2s ease, color .2s ease, border-color .2s ease;
 }
-.dl-list a:hover { background: var(--ink); color: var(--bg); }
+.dl-list a:hover { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 .dl-list a span { font-size: 10px; color: var(--muted); }
 .dl-list a:hover span { color: inherit; opacity: .75; }
-
 /* ---------------- 404 ---------------- */
 .notfound { padding-block: clamp(80px, 18vh, 200px); }
 .notfound .code {
@@ -1364,29 +1321,32 @@ html[lang="ja"] .prose h2, html[lang^="zh"] .prose h2 { font-size: var(--fs-sect
   letter-spacing: -.03em;
   color: var(--accent);
 }
-.notfound h1 { font-family: var(--serif); font-weight: 400; font-size: var(--fs-page); line-height: 1.12; margin-top: 12px; }
+.notfound h1 { font-family: var(--serif); font-weight: 700; font-size: var(--fs-page); line-height: 1.15; margin-top: 12px; }
+html[lang="en"] .notfound h1 { font-weight: 400; }
 .notfound p { color: var(--muted); margin-top: 14px; max-width: 48ch; font-size: var(--fs-body); }
 .notfound .links { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 32px; font-family: var(--mono); font-size: 13px; }
 .notfound .links a { color: var(--accent-ink); }
 
 /* ---------------- footer ---------------- */
 .foot {
-  padding: clamp(64px, 8vw, 110px) 0 clamp(48px, 6vw, 84px);
+  border-top: 1px solid var(--wire);
+  background: transparent;
+  padding: 36px 0 32px;
   color: var(--muted);
   font-family: var(--mono);
   font-size: 12px;
   letter-spacing: .04em;
 }
-.foot .wordmark { font-size: 33px; margin-bottom: 40px; }
-.foot-in { display: block; }
-.foot-top { display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap; margin-bottom: 32px; }
-.foot-products { display: flex; flex-wrap: wrap; gap: 28px; margin-bottom: 40px; text-transform: uppercase; letter-spacing: .08em; }
-.foot-products a { color: var(--muted); }
-.foot-products a:hover { color: var(--accent-ink); }
-.foot-bottom { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; color: var(--muted); }
+.foot .wordmark { font-size: 28px; margin-bottom: 0; }
+.foot .foot-brand .wm-lockup { height: 17px; width: auto; }
+.foot-in { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px 32px; }
+.foot-top { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; margin: 0; }
+.foot-siblings { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font-family: var(--mono); font-size: 11px; letter-spacing: .05em; }
+.foot-siblings a { color: var(--muted); padding: 4px 0; transition: color .18s ease; }
+.foot-siblings a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.foot-bottom { display: flex; align-items: center; justify-content: flex-end; gap: 16px; flex-wrap: wrap; color: var(--muted); font-size: 11.5px; }
 .foot-bottom a { color: var(--muted); text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--muted) 40%, transparent); text-underline-offset: 3px; }
 .foot-bottom a:hover { color: var(--accent-ink); }
-
 /* ---------------- two-column utility ---------------- */
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(20px, 4vw, 56px); }
 
@@ -1431,20 +1391,20 @@ html body #crm-root[data-crm-variant="tactical"] {
   --line-strong: var(--ink);
   --shadow-card: none;
 }
-html body #crm-root { --font-sans: var(--ja-sans); --font-num: var(--mono); --title-font: var(--ja-sans); --radius-ui: 2px; --radius-inner: 2px; --radius-card: 4px; }
+html body #crm-root { --font-sans: var(--sans); --font-num: var(--mono); --title-font: var(--serif); --radius-ui: 2px; --radius-inner: 2px; --radius-card: 2px; }
+html body #hsg-root { --font-sans: var(--sans); --font-num: var(--mono); --title-font: var(--serif); --radius-ui: 2px; --radius-inner: 2px; --radius-card: 2px; }
 
-/* 犯罪页筛选控件宿主：全屏地图上方的浮动工具条（此前整组控件从未挂载） */
+/* 犯罪页筛选控件宿主：全屏地图上方的浮动工具条 */
 html body #crm-root #crm-ctl-host {
   position: absolute;
   left: 20px;
-  /* #crm-root 已经在地图舞台内部（舞台起点在页头之下），这里只留贴角余量 */
   top: 12px;
   z-index: 1200;
   max-width: calc(100% - 40px);
   padding: 6px 8px;
-  /* 全站是 2px 按钮 / 4px 卡片的小圆角，工具条不能是胶囊 */
-  border-radius: 4px;
-  background: var(--bg);
+  border: 1px solid var(--wire);
+  border-radius: 2px;
+  background: var(--card);
 }
 html body #crm-root #crm-ctl-host .crm-ctl { gap: 8px; }
 /* 窄屏：整组筛选收进一个抽屉按钮，不再占两行压在图上 */
@@ -1493,8 +1453,8 @@ html body #crm-root .crime-row,
 html body #crm-root .top-item,
 html body #crm-root .rank-card-item,
 html body #crm-root .faq-item,
-html body #crm-root .faq-block { border-color: transparent !important; box-shadow: none !important; }
-html body #crm-root .panel-card { border-radius: 4px !important; }
+html body #crm-root .faq-block { border-color: var(--wire) !important; box-shadow: none !important; }
+html body #crm-root .panel-card { border-radius: 2px !important; }
 #crm-app-loader { background: var(--bg) !important; }
 #crm-app-loader, #crm-app-loader * { color: var(--muted) !important; }
 #crm-app-loader .loader-radar { border-color: var(--accent-soft) !important; box-shadow: none !important; }
@@ -1505,45 +1465,43 @@ html body #crm-root .panel-card { border-radius: 4px !important; }
 .seg button {
   height: 32px;
   padding: 0 13px;
-  border-radius: var(--btn-radius);
-  background: var(--surface);
+  border-radius: 2px;
+  background: var(--card);
   color: var(--muted);
   font-family: var(--mono);
   font-size: 11.5px;
   letter-spacing: .04em;
-  border: 1px solid color-mix(in srgb, var(--ink) 8%, transparent);
-  transition: all 0.48s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  border: 1px solid var(--wire);
+  transition: background-color .18s ease, color .18s ease, border-color .18s ease !important;
 }
 .seg button:hover {
-  background: color-mix(in srgb, var(--surface) 70%, var(--bg));
+  background: var(--surface);
   color: var(--ink);
-  transform: translateY(-1.5px);
+  border-color: var(--ink);
 }
-.seg button:active { transform: scale(0.95); transition-duration: 0.12s !important; }
-.seg button.on { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 700; transform: translateY(-1px); }
+.seg button.on { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 600; }
 .cab-legend { display: flex; flex-wrap: wrap; gap: 6px; }
 .cab-pill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 3px 9px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--surface) 50%, transparent);
-  border: 1px solid color-mix(in srgb, var(--ink) 6%, transparent);
+  padding: 4px 9px;
+  border-radius: 2px;
+  background: var(--card);
+  border: 1px solid var(--wire);
   color: var(--muted);
+  font-family: var(--mono);
   font-size: 11px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.48s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  transition: background-color .18s ease, color .18s ease, border-color .18s ease !important;
 }
 .cab-pill:hover {
   background: var(--surface);
   color: var(--ink);
-  border-color: color-mix(in srgb, var(--ink) 18%, transparent);
-  transform: translateY(-2px);
+  border-color: var(--ink);
 }
-.cab-pill:active { transform: scale(0.95); transition-duration: 0.12s !important; }
-.cab-pill.cab-focused { background: var(--ink); color: var(--bg); border-color: var(--ink); font-weight: 700; transform: translateY(-2px); }
+.cab-pill.cab-focused { background: var(--ink); color: var(--bg); border-color: var(--ink); font-weight: 600; }
 .cab-dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
 .cab-meta { position: absolute; top: 10px; right: 12px; z-index: 5; display: flex; align-items: center; gap: 8px; pointer-events: none; font-family: var(--mono); font-size: 11px; letter-spacing: .06em; }
 .cab-range { display: none; }
@@ -1576,7 +1534,7 @@ html body #crm-root .panel-card { border-radius: 4px !important; }
 
 @media (min-width: 761px) and (max-width: 1100px) {
   .masthead-in { gap: 8px; }
-  .masthead-in > .wordmark { flex: 0 0 auto; min-width: 0; font-size: clamp(22px, 3vw, 26px); }
+  .masthead-in > .wordmark { flex: 0 0 auto; min-width: 0; font-size: clamp(20px, 2.8vw, 24px); }
   .chapters { gap: 12px; }
   .tools { gap: 4px; }
 }
@@ -1584,7 +1542,8 @@ html body #crm-root .panel-card { border-radius: 4px !important; }
 @media (max-width: 760px) {
   :root { --nav-h: 64px; }
   .masthead-in { height: 64px; gap: 8px; min-width: 0; }
-  .masthead-in > .wordmark { flex: 0 0 auto; min-width: 0; font-size: 24px; }
+  .masthead-in > .wordmark { flex: 0 0 auto; min-width: 0; font-size: 22px; }
+  .wm-lockup { height: 17px; }
   .chapters, .masthead .lang-switch { display: none; }
   .burger { display: flex; flex: 0 0 44px; }
   .tools { flex: 0 0 auto; min-width: 0; margin-left: auto; gap: 4px; }
@@ -1596,12 +1555,14 @@ html body #crm-root .panel-card { border-radius: 4px !important; }
   .stage { height: clamp(360px, 84vw, 560px); }
   .stage-caption { display: none; }
   .stage-crime { height: clamp(360px, 78vw, 620px); }
-  .foot-top, .foot-bottom { flex-direction: column; align-items: flex-start; gap: 20px; }
-  .foot .wordmark { margin-bottom: 28px; }
+  .foot-in { align-items: flex-start; flex-direction: column; gap: 18px; }
+  .foot-bottom { justify-content: flex-start; text-align: left; }
+  .foot .wordmark { margin-bottom: 0; }
 }
 
-@media (max-width: 380px) {
+@media (max-width: 420px) {
   .masthead-in > .wordmark { font-size: 18px; }
+  .wm-lockup { height: 15px; }
 }
 
 @media (max-width: 340px) {
@@ -1625,30 +1586,35 @@ html body #crm-root .panel-card { border-radius: 4px !important; }
 /* ---- 内阁右侧多卡片面板深浅主题自适应 ---- */
 /* 零投影 + 零结构线：只靠底色区分层级，圆角沿用全站 4px / 2px */
 html[data-theme="dark"] .cab-panel .panel-card {
-  background: #121210 !important;
-  border: 0 !important;
+  background: var(--card) !important;
+  border: 1px solid var(--wire) !important;
+  border-radius: 2px !important;
   box-shadow: none !important;
 }
 html[data-theme="dark"] .cab-panel .stat-box {
-  background: rgba(255, 255, 255, 0.04) !important;
-  border: 0 !important;
+  background: var(--surface) !important;
+  border: 1px solid var(--wire-soft) !important;
+  border-radius: 2px !important;
 }
 html[data-theme="dark"] .cab-panel .back-btn {
-  border: 0 !important;
-  background: rgba(255, 255, 255, 0.06) !important;
-  color: #edebe4 !important;
+  border: 1px solid var(--wire) !important;
+  border-radius: 2px !important;
+  background: var(--surface) !important;
+  color: var(--ink) !important;
 }
-html[data-theme="sage"] .cab-panel .panel-card {
-  background: var(--bg) !important;
-  border: 0 !important;
+:is(html[data-theme="light"], html[data-theme="sage"]) .cab-panel .panel-card {
+  background: var(--card) !important;
+  border: 1px solid var(--wire) !important;
+  border-radius: 2px !important;
   box-shadow: none !important;
 }
-html[data-theme="sage"] .cab-panel .stat-box {
-  background: rgba(0, 0, 0, 0.035) !important;
-  border: 0 !important;
+:is(html[data-theme="light"], html[data-theme="sage"]) .cab-panel .stat-box {
+  background: var(--surface) !important;
+  border: 1px solid var(--wire-soft) !important;
+  border-radius: 2px !important;
 }
 
-/* ---- 地震左上角控制按钮强制水平居中对齐 ---- */
+/* ---- 地震左上角控制按钮水平居中对齐与线框风格 ---- */
 #eq-menu-row, #eq-menu-items {
   display: flex !important;
   align-items: center !important;
@@ -1664,78 +1630,38 @@ html[data-theme="sage"] .cab-panel .stat-box {
   margin: 0 !important;
   vertical-align: middle !important;
 }
-
-/* ---- 全站排版体系统一收敛（极细无衬线规范） ---- */
-:root {
-  --font-sans: "Noto Sans JP", "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
-  --ja-sans: "Noto Sans JP", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
-  --zh-sans: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
-  --title-font: var(--font-sans);
-}
-
-/* 标题统一收敛：彻底消除粗黑，统一为 200~250 极细高阶质感 */
-h1, h2, h3, h4, .title, .card-title, .section-title, .hero-panel h1, .hero-panel h2 {
-  font-family: var(--font-sans) !important;
-  font-weight: 200 !important;
-  letter-spacing: -0.02em;
-}
-
-/* 按钮、药丸与时间轴标签：字号拉升至 13px，字重 350 细体 */
-.cab-zoom button, .eq-sq, .seg button, .theme-toggle {
-  font-family: var(--font-sans) !important;
-  font-size: 13px !important;
-  font-weight: 350 !important;
-}
-
-/* 地震页无死角排版加固：杜绝 10px-11px 与 600-800 粗体糊死 */
 #v-quake-viewport .eq-sq {
-  font-family: var(--font-sans) !important;
-  font-size: 13px !important;
-  font-weight: 350 !important;
+  font-family: var(--mono) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
   height: 28px !important;
   min-height: 28px !important;
-  /* 固定 52px 宽会把「メニュー」「インストール」挤成两行再被 28px 高度裁掉 */
   width: auto !important;
   min-width: 44px;
   padding: 0 10px !important;
   white-space: nowrap !important;
+  border-radius: 2px !important;
 }
 #v-quake-viewport .eq-pop-val {
-  font-family: var(--font-sans) !important;
+  font-family: var(--mono) !important;
   font-size: 13px !important;
-  font-weight: 400 !important;
+  font-weight: 500 !important;
 }
 #v-quake-viewport .eq-pop-cap,
 #v-quake-viewport .eq-footer,
 #v-quake-viewport .eq-famous-drawer-hint,
 #v-quake-viewport .eq-famous-item-date {
-  font-family: var(--font-sans) !important;
+  font-family: var(--mono) !important;
   font-size: 12px !important;
-  font-weight: 350 !important;
 }
 #v-quake-viewport .eq-famous-item-mag,
 #v-quake-viewport .eq-famous-item-name {
-  font-family: var(--font-sans) !important;
-  font-weight: 350 !important;
-}
-
-
-
-/* ---- 全站严格彻底消除粗体（大一圈字号的纯细体替代加粗） ---- */
-b, strong, th, h1, h2, h3, h4, h5, h6, dt, .card-title, .policy-title {
-  font-weight: 300 !important;
-}
-.stat-num, .eq-hover-mag {
-  font-weight: 200 !important;
-}
-/* 彻底清除所有控件和按钮内的加粗 */
-button, input, select, .cab-zoom button, .eq-sq, .seg button, .card-badge {
-  font-weight: 300 !important;
+  font-family: var(--sans) !important;
 }
 
 /*__FONT_FACES__*/
 
-/* ---- 实心面板：quake / cabinet 也不再用毛玻璃（面板不透明后模糊无意义） ---- */
+/* ---- 实心面板与无障碍对比度 ---- */
 #v-quake-viewport .eq-famous-panel,
 #v-quake-viewport .eq-menu-items {
   -webkit-backdrop-filter: none !important;
@@ -1745,7 +1671,7 @@ button, input, select, .cab-zoom button, .eq-sq, .seg button, .card-badge {
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
 }
-/* 对比度（WCAG AA）：quake 页脚 3.95:1、模式条选中态 4.27:1 提到 ≥4.5 */
+#v-quake-viewport input[type="range"] { accent-color: var(--accent); }
 #v-quake-viewport .eq-footer { color: var(--muted) !important; }
 #v-quake-viewport .eq-mode-btn.is-active { color: var(--accent-ink) !important; background: color-mix(in srgb, var(--accent) 20%, transparent) !important; }
 html[data-theme="dark"] #v-quake-viewport .eq-mode-btn.is-active { color: var(--accent-ink) !important; background: color-mix(in srgb, var(--accent) 22%, transparent) !important; }

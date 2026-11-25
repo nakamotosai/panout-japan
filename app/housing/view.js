@@ -105,7 +105,7 @@ function deepHant(v) {
 }
 I18N["zh-Hant"] = deepHant(I18N.zh);
 
-const THEME_MAP = { mono: "editorial", sage: "editorial", dark: "tactical", editorial: "editorial", tactical: "tactical" };
+const THEME_MAP = { light: "editorial", mono: "editorial", sage: "editorial", dark: "tactical", editorial: "editorial", tactical: "tactical" };
 const RAMP = {
   tactical: ["#0E0E0C", "#181B10", "#222914", "#2D3717", "#384619", "#43551A", "#4F651B", "#5B751A", "#678618"],
   editorial: ["#F5F3ED", "#E2E5D4", "#D0D7BB", "#BDCAA2", "#ABBC8A", "#9AAF71", "#88A158", "#78933C", "#678618"],

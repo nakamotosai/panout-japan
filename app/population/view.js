@@ -187,7 +187,7 @@ let legendEl = null, searchEl = null, resultsEl = null;
 let DOC = null, MUNIS = [], PREFS = [], BY_CODE = {}, BY_PREF = {}, PREF_BY = {};
 let POP_MIN = 1, POP_MAX = 1;
 let W = 0, H = 0, DPR = 1;
-let lang = "ja", theme = "sage", metric = "rate", view = "grid";
+let lang = "ja", theme = "light", metric = "rate", view = "grid";
 let sel = null, hover = null;           // {type:"muni"|"pref", code}
 let anim = 0, animRaf = 0, animFrom = 0, animTo = 0, animStart = 0;
 let rects = [];                          // [{m, g, t}]
@@ -820,7 +820,7 @@ function setup() {
 export async function mountPopulation(el, opts) {
   rootEl = el;
   lang = (opts && opts.lang) || "ja";
-  theme = (opts && opts.theme) || "sage";
+  theme = (opts && opts.theme) || "light";
   loadCss();
   const res = await fetch(DATA_URL, { cache: "no-cache" });
   if (!res.ok) throw new Error("population data " + res.status);

@@ -6,7 +6,7 @@
   'use strict';
 
   var doc = document.documentElement;
-  var THEMES = ['sage', 'dark'];
+  var THEMES = ['light', 'dark'];
   var scriptSrc = (document.currentScript && document.currentScript.src) || '';
   var VER = '';
   try { VER = new URL(scriptSrc).searchParams.get('v') || ''; } catch (e) {}
@@ -19,8 +19,10 @@
   function viewLang() { return doc.dataset.viewLang || 'ja'; }
 
   function autoTheme() {
-    var h = new Date().getHours();
-    return (h >= 6 && h < 18) ? 'sage' : 'dark';
+    if (typeof window.matchMedia === 'function' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return 'dark';
+    }
+    return 'light';
   }
 
   function syncVendorTheme(t) {
@@ -29,18 +31,16 @@
   }
 
   function applyTheme(t) {
-    if (THEMES.indexOf(t) < 0) t = 'sage';
+    if (t === 'sage') t = 'light';
+    if (THEMES.indexOf(t) < 0) t = 'light';
     doc.dataset.theme = t;
     var meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute('content', t === 'dark' ? '#0E0E0C' : '#F5F3ED');
     labelTheme(t);
-    try { window.dispatchEvent(new CustomEvent('pj:theme', { detail: t })); } catch (e) {}
+    if (typeof CustomEvent === 'function') window.dispatchEvent(new CustomEvent('pj:theme', { detail: t }));
     syncVendorTheme(t);
   }
 
-  // The single toggle's label names the next action (switch to dark / to light).
-  // The single toggle's label names the next action (switch to dark / to light).
-  // 两份文案由构建写进 data-label-* (单一真相源:src/build.py 的 COPY)。
   function labelTheme(t) {
     var toggles = document.querySelectorAll('[data-theme-toggle]');
     for (var i = 0; i < toggles.length; i++) {
@@ -55,12 +55,14 @@
   }
 
   function setTheme(t, save) {
+    if (t === 'sage') t = 'light';
     if (save) put('pj-theme', t);
     applyTheme(t);
   }
 
   function bootTheme() {
     var saved = get('pj-theme');
+    if (saved === 'sage') saved = 'light';
     applyTheme(THEMES.indexOf(saved) >= 0 ? saved : autoTheme());
   }
 
@@ -101,7 +103,7 @@
 
     var url = '/app/' + ch + '/view.js' + (VER ? '?v=' + VER : '');
     import(url).then(function (mod) {
-      var opts = { base: '/', lang: viewLang(), theme: doc.dataset.theme || 'sage' };
+      var opts = { base: '/', lang: viewLang(), theme: doc.dataset.theme || 'light' };
       // 挂载是 async：必须等它 resolve 才算 live，否则数据层失败会留下「live=1 + 空舞台」
       var mountP;
       if (ch === 'quake') mountP = mod.mountQuake(live, opts);
@@ -121,7 +123,7 @@
           else if (ch === 'cabinet' && mod.setCabinetLang) mod.setCabinetLang(l);
           else if (ch === 'housing' && mod.setHousingLang) mod.setHousingLang(l);
           else if (ch === 'population' && mod.setPopulationLang) mod.setPopulationLang(l);
-        } catch (e) {}
+        } catch (e) { console.warn('[pj] setVendorLang failed:', e); }
       };
       live._setVendorTheme = function (t) {
         try {
@@ -130,7 +132,7 @@
           else if (ch === 'cabinet' && mod.setCabinetTheme) mod.setCabinetTheme(t);
           else if (ch === 'housing' && mod.setHousingTheme) mod.setHousingTheme(t);
           else if (ch === 'population' && mod.setPopulationTheme) mod.setPopulationTheme(t);
-        } catch (e) {}
+        } catch (e) { console.warn('[pj] setVendorTheme failed:', e); }
       };
       live._setVendorLang(opts.lang);
       live._setVendorTheme(opts.theme);
@@ -142,10 +144,10 @@
       delete stage.dataset.busy;
       if (!document.body.classList.contains('chapter-app')) {
         [60, 350, 900, 2400].forEach(function (ms) {
-          setTimeout(function () { try { window.dispatchEvent(new Event('resize')); } catch (e) {} }, ms);
+          setTimeout(function () { window.dispatchEvent(new Event('resize')); }, ms);
         });
       }
-      try { window.dispatchEvent(new CustomEvent('pj:stage-mounted', { detail: { ch: ch } })); } catch (e) {}
+      if (typeof CustomEvent === 'function') window.dispatchEvent(new CustomEvent('pj:stage-mounted', { detail: { ch: ch } }));
       });
     }).catch(function (err) {
       console.error(err);
@@ -156,7 +158,7 @@
       var lbl = { ja: '再読み込み', zh: '刷新', 'zh-Hant': '刷新', en: 'Reload' };
       var lg = doc.lang || 'ja';
       window.pjStageFailed(stage, msg[lg] || msg.ja, lbl[lg] || lbl.ja);
-      try { window.dispatchEvent(new CustomEvent('pj:stage-error', { detail: { ch: ch } })); } catch (e) {}
+      if (typeof CustomEvent === 'function') window.dispatchEvent(new CustomEvent('pj:stage-error', { detail: { ch: ch } }));
     });
   }
 
@@ -190,19 +192,24 @@
   }
 
   function setupHeader() {
-    var header = document.querySelector('.masthead');
-    var bar = document.querySelector('.scroll-progress');
-    function onScroll() {
-      var y = window.scrollY || window.pageYOffset || 0;
-      if (header) header.classList.toggle('scrolled', y > 8);
-      if (bar) {
-        var max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-        bar.style.width = Math.min(100, Math.max(0, y / max * 100)) + '%';
-      }
+    var bar = document.getElementById('scrollProgressBar');
+    var ticking = false;
+    function updateBar() {
+      ticking = false;
+      if (!bar) return;
+      var max = Math.max(1, doc.scrollHeight - window.innerHeight);
+      var pct = Math.min(1, Math.max(0, (window.scrollY || window.pageYOffset || 0) / max));
+      bar.style.transform = 'scaleX(' + pct.toFixed(4) + ')';
     }
-    onScroll();
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      if (window.requestAnimationFrame) window.requestAnimationFrame(updateBar);
+      else updateBar();
+    }
+    updateBar();
     window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
+    window.addEventListener('resize', onScroll, { passive: true });
   }
 
   function setupMenu() {
@@ -269,7 +276,7 @@
           io.unobserve(entries[j].target);
         }
       }
-    }, { threshold: 0.25 });
+    }, { rootMargin: '80px 0px', threshold: 0.05 });
     for (var k = 0; k < plates.length; k++) io.observe(plates[k]);
   }
 
@@ -286,12 +293,11 @@
     var toggles = document.querySelectorAll('[data-theme-toggle]');
     for (var j = 0; j < toggles.length; j++) {
       toggles[j].addEventListener('click', function () {
-        setTheme(doc.dataset.theme === 'dark' ? 'sage' : 'dark', true);
+        setTheme(doc.dataset.theme === 'dark' ? 'light' : 'dark', true);
       });
       toggles[j].hidden = false;
     }
-    labelTheme(doc.dataset.theme || 'sage');
-
+    labelTheme(doc.dataset.theme || 'light');
   }
 
   if (document.readyState === 'loading') {

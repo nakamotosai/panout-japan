@@ -48,9 +48,11 @@ WM_COLOUR = {6: 0, 7: 1, 8: 2, 9: 3, 10: 4, 11: 5}
 # 尺寸公式(Outfit 800:标记 ink 高 = o ink 高 × 1.10)见 src/app.css 的 .wm-mark。
 # 别的机器(VPS 日更)用 OUUUT_MARK_JSON 指向同一份资产 —— 与 src/fonts.py 的 PANOUT_* 同法。
 MARK_JSON = Path(os.environ.get("OUUUT_MARK_JSON",
-                               "F:/projects/ouuut-brand/logo/ouuut-mark.json"))
+                               "F:/capabilities/ouuut-brand/logo/ouuut-mark.json"))
+LOCKUP_SVG = Path(os.environ["OUUUT_LOCKUP_SVG"]) if os.environ.get("OUUUT_LOCKUP_SVG") else (
+    MARK_JSON.parent / "lockup-japan.svg"
+)
 MARK_INDEX = 6
-
 
 def wm_mark():
     """Inline SVG for the hand-drawn O, or "" when the brand asset is not on this machine.
@@ -106,22 +108,24 @@ def wm_glyphs(anim=False, aria=False):
 WM = wm_glyphs()
 
 
-def animated_wordmark():
-    """The plain domain is the static/no-JS and accessible name; layers are visual."""
-    layers = []
-    phrases = (("ja", "六つの尺度で日本を見る"), ("zh", "六种尺度看日本"), ("en", "Six scales of Japan"))
-    for group, text in (("domain", BRAND),) + tuple(
-            (f"phrase-{lang}", phrase) for lang, phrase in phrases):
-        if group == "domain":
-            glyphs = wm_glyphs(anim=True, aria=True)
-        else:
-            glyphs = "".join(f'<span aria-hidden="true" style="--i:{i}">{"&nbsp;" if c == " " else c}</span>'
-                             for i, c in enumerate(text))
-        phrase_class = " wm-phrase" if group.startswith("phrase-") else ""
-        layers.append(f'<span class="wm-cycle wm-{group}{phrase_class}" aria-hidden="true">{glyphs}</span>')
-    return ('<span class="wm-static">' + WM + '</span>'
-            '<span class="wm-stage" aria-hidden="true">' + "".join(layers) + '</span>')
-
+def load_lockup(animated=False):
+    """Official Sylfaen + hand-drawn O lockup SVG from ouuut-brand, with graceful WM fallback."""
+    if LOCKUP_SVG.is_file():
+        raw = LOCKUP_SVG.read_text(encoding="utf-8")
+        raw = re.sub(r'\s+role="img"', "", raw)
+        raw = re.sub(r'\s+aria-label="[^"]*"', "", raw)
+        raw = re.sub(r'\s(?:fill|stroke)="#(?:1a1a16|1A1A16|0e0e0c|0E0E0C|edebe4|EDEBE4)"', "", raw)
+        if animated:
+            cnt = {"i": 0}
+            def _tag(m):
+                i = cnt["i"]
+                cnt["i"] += 1
+                return f'<path style="--li:{i}" '
+            raw = re.sub(r"<path\s+", _tag, raw)
+        cls = "wm-lockup is-animated-lockup" if animated else "wm-lockup"
+        return raw.replace("<svg ", f'<svg class="{cls}" aria-hidden="true" focusable="false" ', 1)
+    print(f"[warn] 缺 lockup {LOCKUP_SVG} —— 退回文本字标")
+    return '<span class="wm-static">' + WM + '</span>'
 
 BUILD_DATE = datetime.now().strftime("%Y-%m-%d")
 BUILD_STAMP = datetime.now().strftime("%Y-%m-%d %H:%M")
@@ -1683,6 +1687,41 @@ COPY = {
         "This chapter is a distribution of closed prices, not data about future appreciation. Do not use it to "
         "make an investment decision."),
     "foot.built": ("静的生成", "静态生成", "Statically generated"),
+    "comp.bar.label": ("JP.OUUUT.COM · 読み物とリアルタイム観測",
+                       "JP.OUUUT.COM · 公众号长文 × 实时热搜",
+                       "JP.OUUUT.COM · ESSAYS & LIVE MONITOR"),
+    "comp.bar.meta": ("長文ノート + 24H 監視",
+                      "深度长文 + 24H 雷达",
+                      "ESSAYS + 24H RADAR"),
+    "comp.a.kicker": ("A · 解説ノート", "A · 公众号长文", "A · LONGFORM"),
+    "comp.a.tag": ("仮装在東京", "假装在东京", "ESSAYS"),
+    "comp.a.title": ("東京暮らしの長文ノート", "假装在东京 · 公众号长文", "Pretending in Tokyo"),
+    "comp.a.num": ("200+", "200+", "200+"),
+    "comp.a.unit": ("本の記事 · 8テーマ × 3試算ツール",
+                    "篇长文 · 8 大议题 × 3 生活账本工具",
+                    "essays · 8 topics × 3 calculators"),
+    "comp.a.claim": ("日本での生活帳簿、ビザ制度の変化、東京マンション維持費の実算をまとめた在日観察ノート。",
+                     "写给在日华人的日本生活深度长文、签证变化观察，以及东京买房与手取工资实算工具。",
+                     "In-depth essays on Tokyo living, visa shifts, and practical housing and take-home pay ledgers."),
+    "comp.a.src": ("jp.ouuut.com · 主サイト", "jp.ouuut.com · 主站", "jp.ouuut.com · Main site"),
+    "comp.a.cta": ("記事を読む", "前往阅读", "Read"),
+    "comp.b.kicker": ("B · 24H 監視板", "B · 24H 监控板", "B · 24H MONITOR"),
+    "comp.b.tag": ("LIVE 13/13", "LIVE 13/13", "LIVE 13/13"),
+    "comp.b.title": ("日本トレンド24時間モニター", "日本热搜 24 小时监控板", "Japan Trends 24h Monitor"),
+    "comp.b.num": ("13源", "13 源", "13 sources"),
+    "comp.b.unit": ("毎時更新 · Yahoo! / X / 社媒 / 中日温度差",
+                    "每小时抓取 · 雅虎 / X / 社媒 / 中外温差",
+                    "hourly · Yahoo! / X / forums / bilingual gap"),
+    "comp.b.claim": ("日本のニュース急上昇・Xトレンド・掲示板・中国語圏の話題を1画面でリアルタイム対照。",
+                     "自动汇聚日本雅虎评论暴增、X 趋势、主妇论坛与中文涉日讨论，一屏看清日本当下热议。",
+                     "Hourly radar comparing Yahoo! surges, X Japan trends, forums, and Chinese-language commentary."),
+    "comp.b.src": ("jp.ouuut.com/hot · RSS / JSON", "jp.ouuut.com/hot · RSS / JSON", "jp.ouuut.com/hot · RSS / JSON"),
+    "comp.b.cta": ("監視板へ", "打开监控板", "Open"),
+    "home.prov.summary": ("気象庁 · USGS · 警視庁 · NHK · 国交省 · 総務省",
+                          "气象厅 · USGS · 警视厅 · NHK · 国土交通省 · 总务省",
+                          "JMA · USGS · Tokyo Police · NHK · MLIT · Statistics Bureau"),
+    "home.prov.open": ("展開", "展开", "Expand"),
+    "home.prov.close": ("閉じる", "收起", "Collapse"),
 
     # 海报 SVG 的标注(六张卡与章节页共用同一张图):随页面语言出文案,ja/zh/en 三列,
     # zh-Hant 由 zh 列转出(与其他文案同一条路径、同一道字符集闸)。
@@ -1809,8 +1848,11 @@ def head(title, desc, path, jsonld=None, extra_head="", body_class="", chapter="
         ld = '<script type="application/ld+json">' + json.dumps(jsonld, ensure_ascii=False) + "</script>"
     boot = ("<script>try{var d=document.documentElement;d.classList.add('js');"
             "var t=null;try{t=localStorage.getItem('pj-theme')}catch(e){}"
-            "if(t!=='sage'&&t!=='dark'){var h=new Date().getHours();t=(h>=6&&h<18)?'sage':'dark';}"
+            "if(t==='sage')t='light';"
+            "if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}"
             "d.dataset.theme=t;"
+            "var m=document.querySelector('meta[name=\"theme-color\"]');"
+            "if(m)m.setAttribute('content',t==='dark'?'#0E0E0C':'#F5F3ED');"
             "}catch(e){}</script>")
     # 404 是 noindex 的一次性页面,也不参与分享:不发 og:image(没有它的卡片)。
     og_block = ""
@@ -1823,7 +1865,7 @@ def head(title, desc, path, jsonld=None, extra_head="", body_class="", chapter="
         f'<meta property="og:locale:alternate" content="{OG_LOCALE[lang]}">\n'
         for lang in LANGS if lang != CUR)
     return f"""<!doctype html>
-<html lang="{CUR}" data-view-lang="{VIEW_LANG[CUR]}" data-theme="sage"{f' data-chapter="{chapter}"' if chapter else ""}>
+<html lang="{CUR}" data-view-lang="{VIEW_LANG[CUR]}" data-theme="light" data-wire="all"{f' data-chapter="{chapter}"' if chapter else ""}>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1841,7 +1883,7 @@ def head(title, desc, path, jsonld=None, extra_head="", body_class="", chapter="
 {locale_alts}<meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#F5F3ED">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-<link rel="preload" href="/assets/fonts/outfit-800.woff2?v=__FONT_VER__" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/geist-400.woff2?v=__FONT_VER__" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/app.css?v=__CSS_VER__">
 {boot}
 {ld}
@@ -1849,8 +1891,6 @@ def head(title, desc, path, jsonld=None, extra_head="", body_class="", chapter="
 {GA_SNIPPET}</head>
 <body{body_class}>
 <a class="skip" href="#main">{tr('skip')}</a>
-<div class="grain" aria-hidden="true"></div>
-<div class="scroll-progress" aria-hidden="true"></div>
 """
 
 
@@ -1889,7 +1929,7 @@ def mast(active="", path="/"):
 
     switch = lang_switch(path)
     return f"""<header class="masthead"><div class="wrap masthead-in">
-<a class="wordmark wordmark-cycle" href="{url('/')}" aria-label="{BRAND}">{animated_wordmark()}</a>
+<a class="wordmark" href="{url('/')}" aria-label="{BRAND}">{load_lockup(animated=True)}</a>
 <nav class="chapters" aria-label="{esc(tr('nav.label'))}">
 {link('/weather/', 'nav.weather', 'weather')}
 {link('/quake/', 'nav.quake', 'quake')}
@@ -1903,7 +1943,7 @@ def mast(active="", path="/"):
 {switch}
 <button class="burger" type="button" data-burger aria-expanded="false" aria-controls="mobile-menu" aria-label="{esc(tr('nav.label'))}"><span></span><span></span></button>
 </div>
-</div></header>
+</div><span class="scroll-progress-bar" id="scrollProgressBar" aria-hidden="true"></span></header>
 <div class="mobile-menu" id="mobile-menu">
 <nav class="mobile-nav-links" aria-label="{esc(tr('nav.label'))}">
 {link('/weather/', 'nav.weather', 'weather')}
@@ -2062,7 +2102,17 @@ def dataset_node(name, desc, path, official, distribution, coverage, spatial,
 
 def foot():
     return f"""<footer class="foot hp-foot"><div class="wrap foot-in">
-<div class="foot-top"><a class="wordmark" href="{url('/')}" aria-label="{BRAND}">{WM}</a></div>
+<div class="foot-top">
+<a class="wordmark foot-brand" href="{url('/')}" aria-label="{BRAND}">{load_lockup(animated=False)}</a>
+<nav class="foot-siblings" aria-label="ouuut network">
+<a href="https://ouuut.com/" target="_blank" rel="noopener">ouuut.com ↗</a>
+<a href="https://find.ouuut.com/" target="_blank" rel="noopener">find.ouuut.com ↗</a>
+<a href="https://speak.ouuut.com/" target="_blank" rel="noopener">speak.ouuut.com ↗</a>
+<a href="https://chill.ouuut.com/" target="_blank" rel="noopener">chill.ouuut.com ↗</a>
+<a href="https://make.ouuut.com/" target="_blank" rel="noopener">make.ouuut.com ↗</a>
+<a href="https://assets.ouuut.com/" target="_blank" rel="noopener">assets.ouuut.com ↗</a>
+</nav>
+</div>
 <div class="foot-bottom">
 <span><a href="https://saaaai.com/" rel="author me">中本蔡 / NAKAMOTO SAI</a> · <a href="https://creativecommons.org/licenses/by/4.0/" rel="license">CC BY 4.0</a> · <span>{tr('foot.built')}</span> · {BUILD_DATE}</span>
 </div>
@@ -2195,10 +2245,45 @@ def build_home_preview():
             f'<p>{tr(f"home.{key}.copy")}</p></article>'
         )
 
+    companion_essays_svg = HP.companion_essays_svg(label=tr("comp.a.title"))
+    companion_hot_svg = HP.companion_hot_svg(label=tr("comp.b.title"))
+
+    companion = f"""<section class="wrap hp-companion" aria-label="{esc(tr('comp.bar.label'))}">
+<div class="hp-companion-frame">
+<div class="hp-companion-bar">
+<span class="hp-companion-label">{tr('comp.bar.label')}</span>
+<span class="hp-companion-meta">{tr('comp.bar.meta')}</span>
+</div>
+<div class="hp-companion-grid">
+<a class="hp-comp-card" data-comp="essays" href="https://jp.ouuut.com/" target="_blank" rel="noopener">
+<div class="hp-comp-head"><span class="hp-comp-kicker">{tr('comp.a.kicker')}</span><span class="hp-comp-tag">{tr('comp.a.tag')}</span></div>
+<div class="hp-comp-visual" aria-hidden="true">{companion_essays_svg}</div>
+<div class="hp-comp-body">
+<h2 class="hp-comp-title">{tr('comp.a.title')}</h2>
+<p class="hp-comp-stat"><b>{tr('comp.a.num')}</b><small>{tr('comp.a.unit')}</small></p>
+<p class="hp-comp-claim">{tr('comp.a.claim')}</p>
+<div class="hp-comp-foot"><span class="hp-comp-src">{tr('comp.a.src')}</span><span class="hp-comp-cta"><span>{tr('comp.a.cta')}</span> ↗</span></div>
+</div>
+</a>
+<a class="hp-comp-card" data-comp="hot" href="https://jp.ouuut.com/hot" target="_blank" rel="noopener">
+<div class="hp-comp-head"><span class="hp-comp-kicker">{tr('comp.b.kicker')}</span><span class="hp-comp-tag"><span class="hp-live-dot" aria-hidden="true"></span>{tr('comp.b.tag')}</span></div>
+<div class="hp-comp-visual" aria-hidden="true">{companion_hot_svg}</div>
+<div class="hp-comp-body">
+<h2 class="hp-comp-title">{tr('comp.b.title')}</h2>
+<p class="hp-comp-stat"><b>{tr('comp.b.num')}</b><small>{tr('comp.b.unit')}</small></p>
+<p class="hp-comp-claim">{tr('comp.b.claim')}</p>
+<div class="hp-comp-foot"><span class="hp-comp-src">{tr('comp.b.src')}</span><span class="hp-comp-cta"><span>{tr('comp.b.cta')}</span> ↗</span></div>
+</div>
+</a>
+</div>
+</div>
+</section>"""
+
     body = f"""<main id="main" class="hp">
 <section class="wrap hp-band hp-live" aria-label="Chapters">
 {''.join(entries)}
 </section>
+{companion}
 <section class="wrap hp-statement" aria-labelledby="home-statement-title">
 <h1 id="home-statement-title">{tr('cover.title')}</h1>
 <div class="hp-author">
@@ -2220,15 +2305,20 @@ def build_home_preview():
 </section>
 <section class="wrap hp-provenance" aria-labelledby="method-title">
 <div class="hp-provenance-panel">
-<div class="hp-provenance-intro">
-<p class="hp-kicker">PRIMARY SOURCES / STATIC BUILD</p>
-<h2 id="method-title">{tr('m.h1')}</h2>
-<p class="hp-provenance-lede">{tr('home.c.lede')}</p>
-</div>
-<div class="hp-provenance-content">
-<details class="hp-sources" open>
-<summary>{tr('home.details')}</summary>
+<details class="hp-sources">
+<summary>
+<span class="hp-prov-left">
+<span class="hp-prov-kicker">PRIMARY SOURCES</span>
+<h2 id="method-title" class="hp-prov-title">{tr('m.h1')}</h2>
+<span class="hp-prov-inline">{tr('home.prov.summary')}</span>
+</span>
+<span class="hp-prov-toggle">
+<span class="hp-prov-label-open">+ {tr('home.prov.open')}</span>
+<span class="hp-prov-label-close">× {tr('home.prov.close')}</span>
+</span>
+</summary>
 <div class="hp-sources-body">
+<p class="hp-provenance-lede">{tr('home.c.lede')}</p>
 <div class="hp-sources-list">{''.join(source_items)}</div>
 <div class="hp-definitions">
 <h3>{tr('home.definitions')}</h3>
@@ -2237,7 +2327,6 @@ def build_home_preview():
 </div>
 </div>
 </details>
-</div>
 </div>
 </section>
 </main>"""
@@ -3004,13 +3093,22 @@ def write_site(files):
         txt = txt.replace('/app/housing/app.css"', f'/app/housing/app.css?v={v}"')
         hv.write_text(txt, encoding="utf-8")
 
-    # favicon
-    fav = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
-           f'<rect width="64" height="64" fill="#F5F3ED"/>'
-           f'<text x="31" y="48" text-anchor="middle" font-family="Outfit,Helvetica,Arial,sans-serif" '
-           f'font-weight="800" font-size="46" fill="#CD5545">J</text></svg>')
+    # favicon: official hand-drawn O mark in Wa-iro c1 (#0C8B7A / #1EB39E)
+    if MARK_JSON.is_file():
+        _mk = json.loads(MARK_JSON.read_text(encoding="utf-8"))
+        _x0, _y0, _x1, _y1 = _mk["bounds"]
+        _mw, _mh = (_x1 - _x0), (_y1 - _y0)
+        _sc = 56.0 / max(_mw, _mh)
+        _tx = (64.0 - _mw * _sc) / 2.0 - _x0 * _sc
+        _ty = (64.0 - _mh * _sc) / 2.0 - _y0 * _sc
+        fav = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
+               f'<style>path{{fill:#0C8B7A}}@media (prefers-color-scheme:dark){{path{{fill:#1EB39E}}}}</style>'
+               f'<g transform="translate({_tx:.2f},{_ty:.2f}) scale({_sc:.5f})">'
+               f'<path d="{_mk["d"]}"/></g></svg>')
+    else:
+        fav = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
+               '<circle cx="32" cy="32" r="22" fill="none" stroke="#0C8B7A" stroke-width="10"/></svg>')
     (SITE / "assets/favicon.svg").write_text(fav, encoding="utf-8")
-
 
 def write_data():
     d = SITE / "data"
