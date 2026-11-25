@@ -1846,6 +1846,22 @@ def head(title, desc, path, jsonld=None, extra_head="", body_class="", chapter="
     ld = ""
     if jsonld:
         ld = '<script type="application/ld+json">' + json.dumps(jsonld, ensure_ascii=False) + "</script>"
+    lang_boot = ""
+    if CUR == "ja" and not is_404:
+        lang_boot = (
+            "var pl=null;try{pl=localStorage.getItem('pj-lang')}catch(e){}"
+            "if(!pl&&/(?:^|;\\s*)pj_lang=(ja|zh-Hans|zh-Hant|en)\\b/.test(document.cookie))pl=RegExp.$1;"
+            "if(!navigator.webdriver){"
+            "var tg=pl||'';"
+            "if(!tg){"
+            "var ls=navigator.languages||[navigator.language||''];"
+            "for(var i=0;i<ls.length;i++){var s=(ls[i]||'').toLowerCase();if(s.indexOf('zh')===0){tg=/(hant|[-_](tw|hk|mo))/.test(s)?'zh-Hant':'zh-Hans';break;}}"
+            "if(!tg){for(var j=0;j<ls.length;j++){var s2=(ls[j]||'').toLowerCase();if(s2.indexOf('ja')===0){tg='ja';break;}if(s2.indexOf('en')===0){tg='en';break;}}}"
+            "if(!tg)tg='zh-Hans';"
+            "}"
+            "if(tg&&tg!=='ja'){location.replace('/'+tg+location.pathname+location.search+location.hash);}"
+            "}"
+        )
     boot = ("<script>try{var d=document.documentElement;d.classList.add('js');"
             "var t=null;try{t=localStorage.getItem('pj-theme')}catch(e){}"
             "if(t==='sage')t='light';"
@@ -1853,6 +1869,10 @@ def head(title, desc, path, jsonld=None, extra_head="", body_class="", chapter="
             "d.dataset.theme=t;"
             "var m=document.querySelector('meta[name=\"theme-color\"]');"
             "if(m)m.setAttribute('content',t==='dark'?'#0E0E0C':'#F5F3ED');"
+            + lang_boot +
+            "document.addEventListener('click',function(e){var a=e.target&&e.target.closest&&e.target.closest('[data-set-lang]');"
+            "if(a){var l=a.getAttribute('data-set-lang');try{localStorage.setItem('pj-lang',l)}catch(x){}"
+            "try{document.cookie='pj_lang='+l+';path=/;max-age=31536000;SameSite=Lax'}catch(x){}}},true);"
             "}catch(e){}</script>")
     # 404 是 noindex 的一次性页面,也不参与分享:不发 og:image(没有它的卡片)。
     og_block = ""
@@ -1913,7 +1933,7 @@ def lang_switch(path="/"):
     `<a href>` 发现其余三语(旧版是 JS 改 ?lang= 的按钮,爬虫看不见目标页)。
     """
     items = "".join(
-        f'<a href="{url_in(lang, path)}" lang="{lang}" hreflang="{lang}"'
+        f'<a href="{url_in(lang, path)}" lang="{lang}" hreflang="{lang}" data-set-lang="{lang}"'
         f'{" aria-current=\"page\"" if lang == CUR else ""}>{LANG_NAMES[lang]}</a>'
         for lang in LANGS)
     return f"""<details class="lang-switch" data-lang-switch>
