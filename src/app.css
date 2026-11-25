@@ -463,12 +463,12 @@ html[lang^="zh"] .section-title { font-weight: 700; }
 .section-sub { color: var(--muted); font-size: var(--fs-small); line-height: 1.7; margin-bottom: 24px; }
 
 /* ---------------- CJK routing ---------------- */
-html[lang="ja"] body, html[lang="ja"] p, html[lang="ja"] li,
+html[lang="ja"] body,
 html[lang="ja"] .lede, html[lang="ja"] .section-sub {
   font-family: var(--ja-sans);
   line-height: var(--lh-cjk);
 }
-html[lang^="zh"] body, html[lang^="zh"] p, html[lang^="zh"] li,
+html[lang^="zh"] body,
 html[lang^="zh"] .lede, html[lang^="zh"] .section-sub {
   font-family: var(--zh-sans);
   line-height: var(--lh-cjk);

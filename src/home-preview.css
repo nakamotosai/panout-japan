@@ -749,8 +749,18 @@ html[lang="ja"] .hp-statement h1, html:lang(zh) .hp-statement h1 {
 }
 .hp-author-intro { max-width: 46ch; }
 .hp-author-role { color: var(--muted); font: 11px/1.6 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
-.hp-author-name { margin-top: 8px; color: var(--ink); font-family: var(--serif); font-weight: 700; font-size: 22px; line-height: 1.3; letter-spacing: -.01em; }
-html[lang="en"] .hp-author-name { font-weight: 400; font-size: 24px; }
+.hp-author-name,
+html[lang="en"] .hp-author-name,
+html[lang="ja"] .hp-author-name,
+html:lang(zh) .hp-author-name {
+  margin-top: 8px;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1.25;
+  letter-spacing: -.01em;
+}
 .hp-author-name > span { margin-left: 8px; color: var(--muted); font: 10.5px/1.6 var(--mono); letter-spacing: .08em; }
 .hp-author-bio { margin-top: 10px; color: var(--muted); font-size: 15px; line-height: 1.75; }
 .hp-author-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-content: start; }
@@ -800,8 +810,11 @@ html[lang="en"] .hp-statement h1,
 html[lang="en"] .hp-prov-title { font-family: var(--serif); font-weight: 400; }
 html[lang="ja"] .hp-statement h1,
 html[lang="ja"] .hp-prov-title,
+html[lang="ja"] .hp-author-name,
 html:lang(zh) .hp-statement h1,
-html:lang(zh) .hp-prov-title { font-family: var(--serif); font-weight: 700; }
+html:lang(zh) .hp-prov-title,
+html:lang(zh) .hp-author-name,
+html[lang="en"] .hp-author-name { font-family: var(--serif); font-weight: 700; }
 
 @media (max-width: 1000px) {
   .hp-companion-grid { grid-template-columns: 1fr; }
