@@ -3205,8 +3205,21 @@ def write_meta(font_meta):
     (SITE / "sitemap.xml").write_text("\n".join(sm), encoding="utf-8")
 
     (SITE / "robots.txt").write_text(
-        "User-agent: *\nAllow: /\n\nSitemap: %s/sitemap.xml\n" % SITE_URL, encoding="utf-8")
-
+        "User-agent: *\nAllow: /\n\n"
+        "User-agent: OAI-SearchBot\nAllow: /\n\n"
+        "User-agent: ChatGPT-User\nAllow: /\n\n"
+        "User-agent: GPTBot\nAllow: /\n\n"
+        "User-agent: PerplexityBot\nAllow: /\n\n"
+        "User-agent: Claude-SearchBot\nAllow: /\n\n"
+        "User-agent: ClaudeBot\nAllow: /\n\n"
+        "User-agent: Google-Extended\nAllow: /\n\n"
+        "Sitemap: %s/sitemap.xml\n" % SITE_URL, encoding="utf-8")
+    _indexnow_key = "f1a2b3c4d5e67890a1b2c3d4e5f60718"
+    (SITE / f"{_indexnow_key}.txt").write_text(_indexnow_key + "\n", encoding="utf-8")
+    (SITE / "BingSiteAuth.xml").write_text(
+        '<?xml version="1.0"?>\n<users>\n\t<user>EBD908FD19830478E2AEF72586972E86</user>\n</users>\n',
+        encoding="utf-8",
+    )
     (SITE / "_headers").write_text(
         "/*\n"
         "  X-Content-Type-Options: nosniff\n"
@@ -3245,7 +3258,13 @@ def write_meta(font_meta):
         "\n"
         "/data/*\n"
         "  ! Cache-Control\n"
-        "  Cache-Control: public, max-age=86400\n", encoding="utf-8")
+        "  Cache-Control: public, max-age=86400\n\n"
+        "/llms.txt\n"
+        "  X-Robots-Tag: noindex, follow\n\n"
+        "/llms-full.txt\n"
+        "  X-Robots-Tag: noindex, follow\n\n"
+        "/f1a2b3c4d5e67890a1b2c3d4e5f60718.txt\n"
+        "  X-Robots-Tag: noindex, follow\n", encoding="utf-8")
 
     # 尾斜杠 301:四条语言路由各一条,由 LANGS/PREFIX 推出,不再手抄路径。
     reds = []
@@ -3253,7 +3272,16 @@ def write_meta(font_meta):
         for lang in LANGS:
             full = url_in(lang, route)
             reds.append(f"{full.rstrip('/')} {full} 301")
-    reds += ["/preview / 301", "/preview/ / 301"]
+    reds += [
+        "/preview / 301",
+        "/preview/ / 301",
+        "/zh-hans /zh-Hans/ 301",
+        "/zh-hans/ /zh-Hans/ 301",
+        "/zh-hans/* /zh-Hans/:splat 301",
+        "/zh-hant /zh-Hant/ 301",
+        "/zh-hant/ /zh-Hant/ 301",
+        "/zh-hant/* /zh-Hant/:splat 301",
+    ]
     (SITE / "_redirects").write_text("\n".join(reds) + "\n", encoding="utf-8")
 
     # 退役 `?lang=` 变体的 301 中间件:wrangler 认的是 **仓库根** 的 `functions/`
@@ -3278,6 +3306,27 @@ def write_meta(font_meta):
 - [人口](/population/): 2025年国勢調査、{POP['meta']['n']:,}市町村。91.2%が減少、73.4%が減少市町村に住む。2050年は社人研推計で{POP_N['pop2050']:,}人。CSV: /data/population.csv
 
 Build: {BUILD_STAMP}. Sources: 気象庁, USGS ComCat, 警視庁, NHK, 日経, 朝日, 時事, 読売, JNN, 共同, 総務省統計局, 国立社会保障・人口問題研究所.
+""", encoding="utf-8")
+    (SITE / "llms-full.txt").write_text(f"""# {BRAND} — Full Context Atlas
+
+> 日本を六つの尺度（天気・地震・犯罪・内閣支持率・住宅価格・人口動態）で俯瞰する四語対応（ja / zh-Hans / zh-Hant / en）静的データ地図サイト。
+
+## Languages & Canonical Routes
+- Japanese (default): {SITE_URL}/
+- Simplified Chinese: {SITE_URL}/zh-Hans/
+- Traditional Chinese: {SITE_URL}/zh-Hant/
+- English: {SITE_URL}/en/
+- Sitemap: {SITE_URL}/sitemap.xml
+
+## Six Data Chapters & Direct CSV Downloads
+1. Weather (天気 / 天气): {SITE_URL}/weather/ — JMA forecast across all 47 prefectures (CSV: {SITE_URL}/data/weather.csv)
+2. Earthquakes (地震): {SITE_URL}/quake/ — 2000–{Q_END_DOT}, {n(Q_N)} M4+ USGS hypocentres (CSV: {SITE_URL}/data/quakes.csv)
+3. Crime (犯罪): {SITE_URL}/crime/ — 2025 Tokyo 5,234 chome / 62 municipalities Keishicho rates (CSV: {SITE_URL}/data/crime.csv)
+4. Cabinet Approval (内閣支持率): {SITE_URL}/cabinet/ — {CAB_FIRST['date'][:4]}–{CAB_LAST['date'][:4]}, {n(len(POLLS))} polls across {len(CAB['cabinets'])} cabinets (CSV: {SITE_URL}/data/cabinet.csv)
+5. Housing Prices (住宅): {SITE_URL}/housing/ — 2025Q2–2026Q1 Tokyo used-flat median m2 prices across 1,237 towns (MLIT)
+6. Population (人口): {SITE_URL}/population/ — 2025 Census across {POP['meta']['n']:,} municipalities, 2050 IPSS projection {POP_N['pop2050']:,} (CSV: {SITE_URL}/data/population.csv)
+
+Build: {BUILD_STAMP}. Operator: OUUUT (https://ouuut.com/) / Sai Nakamoto (https://saaaai.com/).
 """, encoding="utf-8")
 
 
