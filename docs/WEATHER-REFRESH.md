@@ -263,6 +263,24 @@ HTML byte-for-byte identical to the 11-25 16:43 deployment while `llms-full.txt`
 `BingSiteAuth.xml` were new. Production served two-day-old weather until the publish
 chain was re-run by hand at 18:00 JST.
 
+2026-11-28: the 06:10 run fetched the day's copy (snapshot `2026-11-27T21:10:06Z`),
+built, deployed (`37f4da11`) and verified production — then stopped at its own commit
+guard: `Refusing to commit unrelated changes: ['MASTER-CHECKLIST.md', 'README.md',
+'docs/WEATHER-REFRESH.md']`. Those three files were the uncommitted remains of the
+`panout-weather-publish-fix` session of 11-27 17:44, which the dispatcher recorded as
+`TIMEOUT` (job `J1127-174421-34bfcd`). The guard is right to refuse, so the run left
+production current while `state.json` still held the 11-26 snapshot and nothing had
+been pushed — production and the repository disagreed, and the probe's
+`最近一次刷新失败` P0 tripped until the dispatcher raised the repair job. Resolution: land
+the pending docs on `main` (`c373595`) and re-run the pipeline by hand, which fetched,
+deployed (`254401dd`), verified, then committed and pushed `5154a3c` to both remotes
+with `state.json.last_success_date = 2026-11-28`.
+
+The ordering is the weakness this exposed: `commit_and_push()` evaluates the guard
+*after* the deployment, so a run that will be refused has already replaced production.
+The guard belongs before the JMA fetch — today's run spent four minutes and a new
+deployment on a commit it then refused to make.
+
 Registration: `/home/ubuntu/watchdog/registry.json` item
 `panout-japan.weather`, cron `panout-weather-watch`, heartbeat
 `/home/ubuntu/watchdog/heartbeats/panout-weather-refresh.ok`, Kuma token in
