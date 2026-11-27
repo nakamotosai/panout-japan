@@ -102,7 +102,7 @@
 - [x] **J4** 桌面 1440 无横向溢出；首页六卡全链接、第六块为人口；出典六章。
 - [x] **J5** 构建 7 个内容页；sitemap 7；llms 六章；`_redirects` 加 `/population`；字体子集含 1,719 市町村名。
 - [ ] **J6** 移动 390 / 平板 768 截图验收；JA/ZH/EN 静态与 app 标签；无 JS 截图。
-- [ ] **J7** 发布：`npx wrangler pages deploy site`，线上冒烟与回滚点。
+- [ ] **J7** 发布:`python tools/deploy_site.py`(构建 + 校验 + 上传 + 复核线上;别裸跑 `npx wrangler pages deploy site`),线上冒烟与回滚点。
 
 ## 后续(不属于已完成验收)
 

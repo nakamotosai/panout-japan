@@ -234,6 +234,35 @@ Kuma monitor `panout-weather-refresh` (id 54) is fed by two independent paths:
   day's — both sides were stale in exactly the same way and the monitor stayed green
   while `/weather/` called 11-03 "today".
 
+### The watchdog repairs the stale-deploy class itself (2026-11-27)
+
+Since 2026-11-27 the probe does not only report that class, it fixes it — but only
+that class. When production's own bytes are older than the snapshot `state.json`
+records (`PRODUCTION_CONTENT_ERRORS`: production's `generatedAt`/地区数/`reportDatetime`
+or `/weather/` markup disagree with a state that *does* hold a current snapshot), the
+probe runs `git fetch origin --prune` + `git merge --ff-only origin/main` in
+`/home/ubuntu/panout-japan` and then the repository's only sanctioned hand-deploy path,
+`python tools/deploy_site.py`. That gate refuses a tree that is not `origin/main`, a
+snapshot that is not today's, and uncommitted tracked changes, and verifies the CSS
+bytes, the weather version and all seven routes before it calls itself done — so a
+repair can fail closed but can never publish something unverified. Bounded to
+`MAX_REPAIRS_PER_DAY = 2` attempts per JST day (recorded in
+`/home/ubuntu/.cache/panout-weather/repair.json`), serialised by
+`flock /tmp/panout-weather-repair.lock`, and skipped while the daily job holds
+`/tmp/panout-weather-refresh.lock`.
+
+A daily run that simply did not succeed (no snapshot for today in `state.json`, or
+"still not successful after 06:40 JST") stays alert-only: re-running the JMA fetch from
+a watchdog has a bigger error surface than leaving that to `refresh_weather.py` and the
+P0 alert.
+
+2026-11-27: a hand-run bare `npx wrangler pages deploy site` from a machine whose `site/`
+had been built on 11-25 16:43 overwrote the 06:13 deployment (`aa879b71`, snapshot
+2026-11-26) with that 11-25 build (`4d729622`, snapshot 2026-11-24) — the `/weather/`
+HTML byte-for-byte identical to the 11-25 16:43 deployment while `llms-full.txt` and
+`BingSiteAuth.xml` were new. Production served two-day-old weather until the publish
+chain was re-run by hand at 18:00 JST.
+
 Registration: `/home/ubuntu/watchdog/registry.json` item
 `panout-japan.weather`, cron `panout-weather-watch`, heartbeat
 `/home/ubuntu/watchdog/heartbeats/panout-weather-refresh.ok`, Kuma token in

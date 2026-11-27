@@ -84,13 +84,18 @@ site/           # 构建产物,gitignore
 ## 构建与发布
 
 ```bash
-python src/build.py                        # 生成 site/（约 100s，含字体子集）
+python src/build.py                        # 生成 site/(约 100s,含字体子集)
 cd site && python -m http.server 8900      # 本地预览
-npx wrangler pages deploy site --project-name=panout-site --branch=main
+python tools/deploy_site.py                # 手工发布:构建 → 校验 → 上传 → 复核线上
 ```
 
-构建产出 `_headers` / `_redirects` / `sitemap.xml` / `robots.txt` / `llms.txt` / `data/*.csv`，
-全部由构建生成，不手改 `site/`。
+手工发布只走 `tools/deploy_site.py`:它拒绝「HEAD 不是 `origin/main`」「快照不是今天的」
+「工作树有未提交改动」三种树,发布后还要比对 CSS 字节、weather 版本与七条路由。
+**别裸跑 `npx wrangler pages deploy site`**(2026-11-04、2026-11-27 两次事故都是它:
+没同步的树把前一天的 `site/` 盖到生产上,线上按「今天」显示了旧快照)。
+
+构建产出 `_headers` / `_redirects` / `sitemap.xml` / `robots.txt` / `llms.txt` / `data/*.csv`,
+全部由构建生成,不手改 `site/`。
 
 ### 天气日更
 
