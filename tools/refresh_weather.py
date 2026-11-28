@@ -355,12 +355,33 @@ def verify_production(data: dict, deployment_url: str | None = None) -> None:
     raise RuntimeError(f"Production verification failed after {attempts} attempts: {last_error}")
 
 
-def commit_and_push(data: dict) -> str:
+ALLOWED_DIRTY = {"src/weather/data.js", "src/weather/DATA-NOTES.md"}
+
+
+def unrelated_changes() -> set[str]:
+    """Paths the pipeline itself did not write, i.e. somebody else's uncommitted work."""
     status = subprocess.run(["git", "status", "--porcelain"], cwd=ROOT, text=True,
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
-    allowed = {"src/weather/data.js", "src/weather/DATA-NOTES.md"}
     changed = {line[3:].strip() for line in status.splitlines() if line.strip()}
-    extra = changed - allowed
+    return changed - ALLOWED_DIRTY
+
+
+def assert_clean_tree() -> None:
+    """Refuse the run *before* the fetch/build/deploy when the checkout is dirty.
+
+    2026-11-28: the issue was ordering. ``commit_and_push()`` only evaluated its guard
+    *after* the deployment, so a run that was going to be refused had already spent four
+    minutes and pushed a new deployment over production — the guard was right to refuse,
+    but it refused too late. Evaluating the same guard first means a dirty checkout fails
+    fast, production is never touched, and the only thing that changes is a failure record.
+    """
+    extra = unrelated_changes()
+    if extra:
+        raise RuntimeError(f"Refusing to commit unrelated changes: {sorted(extra)}")
+
+
+def commit_and_push(data: dict) -> str:
+    extra = unrelated_changes()
     if extra:
         raise RuntimeError(f"Refusing to commit unrelated changes: {sorted(extra)}")
     run(["git", "add", "src/weather/data.js", "src/weather/DATA-NOTES.md"])
@@ -415,6 +436,9 @@ def main() -> int:
     deployed = False
     previous_deployment = None
     try:
+        # 先立门再动手:被拒的运行不该已经抓了 JMA、更不该已经换掉生产(2026-11-28)。
+        if not (args.dry_run or args.no_deploy or args.no_commit):
+            assert_clean_tree()
         data, manifest = W.build_snapshot(CACHE, refresh=not args.reuse_cache)
         geo = W.load_geo(GEO)
         report = W.validate_snapshot(data, geo, expected_date=today_jst())

@@ -281,6 +281,12 @@ The ordering is the weakness this exposed: `commit_and_push()` evaluates the gua
 The guard belongs before the JMA fetch — today's run spent four minutes and a new
 deployment on a commit it then refused to make.
 
+Fixed the same day: the guard now also runs as a preflight. `assert_clean_tree()` is
+called from `main()` ahead of `build_snapshot()` — i.e. before the JMA fetch — whenever
+the run would go on to commit, and it shares `unrelated_changes()` with
+`commit_and_push()` so the refusal text is unchanged. A dirty checkout now fails in well
+under a second with production untouched and only a `last_failure_at` record written.
+
 Registration: `/home/ubuntu/watchdog/registry.json` item
 `panout-japan.weather`, cron `panout-weather-watch`, heartbeat
 `/home/ubuntu/watchdog/heartbeats/panout-weather-refresh.ok`, Kuma token in
